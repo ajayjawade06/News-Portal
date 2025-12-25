@@ -20,7 +20,7 @@ const app = express();
 // Middleware
 // CORS configuration for production
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://your-frontend.vercel.app'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://news-portal-tau-nine.vercel.app/'],
   credentials: true,
   optionsSuccessStatus: 200
 };
