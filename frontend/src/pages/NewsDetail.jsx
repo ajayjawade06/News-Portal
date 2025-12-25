@@ -54,13 +54,19 @@ const NewsDetail = () => {
   }
 
   const title = getNewsContent(newsItem, 'title');
+  const subHeading = getNewsContent(newsItem, 'subHeading');
   const content = getNewsContent(newsItem, 'content');
 
-  const coverageColors = {
-    local: 'bg-green-100 text-green-800 border-green-300',
-    national: 'bg-blue-100 text-blue-800 border-blue-300',
-    international: 'bg-purple-100 text-purple-800 border-purple-300'
+  // Location-based colors (replaces old coverage colors)
+  const locationColors = {
+    maharashtra: 'bg-blue-100 text-blue-800 border-blue-300',
+    chandrapur: 'bg-green-100 text-green-800 border-green-300',
+    korpana: 'bg-purple-100 text-purple-800 border-purple-300',
+    rajura: 'bg-orange-100 text-orange-800 border-orange-300'
   };
+
+  // Support both location (new) and coverage (old) for backward compatibility
+  const location = newsItem.location || newsItem.coverage || '';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
@@ -88,12 +94,18 @@ const NewsDetail = () => {
           <div className="p-8 md:p-12">
             <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
               <div className="flex flex-wrap items-center gap-3">
-                <span className={`px-4 py-2 rounded-full text-sm font-bold uppercase border ${coverageColors[newsItem.coverage] || 'bg-gray-100 text-gray-800'}`}>
-                  {newsItem.coverage}
+                <span className={`px-4 py-2 rounded-full text-sm font-bold uppercase border ${locationColors[location] || 'bg-gray-100 text-gray-800'}`}>
+                  {location}
                 </span>
                 <span className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold">
                   {newsItem.category}
                 </span>
+                {newsItem.views !== undefined && (
+                  <span className="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-semibold flex items-center space-x-1">
+                    <span>👁️</span>
+                    <span>{newsItem.views || 0} views</span>
+                  </span>
+                )}
               </div>
               <div className="flex items-center space-x-2 text-gray-500">
                 <span>📅</span>
@@ -107,9 +119,15 @@ const NewsDetail = () => {
               </div>
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800 leading-tight">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800 leading-tight">
               {title}
             </h1>
+            
+            {subHeading && (
+              <p className="text-xl md:text-2xl text-gray-600 mb-6 font-medium italic border-l-4 border-blue-500 pl-4">
+                {subHeading}
+              </p>
+            )}
             
             <div className="prose prose-lg max-w-none">
               <div className="text-gray-700 text-lg md:text-xl leading-relaxed whitespace-pre-line space-y-4">

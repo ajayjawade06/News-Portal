@@ -38,12 +38,14 @@ export const NewsProvider = ({ children }) => {
     };
   }, []);
 
-  // Fetch news based on coverage type
-  const fetchNews = async (coverage = null) => {
+  // Fetch news based on location type
+  // Updated to use 'location' instead of 'coverage' for location-based filtering
+  // Location values: maharashtra, chandrapur, korpana, rajura
+  const fetchNews = async (location = null) => {
     setLoading(true);
     setError(null);
     try {
-      const params = coverage ? { coverage } : {};
+      const params = location ? { location } : {};
       const response = await api.get('/news', { params });
       setNews(response.data.data || []);
     } catch (err) {
@@ -56,6 +58,7 @@ export const NewsProvider = ({ children }) => {
 
   // Get news content in selected language with fallback
   // For MCA Viva: This function demonstrates language-based content retrieval
+  // Supports title, subHeading, and content fields
   const getNewsContent = (newsItem, field = 'title') => {
     if (!newsItem || !newsItem[field]) return '';
     

@@ -154,16 +154,19 @@ async function translateText(text, sourceLang, targetLang) {
  * @param {string} title - News title in base language
  * @param {string} content - News content in base language
  * @param {string} baseLanguage - Base language code (en, hi, mr)
- * @returns {Promise<Object>} - Object with translated title and content for all languages
+ * @param {string} subHeading - Optional sub-heading in base language (auto-translated)
+ * @returns {Promise<Object>} - Object with translated title, subHeading, and content for all languages
  */
-export async function translateNewsContent(title, content, baseLanguage) {
+export async function translateNewsContent(title, content, baseLanguage, subHeading = '') {
   const languages = ['en', 'hi', 'mr'];
   const translatedTitle = {};
+  const translatedSubHeading = {};
   const translatedContent = {};
 
   // Set base language content directly (no translation needed)
   translatedTitle[baseLanguage] = title;
   translatedContent[baseLanguage] = content;
+  translatedSubHeading[baseLanguage] = subHeading || '';
 
   // Translate to other languages
   const translationPromises = [];
@@ -181,6 +184,22 @@ export async function translateNewsContent(title, content, baseLanguage) {
             translatedTitle[lang] = title;
           })
       );
+
+      // Translate sub-heading if provided
+      if (subHeading && subHeading.trim()) {
+        translationPromises.push(
+          translateText(subHeading, baseLanguage, lang)
+            .then(translated => {
+              translatedSubHeading[lang] = translated;
+            })
+            .catch(() => {
+              // Fallback to base language if translation fails
+              translatedSubHeading[lang] = subHeading;
+            })
+        );
+      } else {
+        translatedSubHeading[lang] = '';
+      }
 
       // Translate content (split into chunks if too long to avoid API limits)
       const maxChunkLength = 4000; // Safe chunk size for translation APIs
@@ -235,6 +254,7 @@ export async function translateNewsContent(title, content, baseLanguage) {
 
   return {
     title: translatedTitle,
+    subHeading: translatedSubHeading,
     content: translatedContent
   };
 }

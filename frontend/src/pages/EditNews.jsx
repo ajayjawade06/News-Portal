@@ -12,9 +12,10 @@ const EditNews = () => {
   // Auto-translation happens on backend
   const [formData, setFormData] = useState({
     title: '',
+    subHeading: '', // Optional sub-heading for additional context
     content: '',
     baseLanguage: 'en', // Language reporter writes in
-    coverage: '',
+    location: '', // Location-based coverage (replaces old coverage field)
     category: '',
     published: false
   });
@@ -36,9 +37,10 @@ const EditNews = () => {
         
         setFormData({
           title: news.title[baseLang] || news.title.en || '',
+          subHeading: news.subHeading?.[baseLang] || news.subHeading?.en || '',
           content: news.content[baseLang] || news.content.en || '',
           baseLanguage: baseLang,
-          coverage: news.coverage,
+          location: news.location || news.coverage || '', // Support both location (new) and coverage (old)
           category: news.category,
           published: news.published
         });
@@ -88,8 +90,8 @@ const EditNews = () => {
     e.preventDefault();
     setError('');
 
-    // Validation: Only need title, content, coverage, category
-    if (!formData.title || !formData.content || !formData.coverage || !formData.category) {
+    // Validation: Only need title, content, location, category
+    if (!formData.title || !formData.content || !formData.location || !formData.category) {
       setError('Please fill all required fields');
       return;
     }
@@ -101,9 +103,10 @@ const EditNews = () => {
       // Backend will auto-translate to all languages
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
+      formDataToSend.append('subHeading', formData.subHeading || '');
       formDataToSend.append('content', formData.content);
       formDataToSend.append('baseLanguage', formData.baseLanguage);
-      formDataToSend.append('coverage', formData.coverage);
+      formDataToSend.append('location', formData.location);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('published', formData.published);
 
@@ -191,6 +194,24 @@ const EditNews = () => {
           />
         </div>
 
+        {/* Sub-Heading Field (Optional) */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Sub-Heading <span className="text-gray-400 text-xs">(Optional)</span>
+          </label>
+          <input
+            type="text"
+            name="subHeading"
+            value={formData.subHeading}
+            onChange={handleChange}
+            placeholder="Enter sub-heading for additional context"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Sub-heading provides additional context below the title.
+          </p>
+        </div>
+
         {/* Single Content Field */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -207,23 +228,24 @@ const EditNews = () => {
           />
         </div>
 
-        {/* Coverage and Category */}
+        {/* Location and Category */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t('form.coverage')} <span className="text-red-500">*</span>
+              Location <span className="text-red-500">*</span>
             </label>
             <select
-              name="coverage"
-              value={formData.coverage}
+              name="location"
+              value={formData.location}
               onChange={handleChange}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500"
             >
-              <option value="">{t('form.selectCoverage')}</option>
-              <option value="local">Local</option>
-              <option value="national">National</option>
-              <option value="international">International</option>
+              <option value="">Select Location</option>
+              <option value="maharashtra">Maharashtra</option>
+              <option value="chandrapur">Chandrapur</option>
+              <option value="korpana">Korpana</option>
+              <option value="rajura">Rajura</option>
             </select>
           </div>
 

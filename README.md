@@ -98,7 +98,31 @@ SEM IV/
     └── vite.config.js
 ```
 
-## 🚀 Setup Instructions
+## 🚀 Quick Deployment Guide
+
+### Deploy to Production (Recommended Platforms)
+
+**Backend:**
+- **Railway** (Free tier): https://railway.app
+- **Render** (Free tier): https://render.com
+
+**Frontend:**
+- **Vercel** (Free tier): https://vercel.com
+- **Netlify** (Free tier): https://netlify.com
+
+**Database:**
+- **MongoDB Atlas** (Free tier): https://www.mongodb.com/cloud/atlas
+
+See `DEPLOYMENT.md` for detailed step-by-step deployment instructions.
+
+### Quick Deploy Steps:
+
+1. **Set up MongoDB Atlas** (free tier)
+2. **Deploy Backend** to Railway/Render with MongoDB connection string
+3. **Deploy Frontend** to Vercel/Netlify with backend URL
+4. **Seed dummy data**: Run `npm run seed-dummy` in backend
+
+## 🚀 Local Setup Instructions
 
 ### Prerequisites
 

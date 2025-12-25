@@ -10,9 +10,10 @@ const CreateNews = () => {
   // Auto-translation happens on backend
   const [formData, setFormData] = useState({
     title: '',
+    subHeading: '', // Optional sub-heading for additional context
     content: '',
     baseLanguage: 'en', // Language reporter writes in
-    coverage: '',
+    location: '', // Location-based coverage (replaces old coverage field)
     category: '',
     published: false
   });
@@ -52,8 +53,8 @@ const CreateNews = () => {
     e.preventDefault();
     setError('');
 
-    // Validation: Only need title, content, coverage, category
-    if (!formData.title || !formData.content || !formData.coverage || !formData.category) {
+    // Validation: Only need title, content, location, category
+    if (!formData.title || !formData.content || !formData.location || !formData.category) {
       setError('Please fill all required fields');
       return;
     }
@@ -67,9 +68,10 @@ const CreateNews = () => {
       // Backend will auto-translate to all languages automatically
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
+      formDataToSend.append('subHeading', formData.subHeading || '');
       formDataToSend.append('content', formData.content);
       formDataToSend.append('baseLanguage', formData.baseLanguage);
-      formDataToSend.append('coverage', formData.coverage);
+      formDataToSend.append('location', formData.location);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('published', formData.published);
 
@@ -95,11 +97,11 @@ const CreateNews = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">{t('form.title')}</h1>
-          <p className="text-gray-600">Create a news post and let AI translate it automatically</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-4 sm:py-6 lg:py-8">
+      <div className="container mx-auto px-3 sm:px-4 max-w-4xl">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">{t('form.title')}</h1>
+          <p className="text-sm sm:text-base text-gray-600">Create a news post and let AI translate it automatically</p>
         </div>
 
         {error && (
@@ -119,21 +121,21 @@ const CreateNews = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+        <form onSubmit={handleSubmit} className="bg-white p-4 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl border border-gray-100">
           {/* Info Banner: Auto-translation feature */}
-          <div className="mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800 px-6 py-4 rounded-xl flex items-start space-x-3">
-            <span className="text-2xl">✨</span>
+          <div className="mb-4 sm:mb-6 lg:mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800 px-4 sm:px-6 py-3 sm:py-4 rounded-lg sm:rounded-xl flex items-start space-x-2 sm:space-x-3">
+            <span className="text-xl sm:text-2xl flex-shrink-0">✨</span>
             <div>
-              <p className="font-semibold mb-1">Auto-Translation Enabled</p>
-              <p className="text-sm">
+              <p className="font-semibold mb-1 text-sm sm:text-base">Auto-Translation Enabled</p>
+              <p className="text-xs sm:text-sm">
                 Write your news in one language. The system will automatically translate it to English, Hindi, and Marathi.
               </p>
             </div>
           </div>
 
         {/* Base Language Selection */}
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+        <div className="mb-4 sm:mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
             Write in Language <span className="text-red-500">*</span>
           </label>
           <select
@@ -141,7 +143,7 @@ const CreateNews = () => {
             value={formData.baseLanguage}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white touch-manipulation"
           >
             <option value="en">🇬🇧 English</option>
             <option value="hi">🇮🇳 Hindi (हिंदी)</option>
@@ -154,8 +156,8 @@ const CreateNews = () => {
         </div>
 
         {/* Single Title Field */}
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+        <div className="mb-4 sm:mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
             Title <span className="text-red-500">*</span>
           </label>
           <input
@@ -165,13 +167,32 @@ const CreateNews = () => {
             onChange={handleChange}
             required
             placeholder="Enter news title"
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
           />
         </div>
 
+        {/* Sub-Heading Field (Optional) */}
+        <div className="mb-4 sm:mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
+            Sub-Heading <span className="text-gray-400 text-xs">(Optional)</span>
+          </label>
+          <input
+            type="text"
+            name="subHeading"
+            value={formData.subHeading}
+            onChange={handleChange}
+            placeholder="Enter sub-heading for additional context"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+          />
+          <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
+            <span>💡</span>
+            <span>Sub-heading provides additional context below the title and improves readability.</span>
+          </p>
+        </div>
+
         {/* Single Content Field */}
-        <div className="mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
+        <div className="mb-4 sm:mb-6">
+          <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
             Content <span className="text-red-500">*</span>
           </label>
           <textarea
@@ -179,34 +200,39 @@ const CreateNews = () => {
             value={formData.content}
             onChange={handleChange}
             required
-            rows="10"
+            rows="8"
             placeholder="Write your news content here..."
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-y"
+            className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-y"
           />
         </div>
 
-        {/* Coverage and Category */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        {/* Location and Category */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              {t('form.coverage')} <span className="text-red-500">*</span>
+            <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
+              Location <span className="text-red-500">*</span>
             </label>
             <select
-              name="coverage"
-              value={formData.coverage}
+              name="location"
+              value={formData.location}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white touch-manipulation"
             >
-              <option value="">{t('form.selectCoverage')}</option>
-              <option value="local">📍 Local</option>
-              <option value="national">🇮🇳 National</option>
-              <option value="international">🌍 International</option>
+              <option value="">Select Location</option>
+              <option value="maharashtra">📍 Maharashtra</option>
+              <option value="chandrapur">📍 Chandrapur</option>
+              <option value="korpana">📍 Korpana</option>
+              <option value="rajura">📍 Rajura</option>
             </select>
+            <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
+              <span>💡</span>
+              <span>Location-based news helps readers find news relevant to their area.</span>
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
+            <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
               {t('form.category')} <span className="text-red-500">*</span>
             </label>
             <input
@@ -216,13 +242,13 @@ const CreateNews = () => {
               onChange={handleChange}
               required
               placeholder="e.g., Politics, Sports, Economy"
-              className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base border-2 border-gray-300 rounded-lg sm:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
             />
           </div>
         </div>
 
         {/* Image Upload */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <label className="block text-sm font-semibold text-gray-700 mb-3">
             {t('form.image')}
           </label>
@@ -276,11 +302,11 @@ const CreateNews = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <button
             type="submit"
             disabled={loading || translating}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02]"
+            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl hover:from-blue-700 hover:to-indigo-700 active:from-blue-800 active:to-indigo-800 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 touch-manipulation text-base sm:text-lg"
           >
             {loading || translating ? (
               <span className="flex items-center justify-center">
@@ -294,7 +320,7 @@ const CreateNews = () => {
           <button
             type="button"
             onClick={() => navigate('/dashboard/manage')}
-            className="px-8 py-4 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 font-semibold transition-all duration-200"
+            className="px-6 sm:px-8 py-3 sm:py-4 bg-gray-200 text-gray-700 rounded-lg sm:rounded-xl hover:bg-gray-300 active:bg-gray-400 font-semibold transition-all duration-200 touch-manipulation text-base sm:text-lg"
           >
             {t('common.cancel')}
           </button>

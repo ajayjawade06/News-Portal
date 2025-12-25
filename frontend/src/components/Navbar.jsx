@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNews } from '../context/NewsContext';
@@ -7,6 +8,7 @@ const Navbar = () => {
   const { selectedLanguage, setSelectedLanguage } = useNews();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLanguageChange = (lang) => {
     // Update both i18n (for UI) and NewsContext (for news content)
@@ -23,20 +25,35 @@ const Navbar = () => {
 
   return (
     <nav className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white shadow-xl sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 group">
-            <div className="text-3xl transform group-hover:scale-110 transition-transform duration-300">
+          <Link to="/" className="flex items-center space-x-1 sm:space-x-2 group" onClick={() => setMobileMenuOpen(false)}>
+            <div className="text-2xl sm:text-3xl transform group-hover:scale-110 transition-transform duration-300">
               📰
             </div>
             <div>
-              <div className="text-2xl font-bold tracking-tight">News Portal</div>
-              <div className="text-xs text-blue-200 opacity-75">Multilingual News</div>
+              <div className="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">News Portal</div>
+              <div className="text-xs text-blue-200 opacity-75 hidden sm:block">Multilingual News</div>
             </div>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors touch-manipulation"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
+          {/* Desktop Navigation Links - Location-based */}
           <div className="hidden md:flex items-center space-x-1">
             <Link
               to="/"
@@ -45,22 +62,28 @@ const Navbar = () => {
               {t('nav.home')}
             </Link>
             <Link
-              to="/local"
+              to="/maharashtra"
               className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
             >
-              {t('nav.local')}
+              Maharashtra
             </Link>
             <Link
-              to="/national"
+              to="/chandrapur"
               className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
             >
-              {t('nav.national')}
+              Chandrapur
             </Link>
             <Link
-              to="/international"
+              to="/korpana"
               className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
             >
-              {t('nav.international')}
+              Korpana
+            </Link>
+            <Link
+              to="/rajura"
+              className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
+            >
+              Rajura
             </Link>
 
             {/* Language Selector */}
@@ -103,6 +126,96 @@ const Navbar = () => {
             )}
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-white/20 py-4 mt-2 animate-slide-down">
+            <div className="flex flex-col space-y-2">
+              <Link
+                to="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
+              >
+                {t('nav.home')}
+              </Link>
+              <Link
+                to="/maharashtra"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
+              >
+                Maharashtra
+              </Link>
+              <Link
+                to="/chandrapur"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
+              >
+                Chandrapur
+              </Link>
+              <Link
+                to="/korpana"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
+              >
+                Korpana
+              </Link>
+              <Link
+                to="/rajura"
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
+              >
+                Rajura
+              </Link>
+
+              {/* Language Selector - Mobile */}
+              <div className="flex items-center justify-between px-4 py-3 border-t border-white/20 mt-2">
+                <span className="text-base flex items-center space-x-2">
+                  <span>🌐</span>
+                  <span>Language</span>
+                </span>
+                <select
+                  value={selectedLanguage}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="bg-white/10 backdrop-blur-sm text-white px-3 py-2 rounded-lg text-sm border border-white/20 hover:bg-white/20 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50 touch-manipulation"
+                >
+                  <option value="en" className="bg-gray-800">EN</option>
+                  <option value="hi" className="bg-gray-800">HI</option>
+                  <option value="mr" className="bg-gray-800">MR</option>
+                </select>
+              </div>
+
+              {/* Dashboard/Login - Mobile */}
+              {token ? (
+                <>
+                  <Link
+                    to="/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 font-medium active:bg-white/30 touch-manipulation mx-4"
+                  >
+                    {t('nav.dashboard')}
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="px-4 py-3 rounded-lg bg-red-500/80 hover:bg-red-600 transition-all duration-200 font-medium active:bg-red-700 touch-manipulation mx-4"
+                  >
+                    {t('nav.logout')}
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-3 rounded-lg bg-white text-blue-700 hover:bg-blue-50 transition-all duration-200 font-semibold active:bg-blue-100 touch-manipulation mx-4 text-center"
+                >
+                  {t('nav.login')}
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

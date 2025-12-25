@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
+import LatestNewsSidebar from '../components/LatestNewsSidebar';
+import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -34,51 +36,51 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
-      {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white py-16 mb-12 shadow-xl">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-5xl font-bold mb-4 animate-fade-in">
-              {t('home.title')}
-            </h1>
-            <p className="text-xl text-blue-100 mb-6">
-              Stay informed with the latest news in multiple languages
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20">
-                <span className="text-sm font-semibold">🌐 Multilingual</span>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20">
-                <span className="text-sm font-semibold">📰 Latest News</span>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full border border-white/20">
-                <span className="text-sm font-semibold">⚡ Auto-Translation</span>
-              </div>
+      {/* Mobile-First Layout: Stack vertically on mobile, 3 columns on desktop */}
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-8">
+        {/* 
+          Mobile-First Responsive Design:
+          - Mobile (< 640px): Single column, sidebars stack above main content
+          - Tablet (640px+): Main content full width, sidebars below
+          - Desktop (1024px+): 3 columns (Latest | Main | Trending)
+        */}
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-6">
+          {/* LEFT SIDEBAR: Latest News - Mobile: Full width, Desktop: 3 columns */}
+          <aside className="w-full lg:col-span-3 order-1">
+            <div className="lg:sticky lg:top-20 lg:h-fit">
+              <LatestNewsSidebar />
             </div>
-          </div>
-        </div>
-      </div>
+          </aside>
 
-      {/* News Grid */}
-      <div className="container mx-auto px-4 pb-12">
-        {news.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">📰</div>
-            <p className="text-gray-600 text-xl">{t('home.noNews')}</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {news.map((item, index) => (
-              <div
-                key={item._id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <NewsCard newsItem={item} />
+          {/* CENTER: Main News Grid - Mobile: Full width, Desktop: 6 columns */}
+          <main className="w-full lg:col-span-6 order-2 flex-1">
+            {news.length === 0 ? (
+              <div className="text-center py-12 sm:py-16 bg-white rounded-lg sm:rounded-xl shadow-md sm:shadow-lg">
+                <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">📰</div>
+                <p className="text-gray-600 text-lg sm:text-xl px-4">{t('home.noNews')}</p>
               </div>
-            ))}
-          </div>
-        )}
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+                {news.map((item, index) => (
+                  <div
+                    key={item._id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
+                    <NewsCard newsItem={item} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </main>
+
+          {/* RIGHT SIDEBAR: Trending News - Mobile: Full width, Desktop: 3 columns */}
+          <aside className="w-full lg:col-span-3 order-3">
+            <div className="lg:sticky lg:top-20 lg:h-fit">
+              <TrendingNewsSidebar />
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );

@@ -5,9 +5,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 
 // Public Pages
 import Home from './pages/Home';
-import Local from './pages/Local';
-import National from './pages/National';
-import International from './pages/International';
+import Maharashtra from './pages/Maharashtra';
+import Chandrapur from './pages/Chandrapur';
+import Korpana from './pages/Korpana';
+import Rajura from './pages/Rajura';
 import NewsDetail from './pages/NewsDetail';
 import Login from './pages/Login';
 
@@ -31,9 +32,10 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
-            <Route path="/local" element={<Local />} />
-            <Route path="/national" element={<National />} />
-            <Route path="/international" element={<International />} />
+            <Route path="/maharashtra" element={<Maharashtra />} />
+            <Route path="/chandrapur" element={<Chandrapur />} />
+            <Route path="/korpana" element={<Korpana />} />
+            <Route path="/rajura" element={<Rajura />} />
             <Route path="/news/:id" element={<NewsDetail />} />
             <Route path="/login" element={<Login />} />
 
