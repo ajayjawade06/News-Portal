@@ -62,6 +62,7 @@ export const adAPI = {
   updateAd: (id, adData) => api.put(`/ads/${id}`, adData),
   deleteAd: (id) => api.delete(`/ads/${id}`),
   toggleAd: (id) => api.patch(`/ads/${id}/toggle`),
+  seedAds: () => api.post('/ads/seed'),
 
   // Tracking functions
   trackImpression: (id) => api.patch(`/ads/${id}/impression`),

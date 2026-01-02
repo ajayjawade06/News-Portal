@@ -6,6 +6,7 @@ const ManageAds = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingAd, setEditingAd] = useState(null);
+  const [seeding, setSeeding] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     imageUrl: '',
@@ -81,6 +82,24 @@ const ManageAds = () => {
     }
   };
 
+  const handleSeedAds = async () => {
+    if (!window.confirm('This will delete all existing ads and add sample ads. Continue?')) {
+      return;
+    }
+
+    setSeeding(true);
+    try {
+      await adAPI.seedAds();
+      fetchAds();
+      alert('Sample ads seeded successfully!');
+    } catch (error) {
+      console.error('Error seeding ads:', error);
+      alert('Error seeding ads. Please check console for details.');
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -107,12 +126,21 @@ const ManageAds = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Manage Ads</h1>
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          {showForm ? 'Cancel' : 'Add New Ad'}
-        </button>
+        <div className="flex space-x-4">
+          <button
+            onClick={handleSeedAds}
+            disabled={seeding}
+            className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white px-4 py-2 rounded-lg"
+          >
+            {seeding ? 'Seeding...' : 'Seed Sample Ads'}
+          </button>
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            {showForm ? 'Cancel' : 'Add New Ad'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
