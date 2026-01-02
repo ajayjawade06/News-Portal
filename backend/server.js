@@ -19,13 +19,31 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
-// CORS configuration for production
+// CORS configuration for production - More permissive for debugging
 const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://news-portal-tau-nine.vercel.app'],
+  origin: true, // Allow all origins temporarily for debugging
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 };
 app.use(cors(corsOptions));
+
+// Additional CORS headers for all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
