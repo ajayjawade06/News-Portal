@@ -357,4 +357,104 @@ router.patch('/:id/click', async (req, res) => {
   }
 });
 
-export default router;
+/**
+ * POST /api/ads/seed
+ * Seed sample ads (admin only - for development/production setup)
+ */
+router.post('/seed', authenticateReporter, requireAdmin, async (req, res) => {
+  try {
+    // Clear existing ads
+    await Ad.deleteMany({});
+    console.log('🗑️ Cleared existing ads');
+
+    // Sample ad data
+    const ads = [
+      {
+        title: 'Sample Banner Ad 1',
+        imageUrl: 'https://via.placeholder.com/800x200/4F46E5/FFFFFF?text=Banner+Ad+1',
+        redirectUrl: 'https://example.com/ad1',
+        position: 'top-banner',
+        page: 'home',
+        isActive: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2025-12-31')
+      },
+      {
+        title: 'Sample Sidebar Ad 1',
+        imageUrl: 'https://via.placeholder.com/300x250/10B981/FFFFFF?text=Sidebar+Ad+1',
+        redirectUrl: 'https://example.com/sidebar1',
+        position: 'sidebar',
+        page: 'home',
+        isActive: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2025-12-31')
+      },
+      {
+        title: 'Sample Sidebar Ad 2',
+        imageUrl: 'https://via.placeholder.com/300x250/F59E0B/FFFFFF?text=Sidebar+Ad+2',
+        redirectUrl: 'https://example.com/sidebar2',
+        position: 'sidebar',
+        page: 'home',
+        isActive: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2025-12-31')
+      },
+      {
+        title: 'Sample Inline Ad 1',
+        imageUrl: 'https://via.placeholder.com/600x100/EF4444/FFFFFF?text=Inline+Ad+1',
+        redirectUrl: 'https://example.com/inline1',
+        position: 'inline',
+        page: 'home',
+        isActive: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2025-12-31')
+      },
+      {
+        title: 'Sample Inline Ad 2',
+        imageUrl: 'https://via.placeholder.com/600x100/8B5CF6/FFFFFF?text=Inline+Ad+2',
+        redirectUrl: 'https://example.com/inline2',
+        position: 'inline',
+        page: 'home',
+        isActive: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2025-12-31')
+      },
+      {
+        title: 'Category Banner Ad',
+        imageUrl: 'https://via.placeholder.com/800x200/06B6D4/FFFFFF?text=Category+Banner',
+        redirectUrl: 'https://example.com/category-ad',
+        position: 'top-banner',
+        page: 'category',
+        isActive: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2025-12-31')
+      },
+      {
+        title: 'Article Banner Ad',
+        imageUrl: 'https://via.placeholder.com/800x200/EC4899/FFFFFF?text=Article+Banner',
+        redirectUrl: 'https://example.com/article-ad',
+        position: 'top-banner',
+        page: 'article',
+        isActive: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2025-12-31')
+      }
+    ];
+
+    // Insert ads
+    await Ad.insertMany(ads);
+    console.log(`✅ Seeded ${ads.length} ads successfully`);
+
+    res.json({
+      success: true,
+      message: `Seeded ${ads.length} sample ads successfully`
+    });
+  } catch (error) {
+    console.error('❌ Error seeding ads:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error seeding ads',
+      error: error.message
+    });
+  }
+});
