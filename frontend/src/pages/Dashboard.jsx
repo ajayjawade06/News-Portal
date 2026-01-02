@@ -53,41 +53,56 @@ const Dashboard = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">{t('dashboard.title')}</h1>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-gray-600 text-sm font-medium mb-2">
-            {t('dashboard.totalPosts')}
-          </h3>
-          <p className="text-3xl font-bold text-blue-600">{stats.total}</p>
+      {/* Stats Cards - iPhone 16 Pro Optimized */}
+      <div className="grid grid-cols-1 phone:grid-cols-2 lg:grid-cols-3 gap-4 phone:gap-6 mb-6 phone:mb-8">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-4 phone:p-6 rounded-xl phone:rounded-2xl shadow-lg phone:shadow-xl transform hover:scale-[1.02] transition-transform duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-blue-100 text-xs phone:text-sm mb-1">Total Posts</p>
+              <p className="text-2xl phone:text-3xl font-bold">{stats.total}</p>
+            </div>
+            <div className="text-3xl phone:text-4xl">📊</div>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-gray-600 text-sm font-medium mb-2">
-            {t('dashboard.publishedPosts')}
-          </h3>
-          <p className="text-3xl font-bold text-green-600">{stats.published}</p>
+        <div className="bg-gradient-to-br from-green-500 to-green-600 text-white p-4 phone:p-6 rounded-xl phone:rounded-2xl shadow-lg phone:shadow-xl transform hover:scale-[1.02] transition-transform duration-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-green-100 text-xs phone:text-sm mb-1">Published</p>
+              <p className="text-2xl phone:text-3xl font-bold">{stats.published}</p>
+            </div>
+            <div className="text-3xl phone:text-4xl">✅</div>
+          </div>
         </div>
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-gray-600 text-sm font-medium mb-2">
-            {t('dashboard.draftPosts')}
-          </h3>
-          <p className="text-3xl font-bold text-yellow-600">{stats.drafts}</p>
+        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white p-4 phone:p-6 rounded-xl phone:rounded-2xl shadow-lg phone:shadow-xl transform hover:scale-[1.02] transition-transform duration-200 phone:col-span-2 lg:col-span-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-yellow-100 text-xs phone:text-sm mb-1">Drafts</p>
+              <p className="text-2xl phone:text-3xl font-bold">{stats.drafts}</p>
+            </div>
+            <div className="text-3xl phone:text-4xl">📝</div>
+          </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-4 mb-8">
+      {/* Action Buttons - iPhone 16 Pro Optimized */}
+      <div className="flex flex-col phone:flex-row gap-3 phone:gap-4">
         <Link
           to="/dashboard/create"
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-medium"
+          className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 phone:px-6 py-3 phone:py-4 rounded-xl phone:rounded-2xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg phone:shadow-xl hover:shadow-2xl transform hover:scale-[1.02] text-center touch-manipulation text-base phone:text-lg"
         >
-          {t('dashboard.createNews')}
+          <span className="flex items-center justify-center space-x-2">
+            <span>✍️</span>
+            <span>{t('dashboard.createNews')}</span>
+          </span>
         </Link>
         <Link
           to="/dashboard/manage"
-          className="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-medium"
+          className="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white px-4 phone:px-6 py-3 phone:py-4 rounded-xl phone:rounded-2xl hover:from-gray-700 hover:to-gray-800 transition-all duration-200 font-semibold shadow-lg phone:shadow-xl hover:shadow-2xl transform hover:scale-[1.02] text-center touch-manipulation text-base phone:text-lg"
         >
-          {t('dashboard.manageNews')}
+          <span className="flex items-center justify-center space-x-2">
+            <span>📋</span>
+            <span>{t('dashboard.manageNews')}</span>
+          </span>
         </Link>
       </div>
     </div>

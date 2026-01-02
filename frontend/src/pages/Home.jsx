@@ -36,15 +36,16 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
-      {/* Mobile-First Layout: Stack vertically on mobile, 3 columns on desktop */}
-      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-8">
-        {/* 
-          Mobile-First Responsive Design:
-          - Mobile (< 640px): Single column, sidebars stack above main content
-          - Tablet (640px+): Main content full width, sidebars below
+      {/* iPhone 16 Pro Optimized Layout */}
+      <div className="container mx-auto px-4 phone:px-6 py-4 phone:py-6 pb-8">
+        {/*
+          iPhone 16 Pro Optimized Responsive Design:
+          - iPhone 16 Pro (393px): Optimized spacing and typography
+          - Small phones (< 375px): Compact layout
+          - Tablets (640px+): Main content full width, sidebars below
           - Desktop (1024px+): 3 columns (Latest | Main | Trending)
         */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-6">
+        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 phone:gap-6 sm:gap-6">
           {/* LEFT SIDEBAR: Latest News - Mobile: Full width, Desktop: 3 columns */}
           <aside className="w-full lg:col-span-3 order-1">
             <div className="lg:sticky lg:top-20 lg:h-fit">
@@ -55,12 +56,12 @@ const Home = () => {
           {/* CENTER: Main News Grid - Mobile: Full width, Desktop: 6 columns */}
           <main className="w-full lg:col-span-6 order-2 flex-1">
             {news.length === 0 ? (
-              <div className="text-center py-12 sm:py-16 bg-white rounded-lg sm:rounded-xl shadow-md sm:shadow-lg">
-                <div className="text-5xl sm:text-6xl mb-3 sm:mb-4">📰</div>
-                <p className="text-gray-600 text-lg sm:text-xl px-4">{t('home.noNews')}</p>
+              <div className="text-center py-12 phone:py-16 sm:py-16 bg-white rounded-lg phone:rounded-xl shadow-md phone:shadow-lg">
+                <div className="text-5xl phone:text-6xl mb-3 phone:mb-4">📰</div>
+                <p className="text-gray-600 text-lg phone:text-xl px-4">{t('home.noNews')}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 gap-4 phone:gap-6 sm:gap-6">
                 {news.map((item, index) => (
                   <div
                     key={item._id}
