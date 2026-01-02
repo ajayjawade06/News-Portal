@@ -18,9 +18,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
-<<<<<<< HEAD
-app.use(cors());
-=======
 // CORS configuration for production - More permissive for debugging
 const corsOptions = {
   origin: true, // Allow all origins temporarily for debugging
@@ -46,7 +43,6 @@ app.use((req, res, next) => {
 
   next();
 });
->>>>>>> edf187866e3146c4438531ac3daf15b56024e623
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

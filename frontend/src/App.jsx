@@ -17,7 +17,6 @@ import Dashboard from './pages/Dashboard';
 import CreateNews from './pages/CreateNews';
 import EditNews from './pages/EditNews';
 import ManageNews from './pages/ManageNews';
-import ManageAds from './pages/ManageAds';
 
 function App() {
   return (
@@ -70,14 +69,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ManageNews />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard/ads"
-              element={
-                <ProtectedRoute>
-                  <ManageAds />
                 </ProtectedRoute>
               }
             />

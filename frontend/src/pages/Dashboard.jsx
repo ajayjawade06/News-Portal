@@ -89,14 +89,6 @@ const Dashboard = () => {
         >
           {t('dashboard.manageNews')}
         </Link>
-        {user?.role === 'admin' && (
-          <Link
-            to="/dashboard/ads"
-            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-medium"
-          >
-            Manage Ads
-          </Link>
-        )}
       </div>
     </div>
   );

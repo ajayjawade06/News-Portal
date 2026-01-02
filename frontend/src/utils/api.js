@@ -51,23 +51,5 @@ export const getUserFromToken = () => {
   }
 };
 
-// Ad API functions
-export const adAPI = {
-  // Get ads for public display
-  getAds: (position, page) => api.get(`/ads?position=${position}&page=${page}`),
-
-  // Admin functions
-  getAllAds: () => api.get('/ads/admin'),
-  createAd: (adData) => api.post('/ads', adData),
-  updateAd: (id, adData) => api.put(`/ads/${id}`, adData),
-  deleteAd: (id) => api.delete(`/ads/${id}`),
-  toggleAd: (id) => api.patch(`/ads/${id}/toggle`),
-  seedAds: () => api.post('/ads/seed'),
-
-  // Tracking functions
-  trackImpression: (id) => api.patch(`/ads/${id}/impression`),
-  trackClick: (id) => api.patch(`/ads/${id}/click`)
-};
-
 export default api;
 
