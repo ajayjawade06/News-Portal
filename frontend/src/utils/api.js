@@ -37,5 +37,36 @@ api.interceptors.response.use(
   }
 );
 
+// Utility to get user info from token
+export const getUserFromToken = () => {
+  const token = localStorage.getItem('token');
+  if (!token) return null;
+
+  try {
+    // Simple JWT decode (without library)
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return payload;
+  } catch {
+    return null;
+  }
+};
+
+// Ad API functions
+export const adAPI = {
+  // Get ads for public display
+  getAds: (position, page) => api.get(`/ads?position=${position}&page=${page}`),
+
+  // Admin functions
+  getAllAds: () => api.get('/ads/admin'),
+  createAd: (adData) => api.post('/ads', adData),
+  updateAd: (id, adData) => api.put(`/ads/${id}`, adData),
+  deleteAd: (id) => api.delete(`/ads/${id}`),
+  toggleAd: (id) => api.patch(`/ads/${id}/toggle`),
+
+  // Tracking functions
+  trackImpression: (id) => api.patch(`/ads/${id}/impression`),
+  trackClick: (id) => api.patch(`/ads/${id}/click`)
+};
+
 export default api;
 

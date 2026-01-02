@@ -19,6 +19,11 @@ const reporterSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'reporter'],
+    default: 'reporter'
   }
 }, {
   timestamps: true

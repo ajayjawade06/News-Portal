@@ -4,6 +4,7 @@ import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
 import LatestNewsSidebar from '../components/LatestNewsSidebar';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
+import AdSlot from '../components/AdSlot';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -36,6 +37,11 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
+      {/* Top Banner Ad */}
+      <div className="container mx-auto px-3 sm:px-4 py-4">
+        <AdSlot position="top-banner" page="home" className="h-32 mb-4" />
+      </div>
+
       {/* Mobile-First Layout: Stack vertically on mobile, 3 columns on desktop */}
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-8">
         {/* 
@@ -68,6 +74,12 @@ const Home = () => {
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     <NewsCard newsItem={item} />
+                    {/* Inline Ad after every 4 news cards */}
+                    {(index + 1) % 4 === 0 && (index + 1) < news.length && (
+                      <div className="mt-4">
+                        <AdSlot position="inline" page="home" className="h-24" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

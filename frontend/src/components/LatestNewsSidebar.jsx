@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNews } from '../context/NewsContext';
 import api from '../utils/api';
+import AdSlot from './AdSlot';
 
 /**
  * Latest News Sidebar Component
@@ -127,6 +128,11 @@ const LatestNewsSidebar = () => {
           })}
         </div>
       )}
+      
+      {/* Sidebar Ad */}
+      <div className="mt-4">
+        <AdSlot position="sidebar" page="home" className="h-48" />
+      </div>
     </div>
   );
 };

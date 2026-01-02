@@ -29,6 +29,7 @@ const Login = () => {
     try {
       const response = await api.post('/auth/login', formData);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.reporter));
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || t('login.invalid'));

@@ -11,8 +11,14 @@ const Dashboard = () => {
     drafts: 0
   });
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+
     const fetchStats = async () => {
       try {
         const response = await api.get('/news/admin/all');
@@ -83,6 +89,14 @@ const Dashboard = () => {
         >
           {t('dashboard.manageNews')}
         </Link>
+        {user?.role === 'admin' && (
+          <Link
+            to="/dashboard/ads"
+            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition font-medium"
+          >
+            Manage Ads
+          </Link>
+        )}
       </div>
     </div>
   );
