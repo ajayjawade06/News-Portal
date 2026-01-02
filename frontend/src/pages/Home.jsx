@@ -37,9 +37,14 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
-      {/* Top Banner Ad */}
-      <div className="container mx-auto px-3 sm:px-4 py-4">
-        <AdSlot position="top-banner" page="home" className="h-32 mb-4" />
+      {/* Mobile Banner Ad - Small banner for mobile */}
+      <div className="sm:hidden container mx-auto px-3 py-2">
+        <AdSlot position="top-banner" page="home" />
+      </div>
+
+      {/* Top Banner Ad - Hidden on mobile, shown on tablet+ */}
+      <div className="hidden sm:block container mx-auto px-3 sm:px-4 py-4">
+        <AdSlot position="top-banner" page="home" className="mb-4" />
       </div>
 
       {/* Mobile-First Layout: Stack vertically on mobile, 3 columns on desktop */}
@@ -74,10 +79,16 @@ const Home = () => {
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     <NewsCard newsItem={item} />
-                    {/* Inline Ad after every 4 news cards */}
+                    {/* Mobile Inline Ad after every 2 news cards on mobile */}
+                    {(index + 1) % 2 === 0 && (index + 1) < news.length && (
+                      <div className="sm:hidden mt-3">
+                        <AdSlot position="inline" page="home" />
+                      </div>
+                    )}
+                    {/* Inline Ad after every 4 news cards - Hidden on mobile, shown on tablet+ */}
                     {(index + 1) % 4 === 0 && (index + 1) < news.length && (
-                      <div className="mt-4">
-                        <AdSlot position="inline" page="home" className="h-24" />
+                      <div className="hidden sm:block mt-4">
+                        <AdSlot position="inline" page="home" />
                       </div>
                     )}
                   </div>

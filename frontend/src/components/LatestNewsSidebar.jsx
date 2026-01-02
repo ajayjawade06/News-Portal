@@ -129,9 +129,9 @@ const LatestNewsSidebar = () => {
         </div>
       )}
       
-      {/* Sidebar Ad */}
+      {/* Sidebar Ad - Smaller on mobile */}
       <div className="mt-4">
-        <AdSlot position="sidebar" page="home" className="h-48" />
+        <AdSlot position="sidebar" page="home" />
       </div>
     </div>
   );

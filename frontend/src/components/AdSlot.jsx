@@ -116,7 +116,7 @@ const AdSlot = ({ position, page, className = '' }) => {
           <img
             src={currentAd.imageUrl}
             alt={currentAd.title}
-            className="w-full h-32 object-cover"
+            className="w-full h-20 sm:h-24 md:h-28 lg:h-32 object-cover"
             loading="lazy"
           />
         </div>
@@ -147,7 +147,7 @@ const AdSlot = ({ position, page, className = '' }) => {
           <img
             src={currentAd.imageUrl}
             alt={currentAd.title}
-            className="w-full h-48 object-cover"
+            className="w-full h-32 sm:h-36 md:h-40 lg:h-48 object-cover"
             loading="lazy"
           />
         </div>
@@ -166,7 +166,7 @@ const AdSlot = ({ position, page, className = '' }) => {
           <img
             src={currentAd.imageUrl}
             alt={currentAd.title}
-            className="w-full h-24 object-cover"
+            className="w-full h-16 sm:h-20 md:h-22 lg:h-24 object-cover"
             loading="lazy"
           />
         </div>

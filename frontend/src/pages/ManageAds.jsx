@@ -124,19 +124,19 @@ const ManageAds = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Manage Ads</h1>
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
           <button
             onClick={handleSeedAds}
             disabled={seeding}
-            className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white px-4 py-2 rounded-lg"
+            className="bg-green-500 hover:bg-green-600 disabled:bg-green-300 text-white px-4 py-2 rounded-lg order-2 sm:order-1"
           >
             {seeding ? 'Seeding...' : 'Seed Sample Ads'}
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg order-1 sm:order-2"
           >
             {showForm ? 'Cancel' : 'Add New Ad'}
           </button>
@@ -149,15 +149,15 @@ const ManageAds = () => {
             {editingAd ? 'Edit Ad' : 'Create New Ad'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Title</label>
                 <input
                   type="text"
                   required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -165,7 +165,7 @@ const ManageAds = () => {
                 <select
                   value={formData.position}
                   onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="top-banner">Top Banner</option>
                   <option value="sidebar">Sidebar</option>
@@ -177,7 +177,7 @@ const ManageAds = () => {
                 <select
                   value={formData.page}
                   onChange={(e) => setFormData({ ...formData, page: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="home">Home</option>
                   <option value="category">Category</option>
@@ -185,24 +185,24 @@ const ManageAds = () => {
                   <option value="all">All Pages</option>
                 </select>
               </div>
-              <div>
+              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Image URL</label>
                 <input
                   type="url"
                   required
                   value={formData.imageUrl}
                   onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
-              <div>
+              <div className="sm:col-span-2">
                 <label className="block text-sm font-medium text-gray-700">Redirect URL</label>
                 <input
                   type="url"
                   required
                   value={formData.redirectUrl}
                   onChange={(e) => setFormData({ ...formData, redirectUrl: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -212,7 +212,7 @@ const ManageAds = () => {
                   required
                   value={formData.startDate}
                   onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -222,21 +222,21 @@ const ManageAds = () => {
                   required
                   value={formData.endDate}
                   onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
             </div>
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
               <button
                 type="submit"
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex-1 sm:flex-none"
               >
                 {editingAd ? 'Update Ad' : 'Create Ad'}
               </button>
               <button
                 type="button"
                 onClick={resetForm}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg"
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex-1 sm:flex-none"
               >
                 Cancel
               </button>
@@ -246,7 +246,54 @@ const ManageAds = () => {
       )}
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
+        {/* Mobile: Card layout, Desktop: Table layout */}
+        <div className="block md:hidden">
+          {ads.map((ad) => (
+            <div key={ad._id} className="p-4 border-b border-gray-200">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{ad.title}</h3>
+                  <p className="text-sm text-gray-600">{ad.position} • {ad.page}</p>
+                </div>
+                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                  ad.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  {ad.isActive ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                <span>Impressions: {ad.impressionsCount}</span>
+                <span>Clicks: {ad.clicksCount}</span>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleToggle(ad._id)}
+                  className={`px-3 py-1 rounded text-xs ${
+                    ad.isActive
+                      ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                      : 'bg-green-100 text-green-800 hover:bg-green-200'
+                  }`}
+                >
+                  {ad.isActive ? 'Deactivate' : 'Activate'}
+                </button>
+                <button
+                  onClick={() => handleEdit(ad)}
+                  className="bg-blue-100 text-blue-800 hover:bg-blue-200 px-3 py-1 rounded text-xs"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(ad._id)}
+                  className="bg-red-100 text-red-800 hover:bg-red-200 px-3 py-1 rounded text-xs"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <table className="hidden md:table min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
