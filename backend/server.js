@@ -18,7 +18,35 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
+<<<<<<< HEAD
 app.use(cors());
+=======
+// CORS configuration for production - More permissive for debugging
+const corsOptions = {
+  origin: true, // Allow all origins temporarily for debugging
+  credentials: true,
+  optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+};
+app.use(cors(corsOptions));
+
+// Additional CORS headers for all routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+    return;
+  }
+
+  next();
+});
+>>>>>>> edf187866e3146c4438531ac3daf15b56024e623
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
