@@ -11,9 +11,14 @@ const router = express.Router();
  */
 router.post('/register', async (req, res) => {
   try {
-    // Check if reporter already exists (only one reporter allowed, but first is admin)
+    // Check if reporter already exists (only one reporter allowed)
     const existingReporter = await Reporter.findOne();
-    const isFirstReporter = !existingReporter;
+    if (existingReporter) {
+      return res.status(400).json({
+        success: false,
+        message: 'Reporter account already exists. Only one reporter is allowed.'
+      });
+    }
 
     const { username, email, password } = req.body;
 
@@ -36,8 +41,7 @@ router.post('/register', async (req, res) => {
     const reporter = new Reporter({
       username,
       email,
-      password,
-      role: isFirstReporter ? 'admin' : 'reporter'
+      password
     });
 
     await reporter.save();
@@ -56,8 +60,7 @@ router.post('/register', async (req, res) => {
       reporter: {
         id: reporter._id,
         username: reporter.username,
-        email: reporter.email,
-        role: reporter.role
+        email: reporter.email
       }
     });
   } catch (error) {
@@ -123,8 +126,7 @@ router.post('/login', async (req, res) => {
       reporter: {
         id: reporter._id,
         username: reporter.username,
-        email: reporter.email,
-        role: reporter.role
+        email: reporter.email
       }
     });
   } catch (error) {
@@ -147,8 +149,7 @@ router.get('/me', authenticateReporter, async (req, res) => {
       reporter: {
         id: req.reporter._id,
         username: req.reporter.username,
-        email: req.reporter.email,
-        role: req.reporter.role
+        email: req.reporter.email
       }
     });
   } catch (error) {

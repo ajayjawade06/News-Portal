@@ -8,7 +8,6 @@ import { fileURLToPath } from 'url';
 // Import routes
 import authRoutes from './routes/auth.js';
 import newsRoutes from './routes/news.js';
-import adsRoutes from './routes/ads.js';
 
 // Load environment variables
 dotenv.config();
@@ -19,13 +18,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Middleware
-// CORS configuration for production
-const corsOptions = {
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://news-portal-tau-nine.vercel.app'],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,7 +28,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
-app.use('/api/ads', adsRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

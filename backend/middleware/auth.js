@@ -56,17 +56,3 @@ export const authenticateReporter = async (req, res, next) => {
   }
 };
 
-/**
- * Middleware to check if reporter is admin
- * Protects routes that require admin privileges
- */
-export const requireAdmin = (req, res, next) => {
-  if (req.reporter.role !== 'admin') {
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied. Admin privileges required.'
-    });
-  }
-  next();
-};
-
