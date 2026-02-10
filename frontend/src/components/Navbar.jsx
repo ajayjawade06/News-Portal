@@ -9,6 +9,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const handleLanguageChange = (lang) => {
     // Update both i18n (for UI) and NewsContext (for news content)
@@ -28,13 +29,23 @@ const Navbar = () => {
       <div className="container mx-auto px-4 phone:px-6">
         <div className="flex items-center justify-between h-16 phone:h-18 sm:h-20">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-1 phone:space-x-2 group" onClick={() => setMobileMenuOpen(false)}>
-            <div className="text-2xl phone:text-3xl sm:text-3xl transform group-hover:scale-110 transition-transform duration-300">
-              📰
-            </div>
+          <Link to="/" className="flex items-center space-x-2 phone:space-x-3 group" onClick={() => setMobileMenuOpen(false)}>
+            {!logoError ? (
+              <img
+                src="/image.png"
+                alt="DSK News"
+                onError={() => setLogoError(true)}
+                className="w-12 h-12 phone:w-14 phone:h-14 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain rounded transition-transform duration-300 group-hover:scale-110"
+              />
+            ) : (
+              <img
+                src="/image.png"
+                alt="DSK News"
+                className="w-12 h-12 phone:w-14 phone:h-14 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain rounded"
+              />
+            )}
             <div>
-              <div className="text-lg phone:text-xl sm:text-xl lg:text-2xl font-bold tracking-tight">News Portal</div>
-              <div className="text-xs text-blue-200 opacity-75 hidden sm:block">Multilingual News</div>
+              <div className="text-lg phone:text-xl sm:text-xl lg:text-2xl font-bold tracking-tight">DSK News</div>
             </div>
           </Link>
 
@@ -88,7 +99,12 @@ const Navbar = () => {
 
             {/* Language Selector */}
             <div className="flex items-center space-x-2 border-l border-white/20 pl-4 ml-4">
-              <span className="text-lg">🌐</span>
+              <svg className="w-5 h-5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20" />
+                <path d="M12 2c2.5 3.5 2.5 8.5 0 12" />
+                <path d="M12 22c-2.5-3.5-2.5-8.5 0-12" />
+              </svg>
               <select
                 value={selectedLanguage}
                 onChange={(e) => handleLanguageChange(e.target.value)}
@@ -170,7 +186,12 @@ const Navbar = () => {
               {/* Language Selector - Mobile */}
               <div className="flex items-center justify-between px-4 phone:px-6 py-3 phone:py-4 border-t border-white/20 mt-2">
                 <span className="text-base flex items-center space-x-2">
-                  <span>🌐</span>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" />
+                    <path d="M2 12h20" />
+                    <path d="M12 2c2.5 3.5 2.5 8.5 0 12" />
+                    <path d="M12 22c-2.5-3.5-2.5-8.5 0-12" />
+                  </svg>
                   <span>Language</span>
                 </span>
                 <select
