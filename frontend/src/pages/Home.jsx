@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
+import AdBanner from '../components/AdBanner';
 import LatestNewsSidebar from '../components/LatestNewsSidebar';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 
@@ -63,12 +64,19 @@ const Home = () => {
             ) : (
               <div className="grid grid-cols-1 gap-4 phone:gap-6 sm:gap-6">
                 {news.map((item, index) => (
-                  <div
-                    key={item._id}
-                    className="animate-fade-in"
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <NewsCard newsItem={item} />
+                  <div key={item._id}>
+                    <div
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <NewsCard newsItem={item} />
+                    </div>
+                    {/* In-feed ad every 3 news items */}
+                    {(index + 1) % 3 === 0 && index !== news.length - 1 && (
+                      <div className="my-6 flex justify-center">
+                        <AdBanner type="vertical" adIndex={index} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

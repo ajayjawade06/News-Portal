@@ -179,6 +179,24 @@ router.get('/trending', async (req, res) => {
  * 
  * This ensures accurate view tracking - only when a guest actually opens and reads the article
  */
+/**
+ * GET /api/news/:id
+ * Get single published news post by ID (public route)
+ * Automatically increments view count when accessed by guests
+ * 
+ * IMPORTANT: Unpublished/draft news is NOT accessible to public users
+ * Only authenticated users (admin/reporter) can view draft news via /api/news/admin/:id
+ * 
+ * For MCA Viva: This demonstrates view tracking for trending news feature
+ * 
+ * Views are incremented ONLY on the detail page (this endpoint)
+ * Views are NOT incremented on:
+ * - List views (GET /api/news)
+ * - Latest news fetch (GET /api/news/latest)
+ * - Trending news fetch (GET /api/news/trending)
+ * 
+ * This ensures accurate view tracking - only when a guest actually opens and reads the article
+ */
 router.get('/:id', async (req, res) => {
   try {
     const news = await News.findById(req.params.id);
@@ -190,9 +208,18 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    // SECURITY: Check if news is published
+    // Guests (non-authenticated users) can only view published news
+    // Draft/unpublished news should not be visible to the public
+    if (!news.published) {
+      return res.status(404).json({
+        success: false,
+        message: 'News post not found'
+      });
+    }
+
     // Increment views count ONLY when guest opens the detail page
     // This is used for trending news calculation
-    // Only increment if news is published (guests can only view published news)
     // 
     // Why only on detail page?
     // - List views don't indicate actual engagement
@@ -241,6 +268,7 @@ router.get('/:id', async (req, res) => {
 /**
  * GET /api/news/admin/all
  * Get all news (including unpublished) - Protected route
+ * Only authenticated reporters can see draft/unpublished news
  */
 router.get('/admin/all', authenticateReporter, async (req, res) => {
   try {
@@ -254,6 +282,42 @@ router.get('/admin/all', authenticateReporter, async (req, res) => {
       data: news
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching news',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/news/admin/:id
+ * Get single news post by ID (including unpublished/draft) - Protected route
+ * Only authenticated reporters can view draft news
+ * Public users cannot access this endpoint
+ */
+router.get('/admin/:id', authenticateReporter, async (req, res) => {
+  try {
+    const news = await News.findById(req.params.id);
+    
+    if (!news) {
+      return res.status(404).json({
+        success: false,
+        message: 'News post not found'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: news
+    });
+  } catch (error) {
+    if (error.name === 'CastError') {
+      return res.status(404).json({
+        success: false,
+        message: 'News post not found'
+      });
+    }
     res.status(500).json({
       success: false,
       message: 'Error fetching news',

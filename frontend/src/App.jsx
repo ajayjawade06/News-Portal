@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { NewsProvider } from './context/NewsContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdBanner from './components/AdBanner';
 
 // Public Pages
 import Home from './pages/Home';
@@ -29,6 +30,10 @@ function App() {
       >
         <div className="min-h-screen bg-gray-50">
           <Navbar />
+          {/* Top Banner Ad */}
+          <div className="bg-gray-50 py-2 flex justify-center border-b border-gray-200">
+            <AdBanner type="horizontal" />
+          </div>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Home />} />
