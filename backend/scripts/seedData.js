@@ -5,7 +5,7 @@ import News from '../models/News.js';
 
 dotenv.config();
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/multilingual_news';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/news';
 
 /**
  * Seed script to populate database with sample data
@@ -25,13 +25,13 @@ async function seedData() {
     // Create reporter account
     const reporter = new Reporter({
       username: 'admin',
-      email: 'dipakkhekare1@gmail.com',
-      password: 'DSK@2026' // Will be hashed automatically
+      email: '',
+      password: '' // Will be hashed automatically
     });
     await reporter.save();
     console.log('✅ Created reporter account:');
-    console.log('   Email: dipakkhekare1@gmail.com');
-    console.log('   Password: DSK@2026');
+    console.log('   Email: ');
+    console.log('   Password: ');
 
     process.exit(0);
   } catch (error) {

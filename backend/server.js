@@ -59,7 +59,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/multilingual_news';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/news';
 
 mongoose
   .connect(MONGODB_URI)
