@@ -16,10 +16,9 @@ const Footer = () => {
       <div className="container-editorial py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <section>
-            <h3 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-lg mb-4">Lokawani</h3>
+            <h3 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-lg mb-4">लोकवाणी</h3>
             <p className="text-sm text-editorial-muted dark:text-zinc-400 leading-relaxed max-w-xs">
-              Independent multilingual news platform. Delivering trusted reporting in English, Hindi, and Marathi.
-            </p>
+लोकवाणी – समाजाचा आवाज, सत्याची बाजू. ताज्या, निष्पक्ष आणि सखोल बातम्यांसाठी आपले विश्वासू व्यासपीठ.            </p>
           </section>
 
           <section>
