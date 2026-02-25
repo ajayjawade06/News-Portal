@@ -25,13 +25,13 @@ async function seedData() {
     // Create reporter account
     const reporter = new Reporter({
       username: 'admin',
-      email: 'reporter@news.com',
-      password: 'admin123' // Will be hashed automatically
+      email: 'dipakkhekare1@gmail.com',
+      password: 'DSK@2026' // Will be hashed automatically
     });
     await reporter.save();
     console.log('✅ Created reporter account:');
-    console.log('   Email: reporter@news.com');
-    console.log('   Password: admin123');
+    console.log('   Email: dipakkhekare1@gmail.com');
+    console.log('   Password: DSK@2026');
 
     process.exit(0);
   } catch (error) {
