@@ -28,9 +28,7 @@ function App() {
       >
         <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-950">
           <Navbar />
-          <div className="border-b border-editorial-border dark:border-zinc-800 bg-neutral-50 dark:bg-zinc-900 py-2 flex justify-center">
-            <AdBanner type="horizontal" />
-          </div>
+          
           <div className="flex-1">
             <Routes>
               <Route path="/" element={<Home />} />

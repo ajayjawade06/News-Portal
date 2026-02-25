@@ -16,7 +16,7 @@ const Footer = () => {
       <div className="container-editorial py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <section>
-            <h3 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-lg mb-4">DSK News</h3>
+            <h3 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-lg mb-4">Lokawani</h3>
             <p className="text-sm text-editorial-muted dark:text-zinc-400 leading-relaxed max-w-xs">
               Independent multilingual news platform. Delivering trusted reporting in English, Hindi, and Marathi.
             </p>
@@ -72,7 +72,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-editorial-border dark:border-zinc-800 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-editorial-muted dark:text-zinc-500">
-            &copy; {new Date().getFullYear()} DSK News. All rights reserved.
+            &copy; {new Date().getFullYear()} Lokawani. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <span className="text-xs text-editorial-muted dark:text-zinc-500">EN</span>

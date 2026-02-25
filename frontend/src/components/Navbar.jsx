@@ -17,11 +17,14 @@ const Navbar = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [logoError, setLogoError] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    setIsDark(document.documentElement.classList.contains('dark'));
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+      setIsDark(true);
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -47,27 +50,22 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-editorial-border dark:border-zinc-800">
       <div className="container-editorial">
-        <div className="flex items-center justify-between h-14 lg:h-16">
+        <div className="flex items-center justify-between h-16">
+
+          {/* LOGO ONLY */}
           <Link
             to="/"
-            className="flex items-center gap-3 shrink-0"
+            className="flex items-center shrink-0"
             onClick={() => setMobileMenuOpen(false)}
           >
-            {!logoError ? (
-              <img
-                src="/image.png"
-                alt="DSK News"
-                onError={() => setLogoError(true)}
-                className="h-9 w-auto object-contain"
-              />
-            ) : (
-              <span className="font-serif text-xl font-bold text-editorial-black dark:text-zinc-100">DSK</span>
-            )}
-            <span className="font-serif text-xl font-bold text-editorial-black dark:text-zinc-100 hidden sm:inline">
-              DSK News
-            </span>
+            <img
+              src="/image.png"   // 👉 Replace with high-quality logo (prefer SVG)
+              alt="Lokawani Logo"
+              className="h-12 lg:h-14 w-auto object-contain"
+            />
           </Link>
 
+          {/* DESKTOP NAVIGATION */}
           <nav className="hidden lg:flex items-center gap-0">
             {CATEGORIES.map((item) => (
               <Link
@@ -80,24 +78,19 @@ const Navbar = () => {
             ))}
           </nav>
 
+          {/* RIGHT SECTION */}
           <div className="flex items-center gap-2 sm:gap-3">
+
+            {/* THEME BUTTON */}
             <button
               type="button"
               onClick={toggleTheme}
-              className="p-2 rounded border border-editorial-border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-editorial-muted dark:text-zinc-300 hover:text-editorial-red dark:hover:text-red-400 hover:border-editorial-red dark:hover:border-red-900 transition-colors"
-              aria-label={isDark ? 'Switch to day mode' : 'Switch to night mode'}
-              title={isDark ? 'Day mode' : 'Night mode'}
+              className="p-2 rounded border border-editorial-border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-editorial-muted dark:text-zinc-300 hover:text-editorial-red hover:border-editorial-red transition-colors"
             >
-              {isDark ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-              )}
+              {isDark ? '☀️' : '🌙'}
             </button>
+
+            {/* LANGUAGE SELECT */}
             <select
               value={i18n.language}
               onChange={(e) => handleLanguageChange(e.target.value)}
@@ -108,6 +101,7 @@ const Navbar = () => {
               <option value="mr">MR</option>
             </select>
 
+            {/* AUTH BUTTONS */}
             {token ? (
               <>
                 <Link to="/dashboard" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
@@ -127,58 +121,32 @@ const Navbar = () => {
               </Link>
             )}
 
+            {/* MOBILE MENU BUTTON */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="lg:hidden p-2 text-editorial-ink dark:text-zinc-200 hover:bg-neutral-100 dark:hover:bg-zinc-800"
-              aria-label="Toggle menu"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
+              {mobileMenuOpen ? '✖' : '☰'}
             </button>
           </div>
         </div>
 
+        {/* MOBILE MENU */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t border-editorial-border dark:border-zinc-800 py-4 animate-fade-in">
-            <div className="flex flex-col gap-0">
+            <div className="flex flex-col">
               {CATEGORIES.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 py-3 text-sm font-medium text-editorial-ink dark:text-zinc-200 hover:bg-editorial-red-muted dark:hover:bg-red-950/30 hover:text-editorial-red"
+                  className="px-4 py-3 text-sm font-medium text-editorial-ink dark:text-zinc-200 hover:bg-editorial-red-muted hover:text-editorial-red"
                 >
                   {item.labelKey ? t(item.labelKey) : item.label}
                 </Link>
               ))}
-              <div className="border-t border-editorial-border dark:border-zinc-800 mt-2 pt-3 px-4 flex justify-between items-center">
-                <span className="text-sm text-editorial-muted dark:text-zinc-400">Theme</span>
-                <button
-                  type="button"
-                  onClick={toggleTheme}
-                  className="p-2 rounded border border-editorial-border dark:border-zinc-600 text-editorial-muted dark:text-zinc-300 hover:text-editorial-red"
-                >
-                  {isDark ? 'Day' : 'Night'}
-                </button>
-              </div>
-              <div className="border-t border-editorial-border dark:border-zinc-800 mt-2 pt-3 px-4 flex justify-between items-center">
-                <span className="text-sm text-editorial-muted dark:text-zinc-400">Language</span>
-                <select
-                  value={i18n.language}
-                  onChange={(e) => handleLanguageChange(e.target.value)}
-                  className="text-sm border border-editorial-border dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 px-3 py-1.5 focus:ring-2 focus:ring-editorial-red"
-                >
-                  <option value="en">EN</option>
-                  <option value="hi">HI</option>
-                  <option value="mr">MR</option>
-                </select>
-              </div>
+
               {token ? (
                 <>
                   <Link
@@ -189,9 +157,8 @@ const Navbar = () => {
                     {t('nav.dashboard')}
                   </Link>
                   <button
-                    type="button"
                     onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
-                    className="mt-2 mx-4 py-2.5 text-sm font-medium text-editorial-muted dark:text-zinc-400 hover:text-editorial-red text-left"
+                    className="mt-2 mx-4 py-2.5 text-sm font-medium text-editorial-muted hover:text-editorial-red text-left"
                   >
                     {t('nav.logout')}
                   </button>

@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
-import AdBanner from '../components/AdBanner';
 import LatestNewsSidebar from '../components/LatestNewsSidebar';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 import ReporterHighlight from '../components/ReporterHighlight';
@@ -52,11 +51,6 @@ const Home = () => {
                     <div className="animate-fade-in" style={{ animationDelay: `${Math.min(index * 0.04, 0.25)}s` }}>
                       <NewsCard newsItem={item} />
                     </div>
-                    {(index + 1) % 3 === 0 && index !== news.length - 1 && (
-                      <div className="flex justify-center py-4">
-                        <AdBanner type="vertical" adIndex={index} />
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>

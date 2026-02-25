@@ -10,7 +10,7 @@ const NewsCard = ({ newsItem }) => {
   const content = getNewsContent(newsItem, 'content');
   const preview = content.length > 160 ? content.substring(0, 160) + '...' : content;
   const location = newsItem.location || newsItem.coverage || '';
-
+  console.log("Image value:", newsItem.image);
   return (
     <article className="card-editorial group">
       <Link to={`/news/${newsItem._id}`} className="block">
