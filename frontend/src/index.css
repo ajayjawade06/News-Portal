@@ -2,26 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f9fafb;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-sans antialiased text-editorial-ink bg-white dark:bg-zinc-950 dark:text-zinc-200;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+  .container-editorial {
+    @apply max-w-editorial mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .headline {
+    @apply font-serif font-bold text-editorial-black text-headline;
+  }
+
+  .headline-sm {
+    @apply font-serif font-semibold text-editorial-black text-headline-sm;
+  }
+
+  .subhead {
+    @apply font-sans text-subhead text-editorial-muted font-medium;
+  }
+
+  .body-text {
+    @apply font-sans text-body text-editorial-ink;
+  }
+
+  .caption {
+    @apply font-sans text-caption text-editorial-muted uppercase tracking-wider;
+  }
+
+  .btn-editorial {
+    @apply inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium
+           bg-editorial-black text-white
+           hover:bg-editorial-red
+           focus:outline-none focus:ring-2 focus:ring-editorial-red focus:ring-offset-2
+           transition-colors duration-200
+           disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-editorial-outline {
+    @apply inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium
+           border border-editorial-black text-editorial-black
+           hover:bg-editorial-black hover:text-white
+           dark:border-zinc-400 dark:text-zinc-200 dark:hover:bg-zinc-400 dark:hover:text-zinc-900
+           focus:outline-none focus:ring-2 focus:ring-editorial-black focus:ring-offset-2 dark:focus:ring-offset-zinc-900
+           transition-colors duration-200;
+  }
+
+  .link-editorial {
+    @apply text-editorial-red font-medium hover:underline hover:text-editorial-red-dark transition-colors;
+  }
+
+  .input-editorial {
+    @apply block w-full border border-editorial-border bg-white text-editorial-ink
+           px-4 py-3 text-base placeholder-editorial-muted
+           dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-100 dark:placeholder-zinc-500
+           focus:outline-none focus:ring-2 focus:ring-editorial-red focus:border-transparent
+           transition-shadow duration-200 disabled:opacity-50;
+  }
+
+  .card-editorial {
+    @apply bg-white border border-editorial-border dark:bg-zinc-900 dark:border-zinc-800;
+  }
 }
 
-/* Custom Animations */
+@layer utilities {
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -31,140 +108,37 @@ code {
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-  20%, 40%, 60%, 80% { transform: translateX(10px); }
-}
-
-@keyframes slide-down {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-    max-height: 0;
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    max-height: 1000px;
-  }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
+  20%, 40%, 60%, 80% { transform: translateX(6px); }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.6s ease-out forwards;
-  opacity: 0;
+  animation: fade-in 0.35s ease-out forwards;
 }
 
 .animate-shake {
-  animation: shake 0.5s ease-in-out;
+  animation: shake 0.4s ease-in-out;
 }
 
-.animate-slide-down {
-  animation: slide-down 0.3s ease-out forwards;
-}
-
-/* Smooth Scrolling */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-/* Line Clamp Utility */
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-/* Mobile Touch Optimization */
 .touch-manipulation {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* iPhone 16 Pro Specific Optimizations */
-@media (max-width: 430px) and (max-height: 932px) {
-  /* iPhone 16 Pro viewport optimizations */
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-
-  /* Better touch targets for iPhone 16 Pro */
-  button, .touch-manipulation {
-    min-height: 44px;
-    min-width: 44px;
-  }
-
-  /* Improved text readability on tall screens */
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.4;
-  }
-
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.4;
-  }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Modern Phone Optimizations (375px - 430px) */
-@media (min-width: 375px) and (max-width: 430px) {
-  /* Enhanced spacing for modern phones */
-  .phone\:px-6 {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-  }
-
-  .phone\:py-6 {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
-  }
-
-  .phone\:text-lg {
-    font-size: 1.125rem;
-    line-height: 1.75rem;
-  }
-
-  .phone\:text-xl {
-    font-size: 1.25rem;
-    line-height: 1.75rem;
-  }
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
 }
 
+::-webkit-scrollbar-thumb {
+  background: #d4d4d4;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a3a3a3;
+}

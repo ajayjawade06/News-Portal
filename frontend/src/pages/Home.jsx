@@ -5,6 +5,7 @@ import NewsCard from '../components/NewsCard';
 import AdBanner from '../components/AdBanner';
 import LatestNewsSidebar from '../components/LatestNewsSidebar';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
+import ReporterHighlight from '../components/ReporterHighlight';
 
 const Home = () => {
   const { t } = useTranslation();
@@ -16,64 +17,43 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <main className="min-h-[50vh] flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600 text-lg">{t('common.loading')}</p>
+          <div className="w-10 h-10 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-editorial-muted text-sm">{t('common.loading')}</p>
         </div>
-      </div>
+      </main>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-lg shadow-md">
-          <p className="font-semibold">{error}</p>
+      <main className="container-editorial py-12">
+        <div className="border border-editorial-red bg-editorial-red-muted text-editorial-red-dark px-6 py-4">
+          <p className="font-medium">{error}</p>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
-      {/* iPhone 16 Pro Optimized Layout */}
-      <div className="container mx-auto px-4 phone:px-6 py-4 phone:py-6 pb-8">
-        {/*
-          iPhone 16 Pro Optimized Responsive Design:
-          - iPhone 16 Pro (393px): Optimized spacing and typography
-          - Small phones (< 375px): Compact layout
-          - Tablets (640px+): Main content full width, sidebars below
-          - Desktop (1024px+): 3 columns (Latest | Main | Trending)
-        */}
-        <div className="flex flex-col lg:grid lg:grid-cols-12 gap-4 phone:gap-6 sm:gap-6">
-          {/* LEFT SIDEBAR: Latest News - Mobile: Full width, Desktop: 3 columns */}
-          <aside className="w-full lg:col-span-3 order-1">
-            <div className="lg:sticky lg:top-20 lg:h-fit">
-              <LatestNewsSidebar />
-            </div>
-          </aside>
-
-          {/* CENTER: Main News Grid - Mobile: Full width, Desktop: 6 columns */}
-          <main className="w-full lg:col-span-6 order-2 flex-1">
+    <main className="min-h-screen bg-white dark:bg-zinc-950">
+      <div className="container-editorial py-8 lg:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
+          <section className="lg:col-span-8 order-2 lg:order-1">
             {news.length === 0 ? (
-              <div className="text-center py-12 phone:py-16 sm:py-16 bg-white rounded-lg phone:rounded-xl shadow-md phone:shadow-lg">
-                <div className="text-5xl phone:text-6xl mb-3 phone:mb-4">📰</div>
-                <p className="text-gray-600 text-lg phone:text-xl px-4">{t('home.noNews')}</p>
+              <div className="card-editorial p-16 text-center">
+                <p className="font-serif text-xl text-editorial-muted">{t('home.noNews')}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 phone:gap-6 sm:gap-6">
+              <div className="space-y-8">
                 {news.map((item, index) => (
                   <div key={item._id}>
-                    <div
-                      className="animate-fade-in"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
+                    <div className="animate-fade-in" style={{ animationDelay: `${Math.min(index * 0.04, 0.25)}s` }}>
                       <NewsCard newsItem={item} />
                     </div>
-                    {/* In-feed ad every 3 news items */}
                     {(index + 1) % 3 === 0 && index !== news.length - 1 && (
-                      <div className="my-6 flex justify-center">
+                      <div className="flex justify-center py-4">
                         <AdBanner type="vertical" adIndex={index} />
                       </div>
                     )}
@@ -81,19 +61,19 @@ const Home = () => {
                 ))}
               </div>
             )}
-          </main>
+          </section>
 
-          {/* RIGHT SIDEBAR: Trending News - Mobile: Full width, Desktop: 3 columns */}
-          <aside className="w-full lg:col-span-3 order-3">
-            <div className="lg:sticky lg:top-20 lg:h-fit">
+          <aside className="lg:col-span-4 order-1 lg:order-2 space-y-8">
+            <div className="lg:sticky lg:top-24 space-y-8">
+              <LatestNewsSidebar />
+              <ReporterHighlight />
               <TrendingNewsSidebar />
             </div>
           </aside>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 
 export default Home;
-

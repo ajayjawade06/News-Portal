@@ -1,21 +1,29 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useNews } from '../context/NewsContext';
 import api from '../utils/api';
 
-/**
- * Sidebar Component
- * Displays Latest News and Trending News sections
- * 
- * For MCA Viva: This component demonstrates:
- * - Latest News: Shows 5 most recent published news (sorted by createdAt DESC)
- * - Trending News: Shows top 5 news with highest views count
- * - How trending news works: Articles with most views are considered most trending
- *   This helps readers discover popular content that others are reading
- */
+const formatDate = (dateString) => {
+  if (!dateString) return '—';
+  try {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    if (diffMinutes < 60) return `${diffMinutes}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  } catch {
+    return '—';
+  }
+};
+
 const Sidebar = () => {
-  const { t } = useTranslation();
   const { getNewsContent } = useNews();
   const [latestNews, setLatestNews] = useState([]);
   const [trendingNews, setTrendingNews] = useState([]);
@@ -25,142 +33,80 @@ const Sidebar = () => {
     const fetchSidebarNews = async () => {
       try {
         setLoading(true);
-        // Fetch latest news (5 most recent published news)
-        const latestResponse = await api.get('/news/latest');
-        setLatestNews(latestResponse.data.data || []);
-
-        // Fetch trending news (top 5 by views)
-        const trendingResponse = await api.get('/news/trending');
-        setTrendingNews(trendingResponse.data.data || []);
-      } catch (error) {
-        console.error('Error fetching sidebar news:', error);
+        const [latestRes, trendingRes] = await Promise.all([
+          api.get('/news/latest'),
+          api.get('/news/trending'),
+        ]);
+        setLatestNews(latestRes.data.data || []);
+        setTrendingNews(trendingRes.data.data || []);
+      } catch (err) {
+        console.error('Error fetching sidebar news:', err);
       } finally {
         setLoading(false);
       }
     };
-
     fetchSidebarNews();
   }, []);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
-    const diffMinutes = Math.floor(diffTime / (1000 * 60));
-
-    if (diffMinutes < 60) {
-      return `${diffMinutes}m ago`;
-    } else if (diffHours < 24) {
-      return `${diffHours}h ago`;
-    } else if (diffDays === 0) {
-      return 'Today';
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return `${diffDays}d ago`;
-    } else {
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }
-  };
-
   return (
     <div className="w-full lg:w-80 space-y-6">
-      {/* Latest News Section */}
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
-          <span>📰</span>
-          <span>Latest News</span>
+      <div className="card-editorial p-5">
+        <h2 className="font-serif font-bold text-editorial-black text-lg border-b-2 border-editorial-red pb-2 mb-4">
+          Latest
         </h2>
         {loading ? (
-          <div className="text-center py-4">
-            <div className="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-600"></div>
+          <div className="flex justify-center py-6">
+            <div className="w-8 h-8 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin" />
           </div>
         ) : latestNews.length === 0 ? (
-          <p className="text-gray-500 text-sm">No latest news available</p>
+          <p className="text-sm text-editorial-muted">No latest news</p>
         ) : (
-          <div className="space-y-4">
+          <ul className="space-y-0 divide-y divide-editorial-border">
             {latestNews.map((item) => {
+              if (!item?._id) return null;
               const title = getNewsContent(item, 'title');
-              const subHeading = getNewsContent(item, 'subHeading');
               return (
-                <Link
-                  key={item._id}
-                  to={`/news/${item._id}`}
-                  className="block group hover:bg-gray-50 p-3 rounded-lg transition-colors duration-200 border-l-4 border-transparent group-hover:border-blue-500"
-                >
-                  <h3 className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2 mb-1">
-                    {title}
-                  </h3>
-                  {subHeading && (
-                    <p className="text-sm text-gray-600 line-clamp-1 mb-2">
-                      {subHeading}
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-500 flex items-center space-x-1">
-                    <span>🕐</span>
-                    <span>{formatDate(item.createdAt)}</span>
-                  </p>
-                </Link>
+                <li key={item._id}>
+                  <Link to={`/news/${item._id}`} className="block py-4 hover:bg-editorial-red-muted transition-colors -mx-2 px-2">
+                    <h3 className="font-serif font-semibold text-editorial-black text-sm line-clamp-2 hover:text-editorial-red transition-colors">{title || 'Untitled'}</h3>
+                    <p className="caption text-editorial-muted mt-1">{formatDate(item.createdAt)}</p>
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
       </div>
 
-      {/* Trending News Section */}
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center space-x-2">
-          <span>🔥</span>
-          <span>Trending News</span>
+      <div className="card-editorial p-5">
+        <h2 className="font-serif font-bold text-editorial-black text-lg border-b-2 border-editorial-red pb-2 mb-4">
+          Trending
         </h2>
-        <p className="text-xs text-gray-500 mb-4">
-          Most viewed articles - Discover what others are reading
-        </p>
         {loading ? (
-          <div className="text-center py-4">
-            <div className="inline-block animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-600"></div>
+          <div className="flex justify-center py-6">
+            <div className="w-8 h-8 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin" />
           </div>
         ) : trendingNews.length === 0 ? (
-          <p className="text-gray-500 text-sm">No trending news available</p>
+          <p className="text-sm text-editorial-muted">No trending news</p>
         ) : (
-          <div className="space-y-4">
+          <ul className="space-y-0 divide-y divide-editorial-border">
             {trendingNews.map((item, index) => {
+              if (!item?._id) return null;
               const title = getNewsContent(item, 'title');
-              const subHeading = getNewsContent(item, 'subHeading');
+              const views = typeof item.views === 'number' ? item.views : 0;
               return (
-                <Link
-                  key={item._id}
-                  to={`/news/${item._id}`}
-                  className="block group hover:bg-gray-50 p-3 rounded-lg transition-colors duration-200 border-l-4 border-transparent group-hover:border-orange-500"
-                >
-                  <div className="flex items-start space-x-2 mb-1">
-                    <span className="text-lg font-bold text-orange-500 flex-shrink-0">
-                      #{index + 1}
-                    </span>
-                    <h3 className="font-semibold text-gray-800 group-hover:text-orange-600 transition-colors duration-200 line-clamp-2 flex-1">
-                      {title}
-                    </h3>
-                  </div>
-                  {subHeading && (
-                    <p className="text-sm text-gray-600 line-clamp-1 mb-2 ml-7">
-                      {subHeading}
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between ml-7">
-                    <p className="text-xs text-gray-500 flex items-center space-x-1">
-                      <span>👁️</span>
-                      <span>{item.views || 0} views</span>
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {formatDate(item.createdAt)}
-                    </p>
-                  </div>
-                </Link>
+                <li key={item._id}>
+                  <Link to={`/news/${item._id}`} className="block py-4 hover:bg-editorial-red-muted transition-colors -mx-2 px-2">
+                    <div className="flex gap-2">
+                      <span className="font-serif font-bold text-editorial-red text-sm shrink-0">{index + 1}.</span>
+                      <h3 className="font-serif font-semibold text-editorial-black text-sm line-clamp-2 hover:text-editorial-red transition-colors">{title || 'Untitled'}</h3>
+                    </div>
+                    <p className="caption text-editorial-muted mt-1 ml-4">{views} views · {formatDate(item.createdAt)}</p>
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
         )}
       </div>
     </div>
@@ -168,4 +114,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-

@@ -1,22 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useNews } from '../context/NewsContext';
 
+const CATEGORIES = [
+  { path: '/', labelKey: 'nav.home' },
+  { path: '/maharashtra', label: 'Maharashtra' },
+  { path: '/chandrapur', label: 'Chandrapur' },
+  { path: '/korpana', label: 'Korpana' },
+  { path: '/rajura', label: 'Rajura' },
+];
+
 const Navbar = () => {
   const { t, i18n } = useTranslation();
-  const { selectedLanguage, setSelectedLanguage } = useNews();
+  const { setSelectedLanguage } = useNews();
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'));
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', next);
+    localStorage.setItem('theme', next ? 'dark' : 'light');
+    setIsDark(next);
+  };
 
   const handleLanguageChange = (lang) => {
-    // Update both i18n (for UI) and NewsContext (for news content)
-    // This ensures UI and news content language stay in sync
     setSelectedLanguage(lang);
     i18n.changeLanguage(lang);
-    // NewsContext will automatically sync via i18n.on('languageChanged') listener
   };
 
   const handleLogout = () => {
@@ -24,203 +41,157 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const navLinkBase =
+    'px-4 py-3 text-sm font-medium text-editorial-ink dark:text-zinc-200 hover:text-editorial-red hover:bg-editorial-red-muted dark:hover:bg-red-950/30 transition-colors border-b-2 border-transparent hover:border-editorial-red';
+
   return (
-    <nav className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white shadow-xl sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
-      <div className="container mx-auto px-4 phone:px-6">
-        <div className="flex items-center justify-between h-16 phone:h-18 sm:h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 phone:space-x-3 group" onClick={() => setMobileMenuOpen(false)}>
+    <header className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-editorial-border dark:border-zinc-800">
+      <div className="container-editorial">
+        <div className="flex items-center justify-between h-14 lg:h-16">
+          <Link
+            to="/"
+            className="flex items-center gap-3 shrink-0"
+            onClick={() => setMobileMenuOpen(false)}
+          >
             {!logoError ? (
               <img
                 src="/image.png"
                 alt="DSK News"
                 onError={() => setLogoError(true)}
-                className="w-12 h-12 phone:w-14 phone:h-14 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain rounded transition-transform duration-300 group-hover:scale-110"
+                className="h-9 w-auto object-contain"
               />
             ) : (
-              <img
-                src="/image.png"
-                alt="DSK News"
-                className="w-12 h-12 phone:w-14 phone:h-14 sm:w-14 sm:h-14 lg:w-16 lg:h-16 object-contain rounded"
-              />
+              <span className="font-serif text-xl font-bold text-editorial-black dark:text-zinc-100">DSK</span>
             )}
-            <div>
-              <div className="text-lg phone:text-xl sm:text-xl lg:text-2xl font-bold tracking-tight">DSK News</div>
-            </div>
+            <span className="font-serif text-xl font-bold text-editorial-black dark:text-zinc-100 hidden sm:inline">
+              DSK News
+            </span>
           </Link>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors touch-manipulation"
-            aria-label="Toggle menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-
-          {/* Desktop Navigation Links - Location-based */}
-          <div className="hidden md:flex items-center space-x-1">
-            <Link
-              to="/"
-              className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
-            >
-              {t('nav.home')}
-            </Link>
-            <Link
-              to="/maharashtra"
-              className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
-            >
-              Maharashtra
-            </Link>
-            <Link
-              to="/chandrapur"
-              className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
-            >
-              Chandrapur
-            </Link>
-            <Link
-              to="/korpana"
-              className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
-            >
-              Korpana
-            </Link>
-            <Link
-              to="/rajura"
-              className="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium hover:scale-105"
-            >
-              Rajura
-            </Link>
-
-            {/* Language Selector */}
-            <div className="flex items-center space-x-2 border-l border-white/20 pl-4 ml-4">
-              <svg className="w-5 h-5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M2 12h20" />
-                <path d="M12 2c2.5 3.5 2.5 8.5 0 12" />
-                <path d="M12 22c-2.5-3.5-2.5-8.5 0-12" />
-              </svg>
-              <select
-                value={selectedLanguage}
-                onChange={(e) => handleLanguageChange(e.target.value)}
-                className="bg-white/10 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg text-sm border border-white/20 hover:bg-white/20 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50"
+          <nav className="hidden lg:flex items-center gap-0">
+            {CATEGORIES.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={navLinkBase}
               >
-                <option value="en" className="bg-gray-800">EN</option>
-                <option value="hi" className="bg-gray-800">HI</option>
-                <option value="mr" className="bg-gray-800">MR</option>
-              </select>
-            </div>
+                {item.labelKey ? t(item.labelKey) : item.label}
+              </Link>
+            ))}
+          </nav>
 
-            {/* Dashboard/Login */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="p-2 rounded border border-editorial-border dark:border-zinc-600 bg-white dark:bg-zinc-800 text-editorial-muted dark:text-zinc-300 hover:text-editorial-red dark:hover:text-red-400 hover:border-editorial-red dark:hover:border-red-900 transition-colors"
+              aria-label={isDark ? 'Switch to day mode' : 'Switch to night mode'}
+              title={isDark ? 'Day mode' : 'Night mode'}
+            >
+              {isDark ? (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
+            </button>
+            <select
+              value={i18n.language}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="text-sm font-medium text-editorial-muted dark:text-zinc-300 border border-editorial-border dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-editorial-red cursor-pointer"
+            >
+              <option value="en">EN</option>
+              <option value="hi">HI</option>
+              <option value="mr">MR</option>
+            </select>
+
             {token ? (
               <>
-                <Link
-                  to="/dashboard"
-                  className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 font-medium hover:scale-105 ml-2"
-                >
+                <Link to="/dashboard" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
                   {t('nav.dashboard')}
                 </Link>
                 <button
+                  type="button"
                   onClick={handleLogout}
-                  className="px-4 py-2 rounded-lg bg-red-500/80 hover:bg-red-600 transition-all duration-200 font-medium hover:scale-105 ml-2 shadow-lg hover:shadow-xl"
+                  className="text-sm font-medium text-editorial-muted dark:text-zinc-400 hover:text-editorial-red transition-colors hidden sm:inline"
                 >
                   {t('nav.logout')}
                 </button>
               </>
             ) : (
-              <Link
-                to="/login"
-                className="px-6 py-2 rounded-lg bg-white text-blue-700 hover:bg-blue-50 transition-all duration-200 font-semibold hover:scale-105 ml-4 shadow-lg hover:shadow-xl"
-              >
+              <Link to="/login" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
                 {t('nav.login')}
               </Link>
             )}
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 text-editorial-ink dark:text-zinc-200 hover:bg-neutral-100 dark:hover:bg-zinc-800"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-white/20 py-4 phone:py-6 mt-2 animate-slide-down">
-            <div className="flex flex-col space-y-2 phone:space-y-3">
-              <Link
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
-              >
-                {t('nav.home')}
-              </Link>
-              <Link
-                to="/maharashtra"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
-              >
-                Maharashtra
-              </Link>
-              <Link
-                to="/chandrapur"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
-              >
-                Chandrapur
-              </Link>
-              <Link
-                to="/korpana"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
-              >
-                Korpana
-              </Link>
-              <Link
-                to="/rajura"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg hover:bg-white/10 transition-all duration-200 font-medium active:bg-white/20 touch-manipulation"
-              >
-                Rajura
-              </Link>
-
-              {/* Language Selector - Mobile */}
-              <div className="flex items-center justify-between px-4 phone:px-6 py-3 phone:py-4 border-t border-white/20 mt-2">
-                <span className="text-base flex items-center space-x-2">
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10" />
-                    <path d="M2 12h20" />
-                    <path d="M12 2c2.5 3.5 2.5 8.5 0 12" />
-                    <path d="M12 22c-2.5-3.5-2.5-8.5 0-12" />
-                  </svg>
-                  <span>Language</span>
-                </span>
-                <select
-                  value={selectedLanguage}
-                  onChange={(e) => handleLanguageChange(e.target.value)}
-                  className="bg-white/10 backdrop-blur-sm text-white px-3 phone:px-4 py-2 phone:py-3 rounded-lg text-sm border border-white/20 hover:bg-white/20 transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/50 touch-manipulation"
+          <div className="lg:hidden border-t border-editorial-border dark:border-zinc-800 py-4 animate-fade-in">
+            <div className="flex flex-col gap-0">
+              {CATEGORIES.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-3 text-sm font-medium text-editorial-ink dark:text-zinc-200 hover:bg-editorial-red-muted dark:hover:bg-red-950/30 hover:text-editorial-red"
                 >
-                  <option value="en" className="bg-gray-800">EN</option>
-                  <option value="hi" className="bg-gray-800">HI</option>
-                  <option value="mr" className="bg-gray-800">MR</option>
+                  {item.labelKey ? t(item.labelKey) : item.label}
+                </Link>
+              ))}
+              <div className="border-t border-editorial-border dark:border-zinc-800 mt-2 pt-3 px-4 flex justify-between items-center">
+                <span className="text-sm text-editorial-muted dark:text-zinc-400">Theme</span>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="p-2 rounded border border-editorial-border dark:border-zinc-600 text-editorial-muted dark:text-zinc-300 hover:text-editorial-red"
+                >
+                  {isDark ? 'Day' : 'Night'}
+                </button>
+              </div>
+              <div className="border-t border-editorial-border dark:border-zinc-800 mt-2 pt-3 px-4 flex justify-between items-center">
+                <span className="text-sm text-editorial-muted dark:text-zinc-400">Language</span>
+                <select
+                  value={i18n.language}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="text-sm border border-editorial-border dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 px-3 py-1.5 focus:ring-2 focus:ring-editorial-red"
+                >
+                  <option value="en">EN</option>
+                  <option value="hi">HI</option>
+                  <option value="mr">MR</option>
                 </select>
               </div>
-
-              {/* Dashboard/Login - Mobile */}
               {token ? (
                 <>
                   <Link
                     to="/dashboard"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg bg-white/10 hover:bg-white/20 transition-all duration-200 font-medium active:bg-white/30 touch-manipulation mx-4"
+                    className="btn-editorial mt-3 mx-4 text-center py-2.5"
                   >
                     {t('nav.dashboard')}
                   </Link>
                   <button
-                    onClick={() => {
-                      handleLogout();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg bg-red-500/80 hover:bg-red-600 transition-all duration-200 font-medium active:bg-red-700 touch-manipulation mx-4"
+                    type="button"
+                    onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
+                    className="mt-2 mx-4 py-2.5 text-sm font-medium text-editorial-muted dark:text-zinc-400 hover:text-editorial-red text-left"
                   >
                     {t('nav.logout')}
                   </button>
@@ -229,7 +200,7 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="px-4 phone:px-6 py-3 phone:py-4 rounded-lg bg-white text-blue-700 hover:bg-blue-50 transition-all duration-200 font-semibold active:bg-blue-100 touch-manipulation mx-4 text-center"
+                  className="btn-editorial mt-3 mx-4 text-center py-2.5"
                 >
                   {t('nav.login')}
                 </Link>
@@ -238,9 +209,8 @@ const Navbar = () => {
           </div>
         )}
       </div>
-    </nav>
+    </header>
   );
 };
 
 export default Navbar;
-

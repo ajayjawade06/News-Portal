@@ -7,7 +7,7 @@ import { IMAGE_BASE_URL } from '../config';
 
 const NewsDetail = () => {
   const { id } = useParams();
-  const { t, i18n } = useTranslation(); // Subscribe to language changes for re-render
+  const { t } = useTranslation();
   const { getNewsContent } = useNews();
   const [newsItem, setNewsItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,126 +24,94 @@ const NewsDetail = () => {
         setLoading(false);
       }
     };
-
     fetchNewsDetail();
   }, [id]);
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600 text-lg">{t('common.loading')}</p>
-        </div>
-      </div>
+      <main className="min-h-[50vh] flex items-center justify-center py-20 bg-white dark:bg-zinc-950">
+        <div className="w-10 h-10 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin" />
+      </main>
     );
   }
 
   if (error || !newsItem) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="text-center bg-white p-8 rounded-xl shadow-lg max-w-md">
-          <div className="text-6xl mb-4">😕</div>
-          <p className="text-red-600 text-xl font-semibold mb-4">{error || 'News not found'}</p>
-          <Link to="/" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200">
-            {t('common.back')} {t('nav.home')}
+      <main className="min-h-[50vh] flex items-center justify-center py-20 bg-white dark:bg-zinc-950">
+        <div className="card-editorial p-10 max-w-md text-center">
+          <p className="font-medium text-editorial-red-dark mb-6">{error || 'Article not found'}</p>
+          <Link to="/" className="btn-editorial">
+            {t('common.back')} to {t('nav.home')}
           </Link>
         </div>
-      </div>
+      </main>
     );
   }
 
   const title = getNewsContent(newsItem, 'title');
   const subHeading = getNewsContent(newsItem, 'subHeading');
   const content = getNewsContent(newsItem, 'content');
-
-  // Location-based colors (replaces old coverage colors)
-  const locationColors = {
-    maharashtra: 'bg-blue-100 text-blue-800 border-blue-300',
-    chandrapur: 'bg-green-100 text-green-800 border-green-300',
-    korpana: 'bg-purple-100 text-purple-800 border-purple-300',
-    rajura: 'bg-orange-100 text-orange-800 border-orange-300'
-  };
-
-  // Support both location (new) and coverage (old) for backward compatibility
   const location = newsItem.location || newsItem.coverage || '';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30">
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
-        <Link 
-          to="/" 
-          className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-700 mb-6 font-medium transition-colors duration-200 group"
+    <main className="min-h-screen bg-white dark:bg-zinc-950">
+      <div className="container-editorial py-8 lg:py-10 max-w-3xl">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-editorial-muted hover:text-editorial-red font-medium mb-8 transition-colors"
         >
-          <span className="transform group-hover:-translate-x-1 transition-transform duration-200">←</span>
-          <span>{t('common.back')}</span>
+          <span>&#8592;</span>
+          {t('common.back')}
         </Link>
 
-        <article className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
+        <article className="card-editorial">
           {newsItem.image && (
-            <div className="relative h-96 overflow-hidden">
+            <div className="aspect-video overflow-hidden">
               <img
                 src={`${IMAGE_BASE_URL}${newsItem.image}`}
                 alt={title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
             </div>
           )}
-          
-          <div className="p-8 md:p-12">
-            <div className="flex flex-wrap items-center justify-between mb-6 gap-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className={`px-4 py-2 rounded-full text-sm font-bold uppercase border ${locationColors[location] || 'bg-gray-100 text-gray-800'}`}>
-                  {location}
-                </span>
-                <span className="px-4 py-2 bg-gray-100 text-gray-800 rounded-full text-sm font-semibold">
-                  {newsItem.category}
-                </span>
-                {newsItem.views !== undefined && (
-                  <span className="px-4 py-2 bg-orange-100 text-orange-800 rounded-full text-sm font-semibold flex items-center space-x-1">
-                    <span>👁️</span>
-                    <span>{newsItem.views || 0} views</span>
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center space-x-2 text-gray-500">
-                <span>📅</span>
-                <span className="text-sm font-medium">
-                  {new Date(newsItem.createdAt).toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}
-                </span>
-              </div>
+          <div className="p-6 sm:p-8 lg:p-10">
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <span className="caption text-editorial-red">{location || 'News'}</span>
+              <span className="caption text-editorial-muted">{newsItem.category}</span>
+              {newsItem.views !== undefined && (
+                <span className="caption text-editorial-muted">{newsItem.views || 0} views</span>
+              )}
+              <span className="caption text-editorial-muted">
+                {new Date(newsItem.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800 leading-tight">
+            <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl lg:text-4xl leading-tight mb-4">
               {title}
             </h1>
-            
             {subHeading && (
-              <p className="text-xl md:text-2xl text-gray-600 mb-6 font-medium italic border-l-4 border-blue-500 pl-4">
+              <p className="font-sans text-lg text-editorial-muted font-medium italic border-l-4 border-editorial-red pl-4 mb-6">
                 {subHeading}
               </p>
             )}
-            
-            <div className="prose prose-lg max-w-none">
-              <div className="text-gray-700 text-lg md:text-xl leading-relaxed whitespace-pre-line space-y-4">
-                {content.split('\n').map((paragraph, index) => (
-                  paragraph.trim() && (
-                    <p key={index} className="mb-4">{paragraph}</p>
-                  )
-                ))}
+
+            <div className="body-text prose prose-neutral max-w-none">
+              <div className="text-editorial-ink leading-relaxed whitespace-pre-line space-y-4">
+                {content.split('\n').map(
+                  (paragraph, index) =>
+                    paragraph.trim() && (
+                      <p key={index} className="mb-4">
+                        {paragraph}
+                      </p>
+                    )
+                )}
               </div>
             </div>
           </div>
         </article>
       </div>
-    </div>
+    </main>
   );
 };
 
 export default NewsDetail;
-

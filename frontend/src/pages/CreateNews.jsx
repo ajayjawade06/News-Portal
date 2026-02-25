@@ -6,16 +6,14 @@ import api from '../utils/api';
 const CreateNews = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  // Simplified form: Reporter writes in ONE language only
-  // Auto-translation happens on backend
   const [formData, setFormData] = useState({
     title: '',
-    subHeading: '', // Optional sub-heading for additional context
+    subHeading: '',
     content: '',
-    baseLanguage: 'en', // Language reporter writes in
-    location: '', // Location-based coverage (replaces old coverage field)
+    baseLanguage: 'en',
+    location: '',
     category: '',
-    published: false
+    published: false,
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -25,10 +23,7 @@ const CreateNews = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     setError('');
   };
 
@@ -37,9 +32,7 @@ const CreateNews = () => {
     if (file) {
       setImage(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
+      reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -52,20 +45,13 @@ const CreateNews = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    // Validation: Only need title, content, location, category
     if (!formData.title || !formData.content || !formData.location || !formData.category) {
       setError('Please fill all required fields');
       return;
     }
-
     setLoading(true);
     setTranslating(true);
-    setError('');
-
     try {
-      // Simplified FormData: Only send single language input
-      // Backend will auto-translate to all languages automatically
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('subHeading', formData.subHeading || '');
@@ -74,18 +60,9 @@ const CreateNews = () => {
       formDataToSend.append('location', formData.location);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('published', formData.published);
+      if (image) formDataToSend.append('image', image);
 
-      if (image) {
-        formDataToSend.append('image', image);
-      }
-
-      // Backend automatically translates to all languages (en, hi, mr)
-      const response = await api.post('/news', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-
+      await api.post('/news', formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
       setTranslating(false);
       navigate('/dashboard/manage');
     } catch (err) {
@@ -97,239 +74,113 @@ const CreateNews = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-4 sm:py-6 lg:py-8">
-      <div className="container mx-auto px-3 sm:px-4 max-w-4xl">
-        <div className="mb-4 sm:mb-6 lg:mb-8">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-1 sm:mb-2">{t('form.title')}</h1>
-          <p className="text-sm sm:text-base text-gray-600">Create a news post and let AI translate it automatically</p>
-        </div>
+    <main className="min-h-screen bg-white dark:bg-zinc-950 py-8 lg:py-10">
+      <div className="container-editorial max-w-2xl">
+        <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-2">
+          {t('form.title')}
+        </h1>
+        <p className="text-sm text-editorial-muted mb-6">
+          Create a post; it will be translated to all languages automatically.
+        </p>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 py-3 rounded-lg mb-6 flex items-center space-x-2">
-            <span>⚠️</span>
-            <span>{error}</span>
+          <div className="border border-editorial-red bg-editorial-red-muted text-editorial-red-dark px-4 py-3 mb-6">
+            {error}
           </div>
         )}
 
         {translating && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 text-blue-800 px-6 py-4 rounded-lg mb-6 flex items-center space-x-3 shadow-md">
-            <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-blue-600"></div>
+          <div className="border border-editorial-border bg-neutral-50 px-4 py-4 mb-6 flex items-center gap-3">
+            <div className="w-6 h-6 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin shrink-0" />
             <div>
-              <p className="font-semibold">🔄 Translating your news to all languages...</p>
-              <p className="text-sm mt-1 text-blue-600">This may take a few seconds. Please wait.</p>
+              <p className="font-medium text-sm text-editorial-ink">Translating to all languages...</p>
+              <p className="text-caption text-editorial-muted">Please wait.</p>
             </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white p-4 phone:p-6 sm:p-6 lg:p-8 rounded-xl phone:rounded-2xl shadow-lg phone:shadow-xl border border-gray-100">
-          {/* Info Banner: Auto-translation feature */}
-          <div className="mb-4 phone:mb-6 lg:mb-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 text-blue-800 px-4 phone:px-6 py-3 phone:py-4 rounded-lg phone:rounded-xl flex items-start space-x-2 phone:space-x-3">
-            <span className="text-xl phone:text-2xl flex-shrink-0">✨</span>
+        <form onSubmit={handleSubmit} className="card-editorial p-6 sm:p-8">
+          <div className="mb-6 border border-editorial-border bg-neutral-50 px-4 py-3 text-sm text-editorial-ink">
+            <strong>Auto-translation:</strong> Write in one language; the system will translate to English, Hindi, and Marathi.
+          </div>
+
+          <div className="space-y-5">
             <div>
-              <p className="font-semibold mb-1 text-sm phone:text-base">Auto-Translation Enabled</p>
-              <p className="text-xs phone:text-sm">
-                Write your news in one language. The system will automatically translate it to English, Hindi, and Marathi.
-              </p>
+              <label className="block text-sm font-medium text-editorial-ink mb-2">Write in language <span className="text-editorial-red">*</span></label>
+              <select name="baseLanguage" value={formData.baseLanguage} onChange={handleChange} required className="input-editorial">
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="mr">Marathi</option>
+              </select>
             </div>
-          </div>
-
-        {/* Base Language Selection */}
-        <div className="mb-4 phone:mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2 phone:mb-3">
-            Write in Language <span className="text-red-500">*</span>
-          </label>
-          <select
-            name="baseLanguage"
-            value={formData.baseLanguage}
-            onChange={handleChange}
-            required
-            className="w-full px-3 phone:px-4 py-2.5 phone:py-3 text-base phone:text-lg border-2 border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white touch-manipulation"
-          >
-            <option value="en">🇬🇧 English</option>
-            <option value="hi">🇮🇳 Hindi (हिंदी)</option>
-            <option value="mr">🇮🇳 Marathi (मराठी)</option>
-          </select>
-          <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
-            <span>💡</span>
-            <span>Select the language you want to write in. Other languages will be auto-translated.</span>
-          </p>
-        </div>
-
-        {/* Single Title Field */}
-        <div className="mb-4 phone:mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2 phone:mb-3">
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            placeholder="Enter news title"
-            className="w-full px-3 phone:px-4 py-2.5 phone:py-3 text-base phone:text-lg border-2 border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-          />
-        </div>
-
-        {/* Sub-Heading Field (Optional) */}
-        <div className="mb-4 phone:mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2 phone:mb-3">
-            Sub-Heading <span className="text-gray-400 text-xs">(Optional)</span>
-          </label>
-          <input
-            type="text"
-            name="subHeading"
-            value={formData.subHeading}
-            onChange={handleChange}
-            placeholder="Enter sub-heading for additional context"
-            className="w-full px-3 phone:px-4 py-2.5 phone:py-3 text-base phone:text-lg border-2 border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-          />
-          <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
-            <span>💡</span>
-            <span>Sub-heading provides additional context below the title and improves readability.</span>
-          </p>
-        </div>
-
-        {/* Single Content Field */}
-        <div className="mb-4 phone:mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-2 phone:mb-3">
-            Content <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            required
-            rows="6"
-            placeholder="Write your news content here..."
-            className="w-full px-3 phone:px-4 py-2.5 phone:py-3 text-base phone:text-lg border-2 border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-y"
-          />
-        </div>
-
-        {/* Location and Category */}
-        <div className="grid grid-cols-1 phone:grid-cols-2 gap-4 phone:gap-6 mb-4 phone:mb-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 phone:mb-3">
-              Location <span className="text-red-500">*</span>
-            </label>
-            <select
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              className="w-full px-3 phone:px-4 py-2.5 phone:py-3 text-base phone:text-lg border-2 border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white touch-manipulation"
-            >
-              <option value="">Select Location</option>
-              <option value="maharashtra">📍 Maharashtra</option>
-              <option value="chandrapur">📍 Chandrapur</option>
-              <option value="korpana">📍 Korpana</option>
-              <option value="rajura">📍 Rajura</option>
-            </select>
-            <p className="text-xs text-gray-500 mt-2 flex items-center space-x-1">
-              <span>💡</span>
-              <span>Location-based news helps readers find news relevant to their area.</span>
-            </p>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2 phone:mb-3">
-              {t('form.category')} <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              required
-              placeholder="e.g., Politics, Sports, Economy"
-              className="w-full px-3 phone:px-4 py-2.5 phone:py-3 text-base phone:text-lg border-2 border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-            />
-          </div>
-        </div>
-
-        {/* Image Upload */}
-        <div className="mb-4 sm:mb-6">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
-            {t('form.image')}
-          </label>
-          {imagePreview ? (
-            <div className="relative inline-block">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="max-w-xs h-48 object-cover rounded-xl shadow-lg border-2 border-gray-200"
-              />
-              <button
-                type="button"
-                onClick={removeImage}
-                className="mt-3 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors duration-200 text-sm font-medium"
-              >
-                {t('form.removeImage')}
+            <div>
+              <label className="block text-sm font-medium text-editorial-ink mb-2">Title <span className="text-editorial-red">*</span></label>
+              <input type="text" name="title" value={formData.title} onChange={handleChange} required placeholder="Enter headline" className="input-editorial" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-editorial-ink mb-2">Sub-heading <span className="text-editorial-muted text-xs">(optional)</span></label>
+              <input type="text" name="subHeading" value={formData.subHeading} onChange={handleChange} placeholder="Optional" className="input-editorial" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-editorial-ink mb-2">Content <span className="text-editorial-red">*</span></label>
+              <textarea name="content" value={formData.content} onChange={handleChange} required rows={6} placeholder="Write your article..." className="input-editorial resize-y" />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-sm font-medium text-editorial-ink mb-2">Location <span className="text-editorial-red">*</span></label>
+                <select name="location" value={formData.location} onChange={handleChange} required className="input-editorial">
+                  <option value="">Select</option>
+                  <option value="maharashtra">Maharashtra</option>
+                  <option value="chandrapur">Chandrapur</option>
+                  <option value="korpana">Korpana</option>
+                  <option value="rajura">Rajura</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-editorial-ink mb-2">{t('form.category')} <span className="text-editorial-red">*</span></label>
+                <input type="text" name="category" value={formData.category} onChange={handleChange} required placeholder="e.g. Politics, Sports" className="input-editorial" />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-editorial-ink mb-2">{t('form.image')}</label>
+              {imagePreview ? (
+                <div className="space-y-2">
+                  <img src={imagePreview} alt="Preview" className="max-w-xs h-48 object-cover border border-editorial-border" />
+                  <button type="button" onClick={removeImage} className="btn-editorial-outline text-sm py-2">
+                    {t('form.removeImage')}
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center border-2 border-dashed border-editorial-border p-8 cursor-pointer hover:border-editorial-muted transition-colors">
+                  <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                  <span className="text-sm text-editorial-muted">Click to upload image (optional)</span>
+                </label>
+              )}
+            </div>
+            <div className="flex items-center gap-3 py-2">
+              <input type="checkbox" name="published" checked={formData.published} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
+              <label className="text-sm font-medium text-editorial-ink">{t('form.published')}</label>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button type="submit" disabled={loading || translating} className="btn-editorial flex-1 py-3">
+                {loading || translating ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    {t('common.loading')}
+                  </span>
+                ) : (
+                  t('form.submit')
+                )}
+              </button>
+              <button type="button" onClick={() => navigate('/dashboard/manage')} className="btn-editorial-outline flex-1 py-3">
+                {t('common.cancel')}
               </button>
             </div>
-          ) : (
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-400 transition-colors duration-200">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="hidden"
-                id="image-upload"
-              />
-              <label htmlFor="image-upload" className="cursor-pointer">
-                <div className="text-4xl mb-2">📷</div>
-                <p className="text-gray-600 font-medium">Click to upload image</p>
-                <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 5MB</p>
-              </label>
-            </div>
-          )}
-        </div>
-
-        {/* Published Checkbox */}
-        <div className="mb-6 phone:mb-8 p-4 phone:p-6 bg-gray-50 rounded-xl phone:rounded-2xl">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              name="published"
-              checked={formData.published}
-              onChange={handleChange}
-              className="w-5 h-5 phone:w-6 phone:h-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer"
-            />
-            <span className="ml-3 text-sm phone:text-base font-semibold text-gray-700">
-              {t('form.published')}
-            </span>
-          </label>
-        </div>
-
-        {/* Submit Button */}
-        <div className="flex flex-col phone:flex-row gap-3 phone:gap-4">
-          <button
-            type="submit"
-            disabled={loading || translating}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 phone:px-6 py-3 phone:py-4 rounded-lg phone:rounded-xl hover:from-blue-700 hover:to-indigo-700 active:from-blue-800 active:to-indigo-800 disabled:opacity-50 font-semibold shadow-lg hover:shadow-xl transition-all duration-200 touch-manipulation text-base phone:text-lg"
-          >
-            {loading || translating ? (
-              <span className="flex items-center justify-center">
-                <span className="animate-spin rounded-full h-5 w-5 phone:h-6 phone:w-6 border-t-2 border-b-2 border-white mr-2 phone:mr-3"></span>
-                {t('common.loading')}
-              </span>
-            ) : (
-              t('form.submit')
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/dashboard/manage')}
-            className="px-4 phone:px-6 py-3 phone:py-4 bg-gray-200 text-gray-700 rounded-lg phone:rounded-xl hover:bg-gray-300 active:bg-gray-400 font-semibold transition-all duration-200 touch-manipulation text-base phone:text-lg"
-          >
-            {t('common.cancel')}
-          </button>
-        </div>
-      </form>
-    </div>
-    </div>
+          </div>
+        </form>
+      </div>
+    </main>
   );
 };
 
 export default CreateNews;
-

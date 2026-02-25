@@ -14,14 +14,25 @@ const ManageNews = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedItems, setSelectedItems] = useState([]);
-  const [showBulkActions, setShowBulkActions] = useState(false);
 
   useEffect(() => {
     fetchNews();
   }, []);
 
   useEffect(() => {
-    filterNews();
+    let filtered = news;
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          getNewsContent(item, 'title').toLowerCase().includes(term) ||
+          (item.category || '').toLowerCase().includes(term) ||
+          (item.location || item.coverage || '').toLowerCase().includes(term)
+      );
+    }
+    if (statusFilter === 'published') filtered = filtered.filter((item) => item.published);
+    if (statusFilter === 'draft') filtered = filtered.filter((item) => !item.published);
+    setFilteredNews(filtered);
   }, [news, searchTerm, statusFilter]);
 
   const fetchNews = async () => {
@@ -36,40 +47,13 @@ const ManageNews = () => {
     }
   };
 
-  const filterNews = () => {
-    let filtered = news;
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(item =>
-        getNewsContent(item, 'title').toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.location || item.coverage || '').toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Status filter
-    if (statusFilter !== 'all') {
-      filtered = filtered.filter(item => {
-        if (statusFilter === 'published') return item.published;
-        if (statusFilter === 'draft') return !item.published;
-        return true;
-      });
-    }
-
-    setFilteredNews(filtered);
-  };
-
   const handleDelete = async (id) => {
-    if (!window.confirm(t('manage.confirmDelete'))) {
-      return;
-    }
-
+    if (!window.confirm(t('manage.confirmDelete'))) return;
     try {
       await api.delete(`/news/${id}`);
       fetchNews();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to delete news');
+      alert(err.response?.data?.message || 'Failed to delete');
     }
   };
 
@@ -78,146 +62,105 @@ const ManageNews = () => {
       await api.patch(`/news/${id}/publish`);
       fetchNews();
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to update publish status');
+      alert(err.response?.data?.message || 'Failed to update status');
     }
   };
 
   const handleBulkPublish = async () => {
     if (selectedItems.length === 0) return;
-
     try {
-      await Promise.all(selectedItems.map(id => api.patch(`/news/${id}/publish`)));
+      await Promise.all(selectedItems.map((id) => api.patch(`/news/${id}/publish`)));
       setSelectedItems([]);
-      setShowBulkActions(false);
       fetchNews();
-    } catch (err) {
-      alert('Failed to update selected items');
+    } catch {
+      alert('Failed to update selected');
     }
   };
 
   const handleBulkDelete = async () => {
     if (selectedItems.length === 0) return;
-
-    if (!window.confirm(`Delete ${selectedItems.length} selected items?`)) {
-      return;
-    }
-
+    if (!window.confirm(`Delete ${selectedItems.length} selected items?`)) return;
     try {
-      await Promise.all(selectedItems.map(id => api.delete(`/news/${id}`)));
+      await Promise.all(selectedItems.map((id) => api.delete(`/news/${id}`)));
       setSelectedItems([]);
-      setShowBulkActions(false);
       fetchNews();
-    } catch (err) {
-      alert('Failed to delete selected items');
+    } catch {
+      alert('Failed to delete');
     }
   };
 
   const toggleSelection = (id) => {
-    setSelectedItems(prev =>
-      prev.includes(id)
-        ? prev.filter(itemId => itemId !== id)
-        : [...prev, id]
-    );
+    setSelectedItems((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
   };
 
   const selectAll = () => {
-    if (selectedItems.length === filteredNews.length) {
-      setSelectedItems([]);
-    } else {
-      setSelectedItems(filteredNews.map(item => item._id));
-    }
+    setSelectedItems(selectedItems.length === filteredNews.length ? [] : filteredNews.map((item) => item._id));
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-8">
-        <div className="container mx-auto px-4 phone:px-6">
-          <div className="text-center py-12 phone:py-16">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 phone:h-16 phone:w-16 border-t-2 border-b-2 border-blue-600 mb-4"></div>
-            <p className="text-gray-600 text-lg phone:text-xl">{t('common.loading')}</p>
-          </div>
-        </div>
-      </div>
+      <main className="min-h-[50vh] flex items-center justify-center py-20 bg-white dark:bg-zinc-950">
+        <div className="w-10 h-10 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin" />
+      </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-4 phone:py-6 lg:py-8">
-      <div className="container mx-auto px-4 phone:px-6 max-w-7xl">
-        {/* Header */}
-        <div className="flex flex-col phone:flex-row phone:justify-between phone:items-center gap-4 mb-6 phone:mb-8">
+    <main className="min-h-screen bg-white dark:bg-zinc-950 py-8 lg:py-10">
+      <div className="container-editorial">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-2xl phone:text-3xl lg:text-4xl font-bold text-gray-800 mb-2">{t('manage.title')}</h1>
-            <p className="text-gray-600 text-sm phone:text-base">Manage your news articles and publications</p>
+            <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-1">
+              {t('manage.title')}
+            </h1>
+            <p className="text-sm text-editorial-muted">Manage your articles</p>
           </div>
-          <Link
-            to="/dashboard/create"
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-4 phone:px-6 py-3 phone:py-4 rounded-lg phone:rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] touch-manipulation text-center"
-          >
-            <span className="flex items-center justify-center space-x-2">
-              <span>✍️</span>
-              <span>{t('common.create')}</span>
-            </span>
+          <Link to="/dashboard/create" className="btn-editorial shrink-0">
+            {t('common.create')}
           </Link>
         </div>
 
-        {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 px-4 phone:px-6 py-3 phone:py-4 rounded-lg phone:rounded-xl mb-6 flex items-center space-x-2">
-            <span>⚠️</span>
-            <span>{error}</span>
+          <div className="border border-editorial-red bg-editorial-red-muted text-editorial-red-dark px-4 py-3 mb-6">
+            {error}
           </div>
         )}
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 phone:grid-cols-4 gap-3 phone:gap-4 mb-6 phone:mb-8">
-          <div className="bg-white p-3 phone:p-4 rounded-lg phone:rounded-xl shadow-md border border-gray-100">
-            <div className="text-2xl phone:text-3xl font-bold text-blue-600">{news.length}</div>
-            <div className="text-xs phone:text-sm text-gray-600">Total</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div className="card-editorial p-4">
+            <p className="font-serif font-bold text-editorial-black text-2xl">{news.length}</p>
+            <p className="caption text-editorial-muted">Total</p>
           </div>
-          <div className="bg-white p-3 phone:p-4 rounded-lg phone:rounded-xl shadow-md border border-gray-100">
-            <div className="text-2xl phone:text-3xl font-bold text-green-600">{news.filter(n => n.published).length}</div>
-            <div className="text-xs phone:text-sm text-gray-600">Published</div>
+          <div className="card-editorial p-4">
+            <p className="font-serif font-bold text-editorial-red text-2xl">{news.filter((n) => n.published).length}</p>
+            <p className="caption text-editorial-muted">Published</p>
           </div>
-          <div className="bg-white p-3 phone:p-4 rounded-lg phone:rounded-xl shadow-md border border-gray-100">
-            <div className="text-2xl phone:text-3xl font-bold text-yellow-600">{news.filter(n => !n.published).length}</div>
-            <div className="text-xs phone:text-sm text-gray-600">Drafts</div>
+          <div className="card-editorial p-4">
+            <p className="font-serif font-bold text-editorial-ink text-2xl">{news.filter((n) => !n.published).length}</p>
+            <p className="caption text-editorial-muted">Drafts</p>
           </div>
-          <div className="bg-white p-3 phone:p-4 rounded-lg phone:rounded-xl shadow-md border border-gray-100">
-            <div className="text-2xl phone:text-3xl font-bold text-purple-600">{selectedItems.length}</div>
-            <div className="text-xs phone:text-sm text-gray-600">Selected</div>
+          <div className="card-editorial p-4">
+            <p className="font-serif font-bold text-editorial-ink text-2xl">{selectedItems.length}</p>
+            <p className="caption text-editorial-muted">Selected</p>
           </div>
         </div>
 
-        {/* Filters and Search */}
-        <div className="bg-white p-4 phone:p-6 rounded-lg phone:rounded-xl shadow-md mb-6 phone:mb-8 border border-gray-100">
-          <div className="flex flex-col phone:flex-row gap-4">
-            {/* Search */}
+        <div className="card-editorial p-5 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search by title, category, or location..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 phone:py-3 border border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-400">🔍</span>
-                </div>
-              </div>
+              <label className="block text-sm font-medium text-editorial-ink mb-2">Search</label>
+              <input
+                type="text"
+                placeholder="Title, category, or location..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-editorial"
+              />
             </div>
-
-            {/* Status Filter */}
-            <div className="phone:w-48">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 phone:px-4 py-2 phone:py-3 border border-gray-300 rounded-lg phone:rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
-                <option value="all">All Posts</option>
+            <div className="sm:w-48">
+              <label className="block text-sm font-medium text-editorial-ink mb-2">Status</label>
+              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="input-editorial">
+                <option value="all">All</option>
                 <option value="published">Published</option>
                 <option value="draft">Drafts</option>
               </select>
@@ -225,154 +168,94 @@ const ManageNews = () => {
           </div>
         </div>
 
-        {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg phone:rounded-xl p-4 phone:p-6 mb-6">
-            <div className="flex flex-col phone:flex-row items-start phone:items-center justify-between gap-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-blue-800 font-medium">{selectedItems.length} items selected</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={handleBulkPublish}
-                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                >
-                  Publish Selected
-                </button>
-                <button
-                  onClick={handleBulkDelete}
-                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-                >
-                  Delete Selected
-                </button>
-                <button
-                  onClick={() => setSelectedItems([])}
-                  className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium"
-                >
-                  Clear Selection
-                </button>
-              </div>
+          <div className="border border-editorial-border bg-neutral-50 p-4 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <span className="text-sm font-medium text-editorial-ink">{selectedItems.length} selected</span>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={handleBulkPublish} className="btn-editorial text-sm py-2">
+                Publish selected
+              </button>
+              <button type="button" onClick={handleBulkDelete} className="px-4 py-2 text-sm font-medium bg-editorial-red text-white hover:bg-editorial-red-dark focus:ring-2 focus:ring-editorial-red focus:ring-offset-2">
+                Delete selected
+              </button>
+              <button type="button" onClick={() => setSelectedItems([])} className="btn-editorial-outline text-sm py-2">
+                Clear
+              </button>
             </div>
           </div>
         )}
 
-        {/* News List */}
         {filteredNews.length === 0 ? (
-          <div className="text-center py-12 phone:py-16 bg-white rounded-lg phone:rounded-xl shadow-md">
-            <div className="text-5xl phone:text-6xl mb-4">📝</div>
-            <p className="text-gray-600 text-lg phone:text-xl mb-4">
+          <div className="card-editorial p-12 sm:p-16 text-center">
+            <p className="text-editorial-muted mb-4">
               {searchTerm || statusFilter !== 'all' ? 'No posts match your filters' : t('manage.noPosts')}
             </p>
             {(searchTerm || statusFilter !== 'all') && (
-              <button
-                onClick={() => {
-                  setSearchTerm('');
-                  setStatusFilter('all');
-                }}
-                className="text-blue-600 hover:text-blue-700 font-medium"
-              >
+              <button type="button" onClick={() => { setSearchTerm(''); setStatusFilter('all'); }} className="link-editorial">
                 Clear filters
               </button>
             )}
           </div>
         ) : (
           <>
-            {/* Select All */}
             <div className="flex items-center justify-between mb-4">
-              <label className="flex items-center space-x-2 cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={selectedItems.length === filteredNews.length && filteredNews.length > 0}
+                  checked={filteredNews.length > 0 && selectedItems.length === filteredNews.length}
                   onChange={selectAll}
-                  className="w-4 h-4 phone:w-5 phone:h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red"
                 />
-                <span className="text-sm phone:text-base text-gray-700">Select All</span>
+                <span className="text-sm text-editorial-ink">Select all</span>
               </label>
-              <span className="text-sm text-gray-500">{filteredNews.length} posts</span>
+              <span className="text-sm text-editorial-muted">{filteredNews.length} posts</span>
             </div>
 
-            {/* Mobile Card Layout */}
             <div className="block md:hidden space-y-4">
               {filteredNews.map((item) => (
-                <div key={item._id} className="bg-white rounded-lg phone:rounded-xl shadow-md overflow-hidden border border-gray-100">
-                  {/* Selection Checkbox */}
-                  <div className="p-4 border-b border-gray-100">
-                    <label className="flex items-center space-x-2 cursor-pointer">
+                <div key={item._id} className="card-editorial">
+                  <div className="p-4 border-b border-editorial-border">
+                    <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={selectedItems.includes(item._id)}
                         onChange={() => toggleSelection(item._id)}
-                        className="w-4 h-4 phone:w-5 phone:h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red"
                       />
-                      <span className="text-sm text-gray-600">Select</span>
+                      <span className="text-sm text-editorial-muted">Select</span>
                     </label>
                   </div>
-
-                  {/* Content */}
-                  <div className="p-4 phone:p-6">
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg phone:text-xl font-semibold text-gray-900 flex-1 mr-2 line-clamp-2">
+                  <div className="p-4">
+                    <div className="flex justify-between items-start gap-2 mb-3">
+                      <h3 className="font-serif font-semibold text-editorial-black line-clamp-2 flex-1">
                         {getNewsContent(item, 'title')}
                       </h3>
-                      <span
-                        className={`px-2 phone:px-3 py-1 text-xs font-semibold rounded-full border flex-shrink-0 ${
-                          item.published
-                            ? 'bg-green-100 text-green-800 border-green-300'
-                            : 'bg-yellow-100 text-yellow-800 border-yellow-300'
-                        }`}
-                      >
+                      <span className={`shrink-0 caption ${item.published ? 'text-editorial-red' : 'text-editorial-muted'}`}>
                         {item.published ? t('common.published') : t('common.draft')}
                       </span>
                     </div>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex items-center justify-between text-sm text-gray-600">
-                        <span className="flex items-center space-x-1">
-                          <span>📍</span>
-                          <span>{item.location || item.coverage || 'N/A'}</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                          <span>🏷️</span>
-                          <span>{item.category}</span>
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500 flex items-center space-x-1">
-                        <span>📅</span>
-                        <span>{new Date(item.createdAt).toLocaleDateString()}</span>
-                      </div>
+                    <div className="flex flex-wrap items-center gap-2 text-caption text-editorial-muted mb-4">
+                      <span>{item.location || item.coverage || 'N/A'}</span>
+                      <span>{item.category}</span>
+                      <span>{new Date(item.createdAt).toLocaleDateString()}</span>
                     </div>
-
-                    <div className="flex flex-col phone:flex-row gap-2">
-                      <Link
-                        to={`/dashboard/edit/${item._id}`}
-                        className="flex-1 bg-blue-600 text-white px-4 py-3 phone:py-4 rounded-lg phone:rounded-xl text-center text-sm phone:text-base font-medium hover:bg-blue-700 transition-colors touch-manipulation"
-                      >
-                        <span className="flex items-center justify-center space-x-1">
-                          <span>✏️</span>
-                          <span>{t('common.edit')}</span>
-                        </span>
+                    <div className="flex flex-wrap gap-2">
+                      <Link to={`/dashboard/edit/${item._id}`} className="btn-editorial flex-1 min-w-[80px] text-center text-sm py-2">
+                        {t('common.edit')}
                       </Link>
                       <button
+                        type="button"
                         onClick={() => handleTogglePublish(item._id)}
-                        className={`flex-1 px-4 py-3 phone:py-4 rounded-lg phone:rounded-xl text-center text-sm phone:text-base font-medium transition-colors touch-manipulation ${
-                          item.published
-                            ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-                            : 'bg-green-500 text-white hover:bg-green-600'
-                        }`}
+                        className="flex-1 min-w-[80px] py-2 text-sm font-medium border border-editorial-border text-editorial-ink hover:bg-neutral-50"
                       >
-                        <span className="flex items-center justify-center space-x-1">
-                          <span>{item.published ? '📥' : '📤'}</span>
-                          <span>{item.published ? t('common.unpublish') : t('common.publish')}</span>
-                        </span>
+                        {item.published ? t('common.unpublish') : t('common.publish')}
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(item._id)}
-                        className="flex-1 bg-red-500 text-white px-4 py-3 phone:py-4 rounded-lg phone:rounded-xl text-center text-sm phone:text-base font-medium hover:bg-red-600 transition-colors touch-manipulation"
+                        className="flex-1 min-w-[80px] py-2 text-sm font-medium text-editorial-red hover:bg-editorial-red-muted"
                       >
-                        <span className="flex items-center justify-center space-x-1">
-                          <span>🗑️</span>
-                          <span>{t('common.delete')}</span>
-                        </span>
+                        {t('common.delete')}
                       </button>
                     </div>
                   </div>
@@ -380,99 +263,63 @@ const ManageNews = () => {
               ))}
             </div>
 
-            {/* Desktop Table Layout */}
-            <div className="hidden md:block bg-white rounded-lg phone:rounded-xl shadow-md overflow-hidden border border-gray-100">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+            <div className="hidden md:block card-editorial overflow-hidden">
+              <table className="min-w-full divide-y divide-editorial-border">
+                <thead className="bg-neutral-50">
                   <tr>
                     <th className="px-6 py-3 text-left">
                       <input
                         type="checkbox"
-                        checked={selectedItems.length === filteredNews.length && filteredNews.length > 0}
+                        checked={filteredNews.length > 0 && selectedItems.length === filteredNews.length}
                         onChange={selectAll}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red"
                       />
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Title
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Category
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
+                    <th className="px-6 py-3 text-left caption text-editorial-muted">Title</th>
+                    <th className="px-6 py-3 text-left caption text-editorial-muted">Location</th>
+                    <th className="px-6 py-3 text-left caption text-editorial-muted">Category</th>
+                    <th className="px-6 py-3 text-left caption text-editorial-muted">Status</th>
+                    <th className="px-6 py-3 text-left caption text-editorial-muted">Date</th>
+                    <th className="px-6 py-3 text-left caption text-editorial-muted">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-editorial-border">
                   {filteredNews.map((item) => (
-                    <tr key={item._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                    <tr key={item._id} className="hover:bg-neutral-50/50">
+                      <td className="px-6 py-4">
                         <input
                           type="checkbox"
                           checked={selectedItems.includes(item._id)}
                           onChange={() => toggleSelection(item._id)}
-                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                          className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red"
                         />
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900 line-clamp-2">
+                        <span className="text-sm font-medium text-editorial-ink line-clamp-2">
                           {getNewsContent(item, 'title')}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {item.location || item.coverage || 'N/A'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {item.category}
+                      <td className="px-6 py-4 whitespace-nowrap caption text-editorial-muted">
+                        {item.location || item.coverage || 'N/A'}
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-editorial-muted">{item.category}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            item.published
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
-                        >
+                        <span className={`caption ${item.published ? 'text-editorial-red' : 'text-editorial-muted'}`}>
                           {item.published ? t('common.published') : t('common.draft')}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-editorial-muted">
                         {new Date(item.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div className="flex items-center space-x-3">
-                          <Link
-                            to={`/dashboard/edit/${item._id}`}
-                            className="text-blue-600 hover:text-blue-900 transition-colors"
-                          >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <Link to={`/dashboard/edit/${item._id}`} className="text-sm font-medium text-editorial-red hover:underline">
                             Edit
                           </Link>
-                          <button
-                            onClick={() => handleTogglePublish(item._id)}
-                            className={`transition-colors ${
-                              item.published
-                                ? 'text-yellow-600 hover:text-yellow-900'
-                                : 'text-green-600 hover:text-green-900'
-                            }`}
-                          >
+                          <button type="button" onClick={() => handleTogglePublish(item._id)} className="text-sm font-medium text-editorial-muted hover:underline">
                             {item.published ? 'Unpublish' : 'Publish'}
                           </button>
-                          <button
-                            onClick={() => handleDelete(item._id)}
-                            className="text-red-600 hover:text-red-900 transition-colors"
-                          >
+                          <button type="button" onClick={() => handleDelete(item._id)} className="text-sm font-medium text-editorial-red hover:underline">
                             Delete
                           </button>
                         </div>
@@ -485,9 +332,8 @@ const ManageNews = () => {
           </>
         )}
       </div>
-    </div>
+    </main>
   );
 };
 
 export default ManageNews;
-

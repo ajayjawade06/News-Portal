@@ -1,44 +1,46 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
-      screens: {
-        'xs': '375px',    // iPhone SE, small phones
-        'sm': '640px',    // Tablets and larger phones
-        'md': '768px',    // Small laptops
-        'lg': '1024px',   // Desktops
-        'xl': '1280px',   // Large screens
-        '2xl': '1536px',  // Extra large screens
-        'phone': {'max': '767px'},  // All phones
-        'tablet': {'min': '768px', 'max': '1023px'}, // Tablets only
-        'desktop': {'min': '1024px'}, // Desktops and up
+      fontFamily: {
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        serif: ['Lora', 'Georgia', 'ui-serif', 'serif'],
+      },
+      colors: {
+        editorial: {
+          black: '#0a0a0a',
+          ink: '#171717',
+          muted: '#525252',
+          border: '#e5e5e5',
+          red: '#991b1b',
+          'red-dark': '#7f1d1d',
+          'red-muted': '#fef2f2',
+        },
+      },
+      fontSize: {
+        'headline': ['2.25rem', { lineHeight: '1.2', letterSpacing: '-0.02em' }],
+        'headline-sm': ['1.5rem', { lineHeight: '1.25', letterSpacing: '-0.01em' }],
+        'subhead': ['1.125rem', { lineHeight: '1.4' }],
+        'body': ['1rem', { lineHeight: '1.65' }],
+        'caption': ['0.8125rem', { lineHeight: '1.4' }],
+      },
+      maxWidth: {
+        'editorial': '1280px',
       },
       spacing: {
         '18': '4.5rem',
         '88': '22rem',
         '112': '28rem',
-        '128': '32rem',
       },
-      fontSize: {
-        'xs': ['0.75rem', { lineHeight: '1rem' }],
-        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
-        'base': ['1rem', { lineHeight: '1.5rem' }],
-        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
-        'xl': ['1.25rem', { lineHeight: '1.75rem' }],
-        '2xl': ['1.5rem', { lineHeight: '2rem' }],
-        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
-        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
-        '5xl': ['3rem', { lineHeight: '1' }],
-      },
-      borderRadius: {
-        '4xl': '2rem',
+      borderColor: {
+        DEFAULT: '#e5e5e5',
       },
     },
   },
   plugins: [],
-}
-
+};
