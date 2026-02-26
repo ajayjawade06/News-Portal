@@ -74,9 +74,7 @@ const Footer = () => {
             &copy; {new Date().getFullYear()} Lokawani. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <span className="text-xs text-editorial-muted dark:text-zinc-500">EN</span>
-            <span className="text-xs text-editorial-muted dark:text-zinc-500">HI</span>
-            <span className="text-xs text-editorial-muted dark:text-zinc-500">MR</span>
+            <span className="text-xs text-editorial-muted dark:text-zinc-500">Developed by Ajay Jawade</span>
           </div>
         </div>
       </div>

@@ -20,7 +20,7 @@ const ReporterHighlight = () => {
         </h2>
 
         <p className="text-red-600 font-medium mt-1">
-          मुख्य संपदाक
+          मुख्य संपादक
         </p>
 
         {/* Contact */}
@@ -35,7 +35,7 @@ const ReporterHighlight = () => {
 
         {/* WhatsApp Join Section */}
         <a
-          href="https://chat.whatsapp.com/EchACru1Pv3I4CqX0KVSRw?mode=gi_t"
+          href="https://chat.whatsapp.com/FNzuitTbKlfFJeIBvn6Sp9?mode=gi_t"
           target="_blank"
           rel="noopener noreferrer"
           className="mt-5 inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition duration-300 w-full"
