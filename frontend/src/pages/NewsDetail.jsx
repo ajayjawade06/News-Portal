@@ -1,23 +1,37 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import api from '../utils/api';
 import { IMAGE_BASE_URL } from '../config';
 
 const NewsDetail = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const backText = useText('Back');
+  const homeText = useText('Home');
+  const shareText = useText('Share');
   const { getNewsContent } = useNews();
   const [newsItem, setNewsItem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // comment handling (no login, ask name on first post)
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState('');
+  const [commentName, setCommentName] = useState('');
+  const commentsLabel = useText('Comments');
+  const noCommentsText = useText('No comments yet');
+  const yourCommentLabel = useText('Your comment');
+  const postCommentText = useText('Post');
+  const namePromptText = useText('Please enter your name');
+
   useEffect(() => {
     const fetchNewsDetail = async () => {
       try {
         const response = await api.get(`/news/${id}`);
-        setNewsItem(response.data.data);
+        const item = response.data.data;
+        setNewsItem(item);
+        setComments(item.comments || []);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch news');
       } finally {
@@ -41,7 +55,7 @@ const NewsDetail = () => {
         <div className="card-editorial p-10 max-w-md text-center">
           <p className="font-medium text-editorial-red-dark mb-6">{error || 'Article not found'}</p>
           <Link to="/" className="btn-editorial">
-            {t('common.back')} to {t('nav.home')}
+            {backText} to {homeText}
           </Link>
         </div>
       </main>
@@ -53,16 +67,60 @@ const NewsDetail = () => {
   const content = getNewsContent(newsItem, 'content');
   const location = newsItem.location || newsItem.coverage || '';
 
+  const shareUrl = window.location.href;
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title,
+        text: subHeading || title,
+        url: shareUrl,
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(shareUrl).then(() => {
+        alert('Link copied to clipboard');
+      });
+    }
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+
+    let name = commentName;
+    if (!name) {
+      name = prompt(namePromptText);
+      if (!name) return;
+      setCommentName(name);
+    }
+
+    try {
+      const res = await api.post(`/news/${id}/comments`, { name, text: commentText });
+      setComments(res.data.data);
+      setCommentText('');
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to post comment');
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10 max-w-3xl">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-editorial-muted hover:text-editorial-red font-medium mb-8 transition-colors"
-        >
-          <span>&#8592;</span>
-          {t('common.back')}
-        </Link>
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-editorial-muted hover:text-editorial-red font-medium transition-colors"
+          >
+            <span>&#8592;</span>
+            {backText}
+          </Link>
+          <button
+            type="button"
+            onClick={handleShare}
+            className="text-sm font-medium text-editorial-red hover:underline"
+          >
+            {shareText}
+          </button>
+        </div>
 
         <article className="card-editorial">
           {newsItem.image && (
@@ -107,8 +165,50 @@ const NewsDetail = () => {
                 )}
               </div>
             </div>
+
+            {/* bottom share button */}
+            <div className="mt-8 text-center">
+              <button
+                type="button"
+                onClick={handleShare}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-editorial-red text-white font-medium rounded hover:bg-editorial-red-dark transition-colors"
+              >
+                {shareText}
+              </button>
+            </div>
           </div>
         </article>
+
+        {/* comments section */}
+        <section className="container-editorial max-w-3xl mt-10">
+          <h2 className="text-xl font-semibold mb-4">{commentsLabel}</h2>
+          {comments.length === 0 ? (
+            <p className="text-editorial-muted mb-4">{noCommentsText}</p>
+          ) : (
+            <ul className="space-y-4 mb-6">
+              {comments.map((c, idx) => (
+                <li key={idx} className="border border-editorial-border p-4 rounded">
+                  <p className="font-medium">{c.name} <span className="text-xs text-editorial-muted">{new Date(c.createdAt).toLocaleString()}</span></p>
+                  <p className="mt-1 whitespace-pre-line">{c.text}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <form onSubmit={handleCommentSubmit} className="space-y-3">
+            <textarea
+              value={commentText}
+              onChange={e => setCommentText(e.target.value)}
+              required
+              rows={3}
+              placeholder={yourCommentLabel}
+              className="input-editorial w-full"
+            />
+            <button type="submit" className="btn-editorial">
+              {postCommentText}
+            </button>
+          </form>
+        </section>
       </div>
     </main>
   );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 
 const CATEGORIES = [
@@ -9,11 +9,17 @@ const CATEGORIES = [
   { path: '/chandrapur', label: 'Chandrapur' },
   { path: '/korpana', label: 'Korpana' },
   { path: '/rajura', label: 'Rajura' },
+  { path: '/advertising', labelKey: 'nav.advertise' },
 ];
 
 const Navbar = () => {
-  const { t, i18n } = useTranslation();
-  const { setSelectedLanguage } = useNews();
+  const setSelectedLanguage = useNews().setSelectedLanguage;
+  const homeText = useText('Home');
+  const dashboardText = useText('Dashboard');
+  const loginText = useText('Login');
+  const logoutText = useText('Logout');
+  const advertiseText = useText('Advertise');
+  const [language, setLanguage] = useState('en');
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -36,7 +42,7 @@ const Navbar = () => {
 
   const handleLanguageChange = (lang) => {
     setSelectedLanguage(lang);
-    i18n.changeLanguage(lang);
+    setLanguage(lang);
   };
 
   const handleLogout = () => {
@@ -73,7 +79,7 @@ const Navbar = () => {
                 to={item.path}
                 className={navLinkBase}
               >
-                {item.labelKey ? t(item.labelKey) : item.label}
+                {item.labelKey ? (item.labelKey === 'nav.home' ? homeText : advertiseText) : item.label}
               </Link>
             ))}
           </nav>
@@ -92,7 +98,7 @@ const Navbar = () => {
 
             {/* LANGUAGE SELECT */}
             <select
-              value={i18n.language}
+              value={language}
               onChange={(e) => handleLanguageChange(e.target.value)}
               className="text-sm font-medium text-editorial-muted dark:text-zinc-300 border border-editorial-border dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-editorial-red cursor-pointer"
             >
@@ -105,19 +111,19 @@ const Navbar = () => {
             {token ? (
               <>
                 <Link to="/dashboard" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
-                  {t('nav.dashboard')}
+                  {dashboardText}
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
                   className="text-sm font-medium text-editorial-muted dark:text-zinc-400 hover:text-editorial-red transition-colors hidden sm:inline"
                 >
-                  {t('nav.logout')}
+                  {logoutText}
                 </button>
               </>
             ) : (
               <Link to="/login" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
-                {t('nav.login')}
+                {loginText}
               </Link>
             )}
 
@@ -143,7 +149,7 @@ const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className="px-4 py-3 text-sm font-medium text-editorial-ink dark:text-zinc-200 hover:bg-editorial-red-muted hover:text-editorial-red"
                 >
-                  {item.labelKey ? t(item.labelKey) : item.label}
+                  {item.labelKey ? (item.labelKey === 'nav.home' ? homeText : advertiseText) : item.label}
                 </Link>
               ))}
 
@@ -154,13 +160,13 @@ const Navbar = () => {
                     onClick={() => setMobileMenuOpen(false)}
                     className="btn-editorial mt-3 mx-4 text-center py-2.5"
                   >
-                    {t('nav.dashboard')}
+                    {dashboardText}
                   </Link>
                   <button
                     onClick={() => { handleLogout(); setMobileMenuOpen(false); }}
                     className="mt-2 mx-4 py-2.5 text-sm font-medium text-editorial-muted hover:text-editorial-red text-left"
                   >
-                    {t('nav.logout')}
+                    {logoutText}
                   </button>
                 </>
               ) : (
@@ -169,7 +175,7 @@ const Navbar = () => {
                   onClick={() => setMobileMenuOpen(false)}
                   className="btn-editorial mt-3 mx-4 text-center py-2.5"
                 >
-                  {t('nav.login')}
+                  {loginText}
                 </Link>
               )}
             </div>

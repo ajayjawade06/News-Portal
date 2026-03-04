@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
+import useText from '../hooks/useText';
 
 const Dashboard = () => {
-  const { t } = useTranslation();
+  const titleText = useText('Dashboard');
+  const totalLabel = useText('Total Posts');
+  const publishedLabel = useText('Published');
+  const draftsLabel = useText('Drafts');
+  const createText = useText('Create news');
+  const manageText = useText('Manage news');
   const [stats, setStats] = useState({ total: 0, published: 0, drafts: 0 });
   const [loading, setLoading] = useState(true);
 
@@ -39,20 +44,20 @@ const Dashboard = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10">
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-8">
-          {t('dashboard.title')}
+          {titleText}
         </h1>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
           <div className="card-editorial p-6">
-            <p className="caption text-editorial-muted mb-1">Total Posts</p>
+            <p className="caption text-editorial-muted mb-1">{totalLabel}</p>
             <p className="font-serif font-bold text-editorial-black text-3xl">{stats.total}</p>
           </div>
           <div className="card-editorial p-6">
-            <p className="caption text-editorial-muted mb-1">Published</p>
+            <p className="caption text-editorial-muted mb-1">{publishedLabel}</p>
             <p className="font-serif font-bold text-editorial-red text-3xl">{stats.published}</p>
           </div>
           <div className="card-editorial p-6">
-            <p className="caption text-editorial-muted mb-1">Drafts</p>
+            <p className="caption text-editorial-muted mb-1">{draftsLabel}</p>
             <p className="font-serif font-bold text-editorial-ink text-3xl">{stats.drafts}</p>
           </div>
         </div>
@@ -62,13 +67,13 @@ const Dashboard = () => {
             to="/dashboard/create"
             className="btn-editorial flex-1 py-3 flex items-center justify-center gap-2"
           >
-            {t('dashboard.createNews')}
+            {createText}
           </Link>
           <Link
             to="/dashboard/manage"
             className="btn-editorial-outline flex-1 py-3 flex items-center justify-center gap-2"
           >
-            {t('dashboard.manageNews')}
+            {manageText}
           </Link>
         </div>
       </div>

@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 
+
 const Rajura = () => {
-  const { t } = useTranslation();
+  const titleText = useText('Rajura Latest News');
+  const noNewsText = useText('No news available');
   const { news, loading, error, fetchNews } = useNews();
 
   useEffect(() => {
@@ -34,16 +36,16 @@ const Rajura = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10">
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-8">
-          Rajura {t('home.title')}
+          {titleText}
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
           <section className="lg:col-span-8">
             {news.length === 0 ? (
               <div className="card-editorial p-12 text-center">
-                <p className="text-editorial-muted">{t('home.noNews')}</p>
+                <p className="text-editorial-muted">{noNewsText}</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {news.map((item) => (
                   <NewsCard key={item._id} newsItem={item} />
                 ))}

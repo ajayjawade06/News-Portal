@@ -1,13 +1,31 @@
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
 import LatestNewsSidebar from '../components/LatestNewsSidebar';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 import ReporterHighlight from '../components/ReporterHighlight';
+import { Link } from 'react-router-dom';
+import { useLiveTranslation } from '../hooks/useLiveTranslation';
+
+
+// small component that translates a single category label
+const CategoryLink = ({ category }) => {
+  const tCat = useLiveTranslation(category, 'en');
+  return (
+    <Link
+      to={`/category/${encodeURIComponent(category)}`}
+      className="text-sm px-3 py-1 border border-editorial-red rounded hover:bg-editorial-red-muted transition-colors"
+    >
+      {tCat}
+    </Link>
+  );
+};
 
 const Home = () => {
-  const { t } = useTranslation();
+  const loadingText = useText('Loading...');
+  const categoryLabel = useText('Category');
+  const noNewsText = useText('No news available');
   const { news, loading, error, fetchNews } = useNews();
 
   useEffect(() => {
@@ -19,7 +37,7 @@ const Home = () => {
       <main className="min-h-[50vh] flex items-center justify-center py-20">
         <div className="text-center">
           <div className="w-10 h-10 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-editorial-muted text-sm">{t('common.loading')}</p>
+          <p className="text-editorial-muted text-sm">{loadingText}</p>
         </div>
       </main>
     );
@@ -38,19 +56,28 @@ const Home = () => {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10">
+        {/* category links */}
+        {news.length > 0 && (
+          <div className="mb-8">
+            <h2 className="font-serif font-semibold text-editorial-black mb-4">{categoryLabel}</h2>
+            <div className="flex flex-wrap gap-3">
+              {[...new Set(news.map(n => n.category).filter(Boolean))].map(cat => (
+                <CategoryLink key={cat} category={cat} />
+              ))}
+            </div>
+          </div>
+        )}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
           <section className="lg:col-span-8 order-2 lg:order-1">
             {news.length === 0 ? (
               <div className="card-editorial p-16 text-center">
-                <p className="font-serif text-xl text-editorial-muted">{t('home.noNews')}</p>
+                <p className="font-serif text-xl text-editorial-muted">{noNewsText}</p>
               </div>
             ) : (
-              <div className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {news.map((item, index) => (
-                  <div key={item._id}>
-                    <div className="animate-fade-in" style={{ animationDelay: `${Math.min(index * 0.04, 0.25)}s` }}>
-                      <NewsCard newsItem={item} />
-                    </div>
+                  <div key={item._id} className="animate-fade-in" style={{ animationDelay: `${Math.min(index * 0.04, 0.25)}s` }}>
+                    <NewsCard newsItem={item} />
                   </div>
                 ))}
               </div>

@@ -12,10 +12,13 @@ import Korpana from './pages/Korpana';
 import Rajura from './pages/Rajura';
 import NewsDetail from './pages/NewsDetail';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import CreateNews from './pages/CreateNews';
 import EditNews from './pages/EditNews';
 import ManageNews from './pages/ManageNews';
+import Advertising from './pages/Advertising';
+import CategoryPage from './pages/CategoryPage';
 
 function App() {
   return (
@@ -38,6 +41,7 @@ function App() {
               <Route path="/rajura" element={<Rajura />} />
               <Route path="/news/:id" element={<NewsDetail />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               <Route
                 path="/dashboard"
                 element={
@@ -70,6 +74,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+              <Route path="/advertising" element={<Advertising />} />
+              <Route path="/category/:category" element={<CategoryPage />} />
             </Routes>
           </div>
           <Footer />

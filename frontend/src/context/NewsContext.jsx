@@ -1,5 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import i18n from '../i18n';
+import { createContext, useContext, useState } from 'react';
 import api from '../utils/api';
 
 const NewsContext = createContext();
@@ -13,30 +12,14 @@ export const useNews = () => {
 };
 
 export const NewsProvider = ({ children }) => {
-  // Sync with i18n language - this ensures news content language matches UI language
-  // Initialize with current i18n language
-  const [selectedLanguage, setSelectedLanguage] = useState(i18n.language || 'en');
+  // Track selected language manually (updated by Navbar handler)
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Sync selectedLanguage with i18n language changes
-  // For MCA Viva: This demonstrates reactive language switching
-  useEffect(() => {
-    const handleLanguageChange = (lng) => {
-      setSelectedLanguage(lng);
-    };
-
-    // Set initial language from i18n
-    setSelectedLanguage(i18n.language || 'en');
-
-    // Listen to i18n language changes
-    i18n.on('languageChanged', handleLanguageChange);
-
-    return () => {
-      i18n.off('languageChanged', handleLanguageChange);
-    };
-  }, []);
+  // selectedLanguage is controlled by Navbar via setSelectedLanguage;
+  // no effect hook needed since there is no i18n event system anymore.
 
   // Fetch news based on location type
   // Updated to use 'location' instead of 'coverage' for location-based filtering
@@ -64,8 +47,8 @@ export const NewsProvider = ({ children }) => {
     
     const content = newsItem[field];
     
-    // Use current i18n language (synced with selectedLanguage)
-    const currentLang = i18n.language || selectedLanguage;
+    // Use current selectedLanguage from context
+    const currentLang = selectedLanguage;
     
     // Try current language first
     if (content[currentLang] && content[currentLang].trim()) {

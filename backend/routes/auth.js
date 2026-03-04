@@ -11,13 +11,31 @@ const router = express.Router();
  */
 router.post('/register', async (req, res) => {
   try {
-    // Check if reporter already exists (only one reporter allowed)
-    const existingReporter = await Reporter.findOne();
-    if (existingReporter) {
+    // allow up to three reporters
+    const count = await Reporter.countDocuments();
+    if (count >= 3) {
       return res.status(400).json({
         success: false,
-        message: 'Reporter account already exists. Only one reporter is allowed.'
+        message: 'Maximum of three admin accounts reached'
       });
+    }
+
+    // if there is already at least one reporter, the request should include
+    // a valid token so that only existing admins can add others
+    if (count > 0) {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({
+          success: false,
+          message: 'Unauthorized: only existing admins can add new accounts'
+        });
+      }
+      try {
+        await authenticateReporter(req, res, () => {});
+      } catch (err) {
+        // authenticateReporter already sent response
+        return;
+      }
     }
 
     const { username, email, password } = req.body;

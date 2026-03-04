@@ -26,6 +26,7 @@ router.get('/', async (req, res) => {
     const news = await News.find(query)
       .sort({ createdAt: -1 })
       .select('-__v')
+      .populate('publishedBy', 'username')
       .lean();
 
     res.json({
@@ -100,6 +101,8 @@ router.get('/admin/all', authenticateReporter, async (req, res) => {
     const news = await News.find()
       .sort({ createdAt: -1 })
       .select('-__v')
+      .populate('publishedBy', 'username')
+      .populate('createdBy', 'username')
       .lean();
 
     res.json({
@@ -150,7 +153,8 @@ router.get('/admin/:id', authenticateReporter, async (req, res) => {
  */
 router.get('/:id', async (req, res) => {
   try {
-    const news = await News.findById(req.params.id);
+    const news = await News.findById(req.params.id)
+      .populate('publishedBy', 'username');
 
     if (!news || !news.published) {
       return res.status(404).json({
@@ -225,8 +229,13 @@ router.post('/', authenticateReporter, upload.single('image'), async (req, res) 
       location,
       category,
       published: published === 'true' || published === true,
-      views: 0
+      views: 0,
+      createdBy: req.reporter._id
     };
+    if (published === 'true' || published === true) {
+      // mark who published it
+      newsData.publishedBy = req.reporter._id;
+    }
 
     if (req.file) {
       newsData.image = `/uploads/${req.file.filename}`;
@@ -321,6 +330,49 @@ router.delete('/:id', authenticateReporter, async (req, res) => {
 });
 
 /* ======================================================
+   ADD COMMENTS (PUBLIC)
+====================================================== */
+
+// POST /api/news/:id/comments
+// body: { name, text }
+// Attach a comment to the specified article. We ask for a name even though there
+// is no login so comments remain simple and anonymous.
+router.post('/:id/comments', async (req, res) => {
+  try {
+    const { name, text } = req.body;
+    if (!name || !text) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name and text are required for a comment'
+      });
+    }
+
+    const news = await News.findById(req.params.id);
+    if (!news || !news.published) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    news.comments = news.comments || [];
+    news.comments.push({ name, text });
+    await news.save();
+
+    res.json({
+      success: true,
+      data: news.comments
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error adding comment',
+      error: error.message
+    });
+  }
+});
+
+/* ======================================================
    TOGGLE PUBLISH
 ====================================================== */
 
@@ -335,7 +387,12 @@ router.patch('/:id/publish', authenticateReporter, async (req, res) => {
       });
     }
 
+    // flip publish flag
     news.published = !news.published;
+    if (news.published) {
+      // record who published it
+      news.publishedBy = req.reporter._id;
+    }
     await news.save();
 
     res.json({

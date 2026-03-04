@@ -1,18 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useText from '../hooks/useText';
 import api from '../utils/api';
 
-const Login = () => {
+const Register = () => {
   const navigate = useNavigate();
-  const loginTitle = useText('Login to your account');
-  const signInText = useText('Sign in to access the dashboard');
+  const titleText = useText('Create admin account');
+  const submitText = useText('Register');
+  const usernameLabel = useText('Username');
   const emailLabel = useText('Email address');
   const passwordLabel = useText('Password');
   const loadingText = useText('Loading...');
-  const submitText = useText('Log in');
-  const invalidCreds = useText('Invalid email or password');
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -26,12 +25,13 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      const response = await api.post('/auth/login', formData);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.reporter));
-      navigate('/dashboard');
+      const token = localStorage.getItem('token');
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      await api.post('/auth/register', formData, config);
+      alert('Admin account created successfully. Please log in.');
+      navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.message || invalidCreds);
+      setError(err.response?.data?.message || 'Failed to register');
     } finally {
       setLoading(false);
     }
@@ -43,9 +43,8 @@ const Login = () => {
         <div className="card-editorial p-8 sm:p-10">
           <div className="text-center mb-8">
             <h2 className="font-serif font-bold text-editorial-black text-2xl mb-2">
-              {loginTitle}
+              {titleText}
             </h2>
-            <p className="text-sm text-editorial-muted">{signInText}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -56,6 +55,20 @@ const Login = () => {
             )}
 
             <div>
+              <label htmlFor="username" className="block text-sm font-medium text-editorial-ink mb-2">
+                {usernameLabel}
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                className="input-editorial"
+                value={formData.username}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
               <label htmlFor="email" className="block text-sm font-medium text-editorial-ink mb-2">
                 {emailLabel}
               </label>
@@ -65,7 +78,6 @@ const Login = () => {
                 type="email"
                 required
                 className="input-editorial"
-                placeholder="you@example.com"
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -80,7 +92,6 @@ const Login = () => {
                 type="password"
                 required
                 className="input-editorial"
-                placeholder="••••••••"
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -103,4 +114,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

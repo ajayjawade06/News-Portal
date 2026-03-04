@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import api from '../utils/api';
 
 const ManageNews = () => {
-  const { t } = useTranslation();
+  const manageTitle = useText('Manage News Posts');
+  const createText = useText('Create');
+  const noPostsText = useText('No posts found');
+  const publishedText = useText('Published');
+  const draftText = useText('Drafts');
+  const editText = useText('Edit');
+  const publishText = useText('Publish');
+  const unpublishText = useText('Unpublish');
+  const deleteText = useText('Delete');
   const { getNewsContent } = useNews();
   const [news, setNews] = useState([]);
   const [filteredNews, setFilteredNews] = useState([]);
@@ -48,7 +56,7 @@ const ManageNews = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm(t('manage.confirmDelete'))) return;
+    if (!window.confirm(useText('Are you sure you want to delete this post?'))) return;
     try {
       await api.delete(`/news/${id}`);
       fetchNews();
@@ -111,12 +119,12 @@ const ManageNews = () => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
             <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-1">
-              {t('manage.title')}
+              {manageTitle}
             </h1>
             <p className="text-sm text-editorial-muted">Manage your articles</p>
           </div>
           <Link to="/dashboard/create" className="btn-editorial shrink-0">
-            {t('common.create')}
+            {createText}
           </Link>
         </div>
 
@@ -188,7 +196,7 @@ const ManageNews = () => {
         {filteredNews.length === 0 ? (
           <div className="card-editorial p-12 sm:p-16 text-center">
             <p className="text-editorial-muted mb-4">
-              {searchTerm || statusFilter !== 'all' ? 'No posts match your filters' : t('manage.noPosts')}
+              {searchTerm || statusFilter !== 'all' ? 'No posts match your filters' : noPostsText}
             </p>
             {(searchTerm || statusFilter !== 'all') && (
               <button type="button" onClick={() => { setSearchTerm(''); setStatusFilter('all'); }} className="link-editorial">
@@ -231,7 +239,7 @@ const ManageNews = () => {
                         {getNewsContent(item, 'title')}
                       </h3>
                       <span className={`shrink-0 caption ${item.published ? 'text-editorial-red' : 'text-editorial-muted'}`}>
-                        {item.published ? t('common.published') : t('common.draft')}
+                        {item.published ? publishedText : draftText}
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-2 text-caption text-editorial-muted mb-4">
@@ -241,21 +249,21 @@ const ManageNews = () => {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Link to={`/dashboard/edit/${item._id}`} className="btn-editorial flex-1 min-w-[80px] text-center text-sm py-2">
-                        {t('common.edit')}
+                        {editText}
                       </Link>
                       <button
                         type="button"
                         onClick={() => handleTogglePublish(item._id)}
                         className="flex-1 min-w-[80px] py-2 text-sm font-medium border border-editorial-border text-editorial-ink hover:bg-neutral-50"
                       >
-                        {item.published ? t('common.unpublish') : t('common.publish')}
+                        {item.published ? unpublishText : publishText}
                       </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(item._id)}
                         className="flex-1 min-w-[80px] py-2 text-sm font-medium text-editorial-red hover:bg-editorial-red-muted"
                       >
-                        {t('common.delete')}
+                        {deleteText}
                       </button>
                     </div>
                   </div>
@@ -305,7 +313,7 @@ const ManageNews = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-editorial-muted">{item.category}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`caption ${item.published ? 'text-editorial-red' : 'text-editorial-muted'}`}>
-                          {item.published ? t('common.published') : t('common.draft')}
+                          {item.published ? publishedText : draftText}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-editorial-muted">

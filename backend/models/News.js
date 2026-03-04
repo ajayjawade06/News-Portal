@@ -116,6 +116,36 @@ const newsSchema = new mongoose.Schema({
       message: 'Views must be a non-negative integer'
     }
   },
+  // Array of comments from readers. Since we don't have login, each comment stores
+  // the name provided by the user along with the text and timestamp. This is kept
+  // simple and public; comments are available when fetching the article.
+  comments: [
+    {
+      name: {
+        type: String,
+        required: true,
+        trim: true
+      },
+      text: {
+        type: String,
+        required: true
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
+  // which reporter created the article
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reporter'
+  },
+  // who most recently published it (username kept by population)
+  publishedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Reporter'
+  },
   createdAt: {
     type: Date,
     default: Date.now

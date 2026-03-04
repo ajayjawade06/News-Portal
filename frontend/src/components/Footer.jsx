@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useText } from '../hooks/useText';
 
 const LOCATIONS = [
   { path: '/maharashtra', label: 'Maharashtra' },
@@ -9,7 +9,9 @@ const LOCATIONS = [
 ];
 
 const Footer = () => {
-  const { t } = useTranslation();
+  const homeText = useText('Home');
+  const loginText = useText('Login');
+  const dashboardText = useText('Dashboard');
 
   return (
     <footer className="bg-neutral-50 dark:bg-zinc-900 border-t border-editorial-border dark:border-zinc-800 mt-auto">
@@ -28,7 +30,7 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-sm text-editorial-ink dark:text-zinc-200 hover:text-editorial-red transition-colors">
-                  {t('nav.home')}
+                  {homeText}
                 </Link>
               </li>
               {LOCATIONS.map(({ path, label }) => (
@@ -48,15 +50,27 @@ const Footer = () => {
             <ul className="space-y-2">
               <li>
                 <Link to="/login" className="text-sm text-editorial-ink dark:text-zinc-200 hover:text-editorial-red transition-colors">
-                  {t('nav.login')}
+                  {loginText}
                 </Link>
               </li>
               <li>
                 <Link to="/dashboard" className="text-sm text-editorial-ink dark:text-zinc-200 hover:text-editorial-red transition-colors">
-                  {t('nav.dashboard')}
+                  {dashboardText}
                 </Link>
               </li>
             </ul>
+          </section>
+
+          <section>
+            <h3 className="font-sans text-xs font-semibold text-editorial-muted dark:text-zinc-400 uppercase tracking-wider mb-4">
+              Advertise
+            </h3>
+            <p className="text-sm text-editorial-muted dark:text-zinc-400 leading-relaxed max-w-xs">
+              Want to reach our readers? We offer monthly plans starting at ₹5,000 for side
+              banners, ₹10,000 for header ads and more. <Link to="/advertising" className="text-editorial-red hover:underline">
+                See details &amp; pricing
+              </Link>.
+            </p>
           </section>
 
           <section>

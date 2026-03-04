@@ -1,11 +1,25 @@
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import api from '../utils/api';
+import useText from '../hooks/useText';
+import { useNews } from '../context/NewsContext';
 
 const CreateNews = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
+  const pageTitle = useText('Create news');
+  // text constants defined above
+  const autoTranslateNote = useText('Create a post; it will be translated to all languages automatically.');
+  const labelCategory = useText('Category');
+  const labelImage = useText('Image');
+  const labelPublished = useText('Published');
+  const btnRemoveImage = useText('Remove image');
+  const btnLoading = useText('Loading...');
+  const btnSubmit = useText('Submit');
+  const btnCancel = useText('Cancel');
+  // form state
+  const { news, fetchNews } = useNews();
+  const categories = useMemo(() => [...new Set(news.map(n => n.category).filter(Boolean))], [news]);
+  const [showCustomCat, setShowCustomCat] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     subHeading: '',
@@ -21,8 +35,21 @@ const CreateNews = () => {
   const [translating, setTranslating] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    if (news.length === 0) fetchNews();
+  }, [news, fetchNews]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (name === 'category') {
+      if (value === '__other__') {
+        setShowCustomCat(true);
+        setFormData({ ...formData, category: '' });
+        return;
+      } else {
+        setShowCustomCat(false);
+      }
+    }
     setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     setError('');
   };
@@ -77,10 +104,10 @@ const CreateNews = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950 py-8 lg:py-10">
       <div className="container-editorial max-w-2xl">
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-2">
-          {t('form.title')}
+          {pageTitle || 'Create news'}
         </h1>
         <p className="text-sm text-editorial-muted mb-6">
-          Create a post; it will be translated to all languages automatically.
+          {autoTranslateNote}
         </p>
 
         {error && (
@@ -137,17 +164,27 @@ const CreateNews = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-editorial-ink mb-2">{t('form.category')} <span className="text-editorial-red">*</span></label>
-                <input type="text" name="category" value={formData.category} onChange={handleChange} required placeholder="e.g. Politics, Sports" className="input-editorial" />
+                <label className="block text-sm font-medium text-editorial-ink mb-2">{labelCategory} <span className="text-editorial-red">*</span></label>
+                {!showCustomCat ? (
+                  <select name="category" value={formData.category} onChange={handleChange} required className="input-editorial">
+                    <option value="">Select</option>
+                    {categories.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                    <option value="__other__">Other</option>
+                  </select>
+                ) : (
+                  <input type="text" name="category" value={formData.category} onChange={handleChange} required placeholder="Enter category" className="input-editorial" />
+                )}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-editorial-ink mb-2">{t('form.image')}</label>
+              <label className="block text-sm font-medium text-editorial-ink mb-2">{labelImage}</label>
               {imagePreview ? (
                 <div className="space-y-2">
                   <img src={imagePreview} alt="Preview" className="max-w-xs h-48 object-cover border border-editorial-border" />
                   <button type="button" onClick={removeImage} className="btn-editorial-outline text-sm py-2">
-                    {t('form.removeImage')}
+                    {btnRemoveImage}
                   </button>
                 </div>
               ) : (
@@ -159,21 +196,21 @@ const CreateNews = () => {
             </div>
             <div className="flex items-center gap-3 py-2">
               <input type="checkbox" name="published" checked={formData.published} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
-              <label className="text-sm font-medium text-editorial-ink">{t('form.published')}</label>
+              <label className="text-sm font-medium text-editorial-ink">{labelPublished}</label>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button type="submit" disabled={loading || translating} className="btn-editorial flex-1 py-3">
                 {loading || translating ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    {t('common.loading')}
+                    {btnLoading}
                   </span>
                 ) : (
-                  t('form.submit')
+                  btnSubmit
                 )}
               </button>
               <button type="button" onClick={() => navigate('/dashboard/manage')} className="btn-editorial-outline flex-1 py-3">
-                {t('common.cancel')}
+                {btnCancel}
               </button>
             </div>
           </div>
