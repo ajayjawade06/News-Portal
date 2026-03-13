@@ -9,6 +9,7 @@
     "dev": "nodemon server.js",
     "seed": "node scripts/seedData.js",
     "seed-dummy": "node scripts/seedDummyNews.js",
+    "seed-trending": "node scripts/seedRealTrendingNews.js",
     "translate-news": "node scripts/translateExistingNews.js"
   },
   "keywords": [

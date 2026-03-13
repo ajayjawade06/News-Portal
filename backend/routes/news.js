@@ -144,6 +144,220 @@ router.get('/admin/:id', authenticateReporter, async (req, res) => {
 });
 
 /* ======================================================
+   ADMIN MODERATION DASHBOARD ENDPOINTS
+====================================================== */
+
+/**
+ * GET /api/news/admin/moderation/comments
+ * Admin only: Get all deleted comments across all articles
+ */
+router.get('/admin/moderation/comments', authenticateReporter, async (req, res) => {
+  try {
+    const news = await News.find({ 'comments.isDeleted': true })
+      .populate('publishedBy', 'username')
+      .select('title comments');
+
+    const deletedComments = [];
+    
+    news.forEach(article => {
+      const deleted = article.comments.filter(c => c.isDeleted);
+      deleted.forEach(comment => {
+        deletedComments.push({
+          commentId: comment._id,
+          newsId: article._id,
+          newsTitle: article.title.en,
+          commentText: comment.text,
+          commentAuthor: comment.name,
+          deletedReason: comment.deletedReason,
+          deletedAt: comment.deletedAt,
+          deletedBy: comment.deletedBy,
+          createdAt: comment.createdAt
+        });
+      });
+    });
+
+    // Sort by deletion date (newest first)
+    deletedComments.sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
+
+    res.json({
+      success: true,
+      total: deletedComments.length,
+      data: deletedComments
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching deleted comments',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/news/admin/moderation/ratings
+ * Admin only: Get all deleted ratings across all articles
+ */
+router.get('/admin/moderation/ratings', authenticateReporter, async (req, res) => {
+  try {
+    const news = await News.find({ 'ratings.isDeleted': true })
+      .populate('publishedBy', 'username')
+      .select('title ratings');
+
+    const deletedRatings = [];
+    
+    news.forEach(article => {
+      const deleted = article.ratings.filter(r => r.isDeleted);
+      deleted.forEach(rating => {
+        deletedRatings.push({
+          ratingId: rating._id,
+          newsId: article._id,
+          newsTitle: article.title.en,
+          ratingValue: rating.ratingValue,
+          ratingFeedback: rating.feedback,
+          ratingAuthor: rating.name,
+          deletedReason: rating.deletedReason,
+          deletedAt: rating.deletedAt,
+          deletedBy: rating.deletedBy,
+          createdAt: rating.createdAt
+        });
+      });
+    });
+
+    // Sort by deletion date (newest first)
+    deletedRatings.sort((a, b) => new Date(b.deletedAt) - new Date(a.deletedAt));
+
+    res.json({
+      success: true,
+      total: deletedRatings.length,
+      data: deletedRatings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching deleted ratings',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/news/admin/moderation/comments/restore/:newsId/:commentId
+ * Admin only: Restore a deleted comment
+ */
+router.post('/admin/moderation/comments/restore/:newsId/:commentId', authenticateReporter, async (req, res) => {
+  try {
+    const news = await News.findById(req.params.newsId);
+    if (!news) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    const comment = news.comments.find(c => c._id.toString() === req.params.commentId);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Comment not found'
+      });
+    }
+
+    if (!comment.isDeleted) {
+      return res.status(400).json({
+        success: false,
+        message: 'This comment is not deleted'
+      });
+    }
+
+    // Restore comment
+    comment.isDeleted = false;
+    comment.deletedReason = null;
+    comment.deletedAt = null;
+    comment.deletedBy = null;
+
+    await news.save();
+
+    res.json({
+      success: true,
+      message: 'Comment restored successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error restoring comment',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * POST /api/news/admin/moderation/ratings/restore/:newsId/:ratingId
+ * Admin only: Restore a deleted rating
+ */
+router.post('/admin/moderation/ratings/restore/:newsId/:ratingId', authenticateReporter, async (req, res) => {
+  try {
+    const news = await News.findById(req.params.newsId);
+    if (!news) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    const rating = news.ratings.find(r => r._id.toString() === req.params.ratingId);
+    if (!rating) {
+      return res.status(404).json({
+        success: false,
+        message: 'Rating not found'
+      });
+    }
+
+    if (!rating.isDeleted) {
+      return res.status(400).json({
+        success: false,
+        message: 'This rating is not deleted'
+      });
+    }
+
+    // Restore rating
+    rating.isDeleted = false;
+    rating.deletedReason = null;
+    rating.deletedAt = null;
+    rating.deletedBy = null;
+
+    // Recalculate aggregate ratings
+    const activeRatings = news.ratings.filter(r => !r.isDeleted);
+    if (activeRatings.length > 0) {
+      const sum = activeRatings.reduce((acc, r) => acc + r.ratingValue, 0);
+      news.aggregateRating.averageRating = (sum / activeRatings.length).toFixed(1);
+      news.aggregateRating.totalRatings = activeRatings.length;
+
+      news.aggregateRating.ratingBreakdown = {
+        fiveStar: activeRatings.filter(r => r.ratingValue === 5).length,
+        fourStar: activeRatings.filter(r => r.ratingValue === 4).length,
+        threeStar: activeRatings.filter(r => r.ratingValue === 3).length,
+        twoStar: activeRatings.filter(r => r.ratingValue === 2).length,
+        oneStar: activeRatings.filter(r => r.ratingValue === 1).length
+      };
+    }
+
+    await news.save();
+
+    res.json({
+      success: true,
+      message: 'Rating restored successfully',
+      data: news.aggregateRating
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error restoring rating',
+      error: error.message
+    });
+  }
+});
+
+/* ======================================================
    SINGLE NEWS (Public - MUST COME AFTER SPECIFIC ROUTES)
 ====================================================== */
 
@@ -372,6 +586,55 @@ router.post('/:id/comments', async (req, res) => {
   }
 });
 
+/**
+ * DELETE /api/news/:id/comments/:commentId
+ * Admin only: Delete a comment with a reason
+ */
+router.delete('/:id/comments/:commentId', authenticateReporter, async (req, res) => {
+  try {
+    const { reason } = req.body;
+
+    const news = await News.findById(req.params.id);
+    if (!news) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    const comment = news.comments.find(c => c._id.toString() === req.params.commentId);
+    if (!comment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Comment not found'
+      });
+    }
+
+    // Mark as deleted
+    comment.isDeleted = true;
+    comment.deletedReason = reason || 'Deleted by admin due to inappropriate content';
+    comment.deletedAt = new Date();
+    comment.deletedBy = req.reporter._id;
+
+    await news.save();
+
+    res.json({
+      success: true,
+      message: 'Comment deleted successfully',
+      data: {
+        commentId: comment._id,
+        status: 'deleted'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting comment',
+      error: error.message
+    });
+  }
+});
+
 /* ======================================================
    TOGGLE PUBLISH
 ====================================================== */
@@ -405,6 +668,230 @@ router.patch('/:id/publish', authenticateReporter, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error updating publish status',
+      error: error.message
+    });
+  }
+});
+
+/* ======================================================
+   RATINGS SYSTEM
+====================================================== */
+
+/**
+ * POST /api/news/:id/ratings
+ * Add a rating to an article (1-5 stars with optional feedback)
+ */
+router.post('/:id/ratings', async (req, res) => {
+  try {
+    const { ratingValue, feedback, name, email } = req.body;
+
+    // Validate rating
+    if (!ratingValue || ratingValue < 1 || ratingValue > 5) {
+      return res.status(400).json({
+        success: false,
+        message: 'Rating must be between 1 and 5'
+      });
+    }
+
+    if (!name || name.trim() === '') {
+      return res.status(400).json({
+        success: false,
+        message: 'Name is required'
+      });
+    }
+
+    const news = await News.findById(req.params.id);
+    if (!news || !news.published) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    // Add rating
+    news.ratings = news.ratings || [];
+    const newRating = {
+      ratingValue,
+      feedback: feedback || '',
+      name: name.trim(),
+      email: email || ''
+    };
+    news.ratings.push(newRating);
+
+    // Update aggregate ratings
+    const activeRatings = news.ratings.filter(r => !r.isDeleted);
+    if (activeRatings.length > 0) {
+      const sum = activeRatings.reduce((acc, r) => acc + r.ratingValue, 0);
+      news.aggregateRating.averageRating = (sum / activeRatings.length).toFixed(1);
+      news.aggregateRating.totalRatings = activeRatings.length;
+
+      // Update breakdown
+      news.aggregateRating.ratingBreakdown = {
+        fiveStar: activeRatings.filter(r => r.ratingValue === 5).length,
+        fourStar: activeRatings.filter(r => r.ratingValue === 4).length,
+        threeStar: activeRatings.filter(r => r.ratingValue === 3).length,
+        twoStar: activeRatings.filter(r => r.ratingValue === 2).length,
+        oneStar: activeRatings.filter(r => r.ratingValue === 1).length
+      };
+    }
+
+    await news.save();
+
+    res.json({
+      success: true,
+      message: 'Rating added successfully',
+      data: {
+        rating: newRating,
+        aggregateRating: news.aggregateRating
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error adding rating',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/news/:id/ratings
+ * Get all ratings for an article (excluding deleted ones for regular users)
+ */
+router.get('/:id/ratings', async (req, res) => {
+  try {
+    const news = await News.findById(req.params.id);
+    if (!news) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    const activeRatings = news.ratings.filter(r => !r.isDeleted);
+
+    res.json({
+      success: true,
+      data: {
+        ratings: activeRatings,
+        aggregateRating: news.aggregateRating
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching ratings',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * DELETE /api/news/:id/ratings/:ratingId
+ * Admin only: Delete a rating with a reason
+ */
+router.delete('/:id/ratings/:ratingId', authenticateReporter, async (req, res) => {
+  try {
+    const { reason } = req.body;
+
+    const news = await News.findById(req.params.id);
+    if (!news) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    const rating = news.ratings.find(r => r._id.toString() === req.params.ratingId);
+    if (!rating) {
+      return res.status(404).json({
+        success: false,
+        message: 'Rating not found'
+      });
+    }
+
+    // Mark as deleted
+    rating.isDeleted = true;
+    rating.deletedReason = reason || 'Deleted by admin due to inappropriate content';
+    rating.deletedAt = new Date();
+    rating.deletedBy = req.reporter._id;
+
+    // Recalculate aggregate ratings
+    const activeRatings = news.ratings.filter(r => !r.isDeleted);
+    if (activeRatings.length > 0) {
+      const sum = activeRatings.reduce((acc, r) => acc + r.ratingValue, 0);
+      news.aggregateRating.averageRating = (sum / activeRatings.length).toFixed(1);
+      news.aggregateRating.totalRatings = activeRatings.length;
+
+      news.aggregateRating.ratingBreakdown = {
+        fiveStar: activeRatings.filter(r => r.ratingValue === 5).length,
+        fourStar: activeRatings.filter(r => r.ratingValue === 4).length,
+        threeStar: activeRatings.filter(r => r.ratingValue === 3).length,
+        twoStar: activeRatings.filter(r => r.ratingValue === 2).length,
+        oneStar: activeRatings.filter(r => r.ratingValue === 1).length
+      };
+    } else {
+      news.aggregateRating = {
+        averageRating: 0,
+        totalRatings: 0,
+        ratingBreakdown: {
+          fiveStar: 0,
+          fourStar: 0,
+          threeStar: 0,
+          twoStar: 0,
+          oneStar: 0
+        }
+      };
+    }
+
+    await news.save();
+
+    res.json({
+      success: true,
+      message: 'Rating deleted successfully',
+      data: news.aggregateRating
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting rating',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/news/:id/ratings/admin/all
+ * Admin only: Get all ratings including deleted ones (with deletion info)
+ */
+router.get('/:id/ratings/admin/all', authenticateReporter, async (req, res) => {
+  try {
+    const news = await News.findById(req.params.id);
+    if (!news) {
+      return res.status(404).json({
+        success: false,
+        message: 'News not found'
+      });
+    }
+
+    // Include deleted ratings with deletion info for admin
+    const ratingsWithInfo = news.ratings.map(r => ({
+      ...r.toObject(),
+      status: r.isDeleted ? 'deleted' : 'active'
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        ratings: ratingsWithInfo,
+        aggregateRating: news.aggregateRating,
+        totalRatingsIncludingDeleted: news.ratings.length
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching ratings',
       error: error.message
     });
   }

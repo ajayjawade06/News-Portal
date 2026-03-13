@@ -3,6 +3,7 @@ import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
+import AdBanner from '../components/AdBanner';
 
 
 const Maharashtra = () => {
@@ -34,6 +35,11 @@ const Maharashtra = () => {
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
+      <div className="container-editorial py-4">
+        <div className="flex justify-center mb-6">
+          <AdBanner type="horizontal" adIndex={1} />
+        </div>
+      </div>
       <div className="container-editorial py-8 lg:py-10">
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-8">
           {titleText}
@@ -53,10 +59,14 @@ const Maharashtra = () => {
             )}
           </section>
           <aside className="lg:col-span-4">
-            <div className="lg:sticky lg:top-24">
+            <div className="lg:sticky lg:top-24 space-y-8">
+              <AdBanner type="vertical" adIndex={9} />
               <TrendingNewsSidebar />
             </div>
           </aside>
+        </div>
+        <div className="mt-12 flex justify-center">
+          <AdBanner type="horizontal" adIndex={0} />
         </div>
       </div>
     </main>

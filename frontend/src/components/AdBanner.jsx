@@ -7,6 +7,13 @@ const AdBanner = ({ type = 'horizontal', adIndex = 0 }) => {
     { title: "Sharma's Restaurant", subtitle: 'Authentic Indian Cuisine', address: 'Chandrapur Main Road' },
     { title: 'Digital Shop', subtitle: 'Electronics & Gadgets', address: 'Market Square' },
     { title: 'Rajesh Garments', subtitle: 'Fashion Store', address: 'Shopping Complex' },
+    { title: 'City Hospital', subtitle: 'Quality Healthcare Services', address: 'Medical Plaza, Chandrapur' },
+    { title: 'Arjun Auto Garage', subtitle: 'Car Repairs & Maintenance', address: 'Industrial Road' },
+    { title: 'Priya Beauty Salon', subtitle: 'Hair & Spa Services', address: 'Mall Road, Rajura' },
+    { title: 'Bright Education Center', subtitle: 'Coaching & Tuitions', address: 'Near School, Korpana' },
+    { title: 'Green Valley Farm', subtitle: 'Fresh Produce & Organic Foods', address: 'Highway 16, Maharashtra' },
+    { title: 'Royal Palace Hotel', subtitle: 'Banquets & Events', address: 'City Center' },
+    { title: 'Tech Solutions IT', subtitle: 'Web Design & Development', address: 'Tech Park' },
   ];
 
   const ad = sampleAds[adIndex % sampleAds.length];

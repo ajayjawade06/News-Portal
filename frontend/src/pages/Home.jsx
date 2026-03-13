@@ -5,6 +5,7 @@ import NewsCard from '../components/NewsCard';
 import LatestNewsSidebar from '../components/LatestNewsSidebar';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 import ReporterHighlight from '../components/ReporterHighlight';
+import AdBanner from '../components/AdBanner';
 import { Link } from 'react-router-dom';
 import { useLiveTranslation } from '../hooks/useLiveTranslation';
 
@@ -55,6 +56,11 @@ const Home = () => {
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
+      <div className="container-editorial py-4">
+        <div className="flex justify-center mb-6">
+          <AdBanner type="horizontal" adIndex={0} />
+        </div>
+      </div>
       <div className="container-editorial py-8 lg:py-10">
         {/* category links */}
         {news.length > 0 && (
@@ -87,10 +93,14 @@ const Home = () => {
           <aside className="lg:col-span-4 order-1 lg:order-2 space-y-8">
             <div className="lg:sticky lg:top-24 space-y-8">
               <LatestNewsSidebar />
+              <AdBanner type="vertical" adIndex={3} />
               <ReporterHighlight />
               <TrendingNewsSidebar />
             </div>
           </aside>
+        </div>
+        <div className="mt-12 flex justify-center">
+          <AdBanner type="horizontal" adIndex={1} />
         </div>
       </div>
     </main>

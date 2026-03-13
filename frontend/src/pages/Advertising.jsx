@@ -1,4 +1,5 @@
 import { useText } from '../hooks/useText';
+import AdBanner from '../components/AdBanner';
 
 const Advertising = () => {
   const advertText = useText('Advertise');
@@ -15,22 +16,22 @@ const Advertising = () => {
         <div>
           <h3 className="font-semibold">₹5,000 – Sidebar banner</h3>
           <p className="text-sm text-editorial-muted dark:text-zinc-400">300×250 pixels, appears alongside articles.</p>
-          <div className="mt-2 w-[300px] h-[250px] border-2 border-dashed border-editorial-border flex items-center justify-center text-editorial-muted text-xs">
-            Sidebar ad preview
+          <div className="mt-2">
+            <AdBanner type="vertical" adIndex={0} />
           </div>
         </div>
         <div>
           <h3 className="font-semibold">₹10,000 – Header banner</h3>
           <p className="text-sm text-editorial-muted dark:text-zinc-400">728×90 pixels, shown at top of every page.</p>
-          <div className="mt-2 w-full max-w-[728px] h-[90px] border-2 border-dashed border-editorial-border flex items-center justify-center text-editorial-muted text-xs">
-            Header ad preview
+          <div className="mt-2">
+            <AdBanner type="horizontal" adIndex={1} />
           </div>
         </div>
         <div>
           <h3 className="font-semibold">₹15,000 – Homepage takeover</h3>
           <p className="text-sm text-editorial-muted dark:text-zinc-400">Full-width banner on the homepage.</p>
-          <div className="mt-2 w-full h-[150px] border-2 border-dashed border-editorial-border flex items-center justify-center text-editorial-muted text-xs">
-            Homepage takeover preview
+          <div className="mt-2">
+            <AdBanner type="horizontal" adIndex={2} />
           </div>
         </div>
       </div>

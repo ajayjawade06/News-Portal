@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
+import AdBanner from '../components/AdBanner';
+import NewsRating from '../components/NewsRating';
 import api from '../utils/api';
 import { IMAGE_BASE_URL } from '../config';
 
@@ -104,6 +106,11 @@ const NewsDetail = () => {
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
+      <div className="container-editorial py-4">
+        <div className="flex justify-center mb-6">
+          <AdBanner type="horizontal" adIndex={4} />
+        </div>
+      </div>
       <div className="container-editorial py-8 lg:py-10 max-w-3xl">
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -182,14 +189,19 @@ const NewsDetail = () => {
         {/* comments section */}
         <section className="container-editorial max-w-3xl mt-10">
           <h2 className="text-xl font-semibold mb-4">{commentsLabel}</h2>
-          {comments.length === 0 ? (
+          {comments.filter(c => !c.isDeleted).length === 0 ? (
             <p className="text-editorial-muted mb-4">{noCommentsText}</p>
           ) : (
             <ul className="space-y-4 mb-6">
-              {comments.map((c, idx) => (
+              {comments.filter(c => !c.isDeleted).map((c, idx) => (
                 <li key={idx} className="border border-editorial-border p-4 rounded">
-                  <p className="font-medium">{c.name} <span className="text-xs text-editorial-muted">{new Date(c.createdAt).toLocaleString()}</span></p>
-                  <p className="mt-1 whitespace-pre-line">{c.text}</p>
+                  <p className="font-medium">
+                    {c.name} 
+                    <span className="text-xs text-editorial-muted block sm:inline sm:ml-2">
+                      {new Date(c.createdAt).toLocaleDateString('en-IN')} at {new Date(c.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </p>
+                  <p className="mt-2 whitespace-pre-line text-editorial-ink">{c.text}</p>
                 </li>
               ))}
             </ul>
@@ -209,6 +221,15 @@ const NewsDetail = () => {
             </button>
           </form>
         </section>
+
+        {/* news rating section */}
+        <section className="container-editorial max-w-3xl mt-10">
+          <NewsRating newsId={newsItem._id} />
+        </section>
+
+        <div className="mt-10 flex justify-center">
+          <AdBanner type="horizontal" adIndex={5} />
+        </div>
       </div>
     </main>
   );

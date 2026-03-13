@@ -19,6 +19,7 @@ import EditNews from './pages/EditNews';
 import ManageNews from './pages/ManageNews';
 import Advertising from './pages/Advertising';
 import CategoryPage from './pages/CategoryPage';
+import ModerationDashboard from './pages/ModerationDashboard';
 
 function App() {
   return (
@@ -71,6 +72,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ManageNews />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/moderation"
+                element={
+                  <ProtectedRoute>
+                    <ModerationDashboard />
                   </ProtectedRoute>
                 }
               />

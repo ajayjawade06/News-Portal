@@ -75,6 +75,12 @@ const Dashboard = () => {
           >
             {manageText}
           </Link>
+          <Link
+            to="/dashboard/moderation"
+            className="btn-editorial-outline flex-1 py-3 flex items-center justify-center gap-2"
+          >
+            Moderation
+          </Link>
         </div>
       </div>
     </main>

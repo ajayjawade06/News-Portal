@@ -119,8 +119,13 @@ const newsSchema = new mongoose.Schema({
   // Array of comments from readers. Since we don't have login, each comment stores
   // the name provided by the user along with the text and timestamp. This is kept
   // simple and public; comments are available when fetching the article.
+  // Admin can delete inappropriate comments with a deletion reason.
   comments: [
     {
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+      },
       name: {
         type: String,
         required: true,
@@ -130,12 +135,104 @@ const newsSchema = new mongoose.Schema({
         type: String,
         required: true
       },
+      isDeleted: {
+        type: Boolean,
+        default: false
+      },
+      deletedReason: {
+        type: String,
+        default: 'Deleted by admin due to inappropriate content'
+      },
+      deletedAt: {
+        type: Date,
+        default: null
+      },
+      deletedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reporter',
+        default: null
+      },
       createdAt: {
         type: Date,
         default: Date.now
       }
     }
   ],
+  // Ratings system: Users can rate articles 1-5 stars with optional feedback
+  // Admin can view all ratings and delete inappropriate ones
+  ratings: [
+    {
+      _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+      },
+      ratingValue: {
+        type: Number,
+        required: true,
+        min: 1,
+        max: 5,
+        enum: [1, 2, 3, 4, 5]
+      },
+      feedback: {
+        type: String,
+        trim: true,
+        maxlength: 500,
+        default: ''
+      },
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: 50
+      },
+      email: {
+        type: String,
+        trim: true,
+        default: ''
+      },
+      isDeleted: {
+        type: Boolean,
+        default: false
+      },
+      deletedReason: {
+        type: String,
+        default: 'Deleted by admin due to inappropriate content'
+      },
+      deletedAt: {
+        type: Date,
+        default: null
+      },
+      deletedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Reporter',
+        default: null
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      }
+    }
+  ],
+  // Aggregate rating scores for quick access
+  aggregateRating: {
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5
+    },
+    totalRatings: {
+      type: Number,
+      default: 0
+    },
+    ratingBreakdown: {
+      fiveStar: { type: Number, default: 0 },
+      fourStar: { type: Number, default: 0 },
+      threeStar: { type: Number, default: 0 },
+      twoStar: { type: Number, default: 0 },
+      oneStar: { type: Number, default: 0 }
+    }
+  },
   // which reporter created the article
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
