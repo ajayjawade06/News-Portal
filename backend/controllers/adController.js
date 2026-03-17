@@ -1,4 +1,5 @@
 import Ad from '../models/Ad.js';
+import AdBooking from '../models/AdBooking.js';
 
 // Get active ads based on placement
 export const getActiveAds = async (req, res) => {
@@ -187,5 +188,103 @@ export const toggleAdActiveStatus = async (req, res) => {
       message: 'Error updating ad status',
       error: error.message
     });
+  }
+};
+
+// Public: Track a view (called by frontend when ad enters viewport)
+export const trackView = async (req, res) => {
+  try {
+    await Ad.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ success: false });
+  }
+};
+
+// Public: Track a click (called by frontend when ad link is clicked)
+export const trackClick = async (req, res) => {
+  try {
+    await Ad.findByIdAndUpdate(req.params.id, { $inc: { clicks: 1 } });
+    res.json({ success: true });
+  } catch {
+    res.status(500).json({ success: false });
+  }
+};
+
+// Admin: Get aggregated analytics summary with revenue logic
+export const getAnalyticsSummary = async (req, res) => {
+  try {
+    const now = new Date();
+    const ads = await Ad.find({}, { title: 1, placement: 1, views: 1, clicks: 1, isActive: 1, plan: 1, price: 1, startDate: 1, endDate: 1 })
+      .sort({ views: -1 });
+
+    // Revenue Logic: 
+    // 1. Manual Ads: ONLY active ads within their date range count
+    const activeAds = ads.filter(ad => {
+      const isWithinDate = (!ad.startDate || ad.startDate <= now) && (!ad.endDate || ad.endDate >= now);
+      return ad.isActive && isWithinDate;
+    });
+    const manualRevenue = activeAds.reduce((sum, ad) => sum + (ad.price || 0), 0);
+
+    // 2. Client Bookings: All approved bookings count
+    const approvedBookings = await AdBooking.find({ status: 'approved' });
+    const bookingRevenue = approvedBookings.reduce((sum, b) => sum + (b.amountPaid || 0), 0);
+
+    const totalRevenue = manualRevenue + bookingRevenue;
+    const totalViews = ads.reduce((s, a) => s + (a.views || 0), 0);
+    const totalClicks = ads.reduce((s, a) => s + (a.clicks || 0), 0);
+    const avgCtr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(2) : '0.00';
+
+    // Chart Data: Plan Distribution
+    const planCounts = ads.reduce((acc, ad) => {
+      acc[ad.plan] = (acc[ad.plan] || 0) + 1;
+      return acc;
+    }, {});
+    
+    const planDistribution = [
+      { name: 'Basic', value: planCounts['basic'] || 0, color: '#ef4444' }, // editorial red
+      { name: 'Standard', value: planCounts['standard'] || 0, color: '#1f2937' }, // ink
+      { name: 'Premium', value: planCounts['premium'] || 0, color: '#2563eb' }, // blue
+      { name: 'Enterprise', value: planCounts['enterprise'] || 0, color: '#fbbf24' } // yellow
+    ];
+
+    // Chart Data: Click Performance (Top 5)
+    const topAdsByClicks = [...ads]
+      .sort((a, b) => (b.clicks || 0) - (a.clicks || 0))
+      .slice(0, 5)
+      .map(ad => ({
+        name: ad.title.length > 15 ? ad.title.substring(0, 15) + '...' : ad.title,
+        clicks: ad.clicks || 0
+      }));
+
+    // Revenue by placement (for charts)
+    const revenueByPlacement = activeAds.reduce((acc, ad) => {
+      acc[ad.placement] = (acc[ad.placement] || 0) + ad.price;
+      return acc;
+    }, {});
+
+    const placementRevenueData = Object.keys(revenueByPlacement).map(p => ({
+      name: p.charAt(0).toUpperCase() + p.slice(1),
+      revenue: revenueByPlacement[p]
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        totalRevenue,
+        manualRevenue,
+        bookingRevenue,
+        totalAdsRunning: activeAds.length,
+        totalClicks,
+        totalViews,
+        avgCtr,
+        planDistribution,
+        topAdsByClicks,
+        placementRevenueData,
+        ads // full list for tables
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

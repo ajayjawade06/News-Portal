@@ -10,16 +10,25 @@ const AdsManagement = () => {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentAd, setCurrentAd] = useState(null);
+  const [summary, setSummary] = useState({
+    totalRevenue: 0,
+    totalViews: 0,
+    totalClicks: 0,
+    avgCtr: '0.00'
+  });
 
   const fetchAds = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/ads');
-      // The API returns { data: adsArray } based on the controller
-      setAds(response.data.data || []);
+      const [adsRes, sRes] = await Promise.all([
+        api.get('/ads'),
+        api.get('/ads/analytics')
+      ]);
+      setAds(adsRes.data.data || []);
+      setSummary(sRes.data.data);
       setError(null);
     } catch (err) {
-      console.error('Error fetching ads:', err);
+      console.error('Error fetching ads data:', err);
       setError('Failed to load advertisements. Please try again.');
     } finally {
       setLoading(false);
@@ -124,6 +133,23 @@ const AdsManagement = () => {
           </button>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+          {[
+            { label: 'Total Revenue', value: `₹${summary.totalRevenue?.toLocaleString('en-IN') || 0}`, icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+            { label: 'Total Views', value: summary.totalViews?.toLocaleString() || 0, icon: Eye, color: 'text-editorial-black dark:text-white', bg: 'bg-neutral-100 dark:bg-zinc-800' },
+            { label: 'Total Clicks', value: summary.totalClicks?.toLocaleString() || 0, icon: MousePointer, color: 'text-editorial-red', bg: 'bg-editorial-red/10' },
+            { label: 'Avg. CTR', value: `${summary.avgCtr || '0.00'}%`, icon: TrendingUp, color: 'text-blue-500', bg: 'bg-blue-500/10' }
+          ].map((stat, i) => (
+            <div key={i} className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-white/20 dark:border-white/5 p-6 rounded-2xl shadow-sm">
+              <div className={`${stat.bg} ${stat.color} w-10 h-10 rounded-xl flex items-center justify-center mb-4`}>
+                <stat.icon size={20} />
+              </div>
+              <p className="text-editorial-muted text-[10px] font-bold uppercase tracking-widest mb-1 opacity-70">{stat.label}</p>
+              <h3 className="text-2xl font-black text-editorial-black dark:text-white tracking-tight">{stat.value}</h3>
+            </div>
+          ))}
+        </div>
+
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 text-red-600 p-4 rounded-md flex items-start gap-3 mb-6">
             <AlertCircle size={20} className="shrink-0 mt-0.5" />
@@ -138,6 +164,8 @@ const AdsManagement = () => {
                 <tr>
                   <th className="px-6 py-4 font-semibold">Advertisement</th>
                   <th className="px-6 py-4 font-semibold">Placement</th>
+                  <th className="px-6 py-4 font-semibold">Plan/Price</th>
+                  <th className="px-6 py-4 font-semibold">Analytics</th>
                   <th className="px-6 py-4 font-semibold">Status</th>
                   <th className="px-6 py-4 font-semibold">Dates</th>
                   <th className="px-6 py-4 font-semibold text-right">Actions</th>
@@ -167,6 +195,41 @@ const AdsManagement = () => {
                       <td className="px-6 py-4">
                         <span className="capitalize text-editorial-black font-medium">{ad.placement}</span>
                         <div className="text-xs text-editorial-muted mt-1">Priority: {ad.priority}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className={`text-[10px] w-fit px-2 py-0.5 rounded-full border border-current font-bold uppercase ${
+                            ad.plan === 'premium' ? 'text-blue-600 bg-blue-50' :
+                            ad.plan === 'standard' ? 'text-neutral-900 bg-neutral-100' :
+                            ad.plan === 'enterprise' ? 'text-amber-600 bg-amber-50' :
+                            'text-editorial-muted bg-neutral-50'
+                          }`}>
+                            {ad.plan || 'none'}
+                          </span>
+                          <div className="flex flex-col mt-1">
+                            <span className="font-bold text-emerald-600">
+                              ₹{ad.price || 0}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col gap-1 text-xs">
+                          <div className="flex items-center justify-between gap-4">
+                            <span className="text-editorial-muted">Views:</span>
+                            <span className="font-bold text-editorial-black">{ad.views || 0}</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-4">
+                            <span className="text-editorial-muted">Clicks:</span>
+                            <span className="font-bold text-editorial-red">{ad.clicks || 0}</span>
+                          </div>
+                          <div className="flex items-center justify-between gap-4 pt-1 border-t border-neutral-100 dark:border-zinc-700">
+                            <span className="text-editorial-muted">CTR:</span>
+                            <span className="font-bold text-blue-600">
+                              {ad.views > 0 ? ((ad.clicks / ad.views) * 100).toFixed(1) : '0.0'}%
+                            </span>
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         {getStatusBadge(ad)}

@@ -10,6 +10,7 @@ import authRoutes from './routes/auth.js';
 import newsRoutes from './routes/news.js';
 import translateRoutes from './routes/translate.js';
 import adRoutes from './routes/adRoutes.js';
+import adBookingRoutes from './routes/adBookingRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -56,6 +57,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/translate', translateRoutes);
 app.use('/api/ads', adRoutes);
+app.use('/api/bookings', adBookingRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

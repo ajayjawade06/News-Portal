@@ -13,7 +13,9 @@ const AdFormModal = ({ ad, onClose, onSave }) => {
     startDate: '',
     endDate: '',
     isActive: true,
-    priority: 0
+    priority: 0,
+    plan: 'none',
+    price: 0
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -34,7 +36,9 @@ const AdFormModal = ({ ad, onClose, onSave }) => {
         startDate: ad.startDate ? new Date(ad.startDate).toISOString().slice(0, 16) : '',
         endDate: ad.endDate ? new Date(ad.endDate).toISOString().slice(0, 16) : '',
         isActive: ad.isActive !== undefined ? ad.isActive : true,
-        priority: ad.priority || 0
+        priority: ad.priority || 0,
+        plan: ad.plan || 'none',
+        price: ad.price || 0
       });
 
       if (ad.type === 'image' && ad.content) {
@@ -226,6 +230,43 @@ const AdFormModal = ({ ad, onClose, onSave }) => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-editorial-border rounded bg-transparent focus:ring-1 focus:ring-editorial-red focus:border-editorial-red transition-colors dark:text-zinc-100"
                 />
+              </div>
+
+              {/* Plan */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-editorial-black dark:text-zinc-300">
+                  Ad Plan *
+                </label>
+                <select
+                  name="plan"
+                  required
+                  value={formData.plan}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-editorial-border rounded bg-transparent focus:ring-1 focus:ring-editorial-red focus:border-editorial-red transition-colors dark:text-zinc-100 dark:bg-zinc-900"
+                >
+                  <option value="none">None / House Ad</option>
+                  <option value="basic">Basic (₹999)</option>
+                  <option value="standard">Standard (₹2499)</option>
+                  <option value="premium">Premium (₹4999)</option>
+                  <option value="enterprise">Enterprise (Custom)</option>
+                </select>
+              </div>
+
+              {/* Revenue (Price) */}
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-editorial-black dark:text-zinc-300">
+                  Revenue (₹ Price)
+                </label>
+                <input
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-editorial-border rounded bg-transparent focus:ring-1 focus:ring-editorial-red focus:border-editorial-red transition-colors dark:text-zinc-100"
+                  min="0"
+                  placeholder="e.g. 4999"
+                />
+                <p className="text-[10px] text-editorial-muted">This amount contributes to analytics revenue.</p>
               </div>
             </div>
 

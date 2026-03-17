@@ -5,7 +5,10 @@ import {
   createAd,
   updateAd,
   deleteAd,
-  toggleAdActiveStatus
+  toggleAdActiveStatus,
+  trackView,
+  trackClick,
+  getAnalyticsSummary
 } from '../controllers/adController.js';
 import { authenticateReporter } from '../middleware/auth.js';
 import multer from 'multer';
@@ -36,11 +39,14 @@ const upload = multer({ storage: storage });
    PUBLIC ROUTES
 ====================================================== */
 router.get('/active', getActiveAds);
+router.post('/:id/view', trackView);
+router.post('/:id/click', trackClick);
 
 /* ======================================================
    ADMIN ROUTES (Protected)
 ====================================================== */
 router.get('/', authenticateReporter, getAllAdsAdmin);
+router.get('/analytics', authenticateReporter, getAnalyticsSummary);
 router.post('/', authenticateReporter, upload.single('image'), createAd);
 router.put('/:id', authenticateReporter, upload.single('image'), updateAd);
 router.delete('/:id', authenticateReporter, deleteAd);

@@ -58,7 +58,7 @@ const Home = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-4">
         <div className="flex justify-center mb-6">
-          <AdRenderer placement="header" fallbackIndex={0} />
+          <AdRenderer placement="header" />
         </div>
       </div>
       <div className="container-editorial py-8 lg:py-10">
@@ -82,8 +82,16 @@ const Home = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {news.map((item, index) => (
-                  <div key={item._id} className="animate-fade-in" style={{ animationDelay: `${Math.min(index * 0.04, 0.25)}s` }}>
-                    <NewsCard newsItem={item} />
+                  <div key={item._id} className="contents relative">
+                    <div className="animate-fade-in" style={{ animationDelay: `${Math.min(index * 0.04, 0.25)}s` }}>
+                      <NewsCard newsItem={item} />
+                    </div>
+                    {/* Inject Ad after every 3 items */}
+                    {(index + 1) % 3 === 0 && (
+                      <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-center my-4 animate-fade-in">
+                        <AdRenderer placement="in-feed" />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -93,14 +101,14 @@ const Home = () => {
           <aside className="lg:col-span-4 order-1 lg:order-2 space-y-8">
             <div className="lg:sticky lg:top-24 space-y-8">
               <LatestNewsSidebar />
-              <AdRenderer placement="sidebar" fallbackIndex={3} />
+              <AdRenderer placement="sidebar" />
               <ReporterHighlight />
               <TrendingNewsSidebar />
             </div>
           </aside>
         </div>
         <div className="mt-12 flex justify-center">
-          <AdRenderer placement="footer" fallbackIndex={1} />
+          <AdRenderer placement="footer" />
         </div>
       </div>
     </main>

@@ -51,7 +51,7 @@ const CategoryPage = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-4">
         <div className="flex justify-center mb-6">
-          <AdRenderer placement="header" fallbackIndex={2} />
+          <AdRenderer placement="header" />
         </div>
       </div>
       <div className="container-editorial py-8 lg:py-10">
@@ -69,13 +69,20 @@ const CategoryPage = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filtered.map(item => (
-              <NewsCard key={item._id} newsItem={item} />
+            {filtered.map((item, index) => (
+              <div key={item._id} className="contents relative">
+                <NewsCard newsItem={item} />
+                {(index + 1) % 3 === 0 && (
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-center my-4 animate-fade-in">
+                    <AdRenderer placement="in-feed" />
+                  </div>
+                )}
+              </div>
             ))}
           </div>
         )}
         <div className="mt-12 flex justify-center">
-          <AdRenderer placement="footer" fallbackIndex={3} />
+          <AdRenderer placement="footer" />
         </div>
       </div>
     </main>

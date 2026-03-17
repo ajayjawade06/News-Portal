@@ -108,7 +108,7 @@ const NewsDetail = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-4">
         <div className="flex justify-center mb-6">
-          <AdRenderer placement="header" fallbackIndex={4} />
+          <AdRenderer placement="header" />
         </div>
       </div>
       <div className="container-editorial py-8 lg:py-10 max-w-3xl">
@@ -162,14 +162,20 @@ const NewsDetail = () => {
 
             <div className="body-text prose prose-neutral max-w-none">
               <div className="text-editorial-ink leading-relaxed whitespace-pre-line space-y-4">
-                {content.split('\n').map(
-                  (paragraph, index) =>
-                    paragraph.trim() && (
-                      <p key={index} className="mb-4">
-                        {paragraph}
-                      </p>
-                    )
-                )}
+                {content.split('\n').map((paragraph, index) => {
+                  const trimmed = paragraph.trim();
+                  if (!trimmed) return null;
+                  return (
+                    <div key={index} className="mb-4">
+                      <p>{trimmed}</p>
+                      {index > 0 && index % 3 === 0 && (
+                        <div className="my-8 flex justify-center">
+                          <AdRenderer placement="inline" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -228,7 +234,7 @@ const NewsDetail = () => {
         </section>
 
         <div className="mt-10 flex justify-center">
-          <AdRenderer placement="footer" fallbackIndex={5} />
+          <AdRenderer placement="footer" />
         </div>
       </div>
     </main>

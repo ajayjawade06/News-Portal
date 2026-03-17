@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
+import { Layout, LogOut, Moon, Sun, Globe, Monitor, ShieldCheck } from 'lucide-react';
 
 const CATEGORIES = [
   { path: '/', labelKey: 'nav.home' },
@@ -13,6 +14,9 @@ const CATEGORIES = [
 ];
 
 const Navbar = () => {
+  const { pathname } = useLocation();
+  const isAdminPath = pathname.startsWith('/dashboard');
+  
   const setSelectedLanguage = useNews().setSelectedLanguage;
   const homeText = useText('Home');
   const dashboardText = useText('Dashboard');
@@ -53,6 +57,58 @@ const Navbar = () => {
   const navLinkBase =
     'px-4 py-3 text-sm font-medium text-editorial-ink dark:text-zinc-200 hover:text-editorial-red hover:bg-editorial-red-muted dark:hover:bg-red-950/30 transition-colors border-b-2 border-transparent hover:border-editorial-red';
 
+  // --- PREMIUM ADMIN STYLES ---
+  if (isAdminPath) {
+    return (
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-neutral-200 dark:border-white/5 transition-all duration-500">
+        <div className="container-editorial">
+          <div className="flex items-center justify-between h-20">
+            <div className="flex items-center gap-8">
+              <Link to="/" className="flex items-center gap-2 group">
+                <div className="w-10 h-10 bg-editorial-red rounded-xl flex items-center justify-center shadow-lg shadow-editorial-red/20 group-hover:rotate-12 transition-transform">
+                  <Monitor size={20} className="text-white" />
+                </div>
+                <div className="hidden sm:block">
+                  <h2 className="font-serif font-black text-xl text-editorial-black dark:text-white leading-none">Console</h2>
+                  <p className="text-[10px] text-editorial-muted font-bold uppercase tracking-widest mt-0.5 opacity-60">Admin Systems</p>
+                </div>
+              </Link>
+
+              <nav className="hidden md:flex items-center gap-1 bg-neutral-100 dark:bg-zinc-800 p-1 rounded-xl">
+                 <Link to="/dashboard" className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${pathname === '/dashboard' ? 'bg-white dark:bg-zinc-700 text-editorial-red shadow-sm' : 'text-editorial-muted hover:text-editorial-black dark:hover:text-white'}`}>Central</Link>
+                 <Link to="/dashboard/manage" className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${pathname.includes('/manage') ? 'bg-white dark:bg-zinc-700 text-editorial-red shadow-sm' : 'text-editorial-muted hover:text-editorial-black dark:hover:text-white'}`}>Articles</Link>
+                 <Link to="/dashboard/analytics" className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${pathname.includes('/analytics') ? 'bg-white dark:bg-zinc-700 text-editorial-red shadow-sm' : 'text-editorial-muted hover:text-editorial-black dark:hover:text-white'}`}>ROI Intel</Link>
+              </nav>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center rounded-xl bg-neutral-100 dark:bg-zinc-800 text-editorial-muted hover:text-editorial-red transition-all">
+                {isDark ? <Sun size={18} /> : <Moon size={18} />}
+              </button>
+
+              <div className="h-8 w-px bg-neutral-200 dark:bg-zinc-800 hidden sm:block"></div>
+
+              <div className="flex items-center gap-3">
+                 <div className="hidden sm:flex flex-col items-end mr-1">
+                    <span className="text-xs font-black text-editorial-black dark:text-white">Editorial Admin</span>
+                    <span className="text-[10px] text-emerald-500 font-bold uppercase flex items-center gap-1"><ShieldCheck size={10}/> Verified Session</span>
+                 </div>
+                 <button 
+                  onClick={handleLogout}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-editorial-red/10 text-editorial-red hover:bg-editorial-red hover:text-white transition-all shadow-sm"
+                  title="Secure Logout"
+                 >
+                   <LogOut size={18} />
+                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // --- STANDARD WEBSITE STYLES ---
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-editorial-border dark:border-zinc-800">
       <div className="container-editorial">
@@ -65,7 +121,7 @@ const Navbar = () => {
             onClick={() => setMobileMenuOpen(false)}
           >
             <img
-              src="/image.png"   // 👉 Replace with high-quality logo (prefer SVG)
+              src="/image.png"
               alt="Lokawani Logo"
               className="h-12 lg:h-14 w-auto object-contain"
             />
@@ -109,8 +165,8 @@ const Navbar = () => {
 
             {/* AUTH BUTTONS */}
             {token ? (
-              <>
-                <Link to="/dashboard" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
+              <div className="flex items-center gap-3">
+                <Link to="/dashboard" className="px-5 py-2 bg-editorial-black dark:bg-white text-white dark:text-editorial-black text-xs font-black uppercase tracking-widest rounded transition-all hover:bg-editorial-red dark:hover:bg-editorial-red dark:hover:text-white shadow-sm">
                   {dashboardText}
                 </Link>
                 <button
@@ -118,9 +174,9 @@ const Navbar = () => {
                   onClick={handleLogout}
                   className="text-sm font-medium text-editorial-muted dark:text-zinc-400 hover:text-editorial-red transition-colors hidden sm:inline"
                 >
-                  {logoutText}
+                  <LogOut size={18} />
                 </button>
-              </>
+              </div>
             ) : (
               <Link to="/login" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
                 {loginText}

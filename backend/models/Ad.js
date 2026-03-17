@@ -22,7 +22,7 @@ const adSchema = new mongoose.Schema(
     },
     placement: {
       type: String,
-      enum: ['header', 'sidebar', 'footer', 'inline', 'popup'],
+      enum: ['header', 'sidebar', 'footer', 'inline', 'popup', 'in-feed'],
       required: true
     },
     startDate: {
@@ -44,6 +44,17 @@ const adSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Reporter',
       required: true
+    },
+    views: { type: Number, default: 0 },
+    clicks: { type: Number, default: 0 },
+    plan: {
+      type: String,
+      enum: ['basic', 'standard', 'premium', 'enterprise', 'none'],
+      default: 'none'
+    },
+    price: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }
