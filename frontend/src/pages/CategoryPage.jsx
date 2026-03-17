@@ -49,11 +49,6 @@ const CategoryPage = () => {
   const translatedCategory = useLiveTranslation(category, 'en');
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
-      <div className="container-editorial py-4">
-        <div className="flex justify-center mb-6">
-          <AdRenderer placement="header" />
-        </div>
-      </div>
       <div className="container-editorial py-8 lg:py-10">
         <div className="mb-4">
           <Link to="/" className="text-sm text-editorial-red hover:underline">
@@ -81,9 +76,6 @@ const CategoryPage = () => {
             ))}
           </div>
         )}
-        <div className="mt-12 flex justify-center">
-          <AdRenderer placement="footer" />
-        </div>
       </div>
     </main>
   );

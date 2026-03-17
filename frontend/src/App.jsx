@@ -3,6 +3,7 @@ import { NewsProvider } from './context/NewsContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import AdRenderer from './components/AdRenderer';
 
 import Home from './pages/Home';
 import Maharashtra from './pages/Maharashtra';
@@ -30,6 +31,14 @@ const AppContent = () => {
   return (
     <div className="min-h-screen flex flex-col bg-white dark:bg-zinc-950">
       <Navbar />
+
+      {!isAdminPath && (
+        <div className="container-editorial py-4">
+          <div className="flex justify-center mb-2">
+            <AdRenderer placement="header" />
+          </div>
+        </div>
+      )}
 
       <div className="flex-1">
         <Routes>
@@ -109,7 +118,14 @@ const AppContent = () => {
           <Route path="/category/:category" element={<CategoryPage />} />
         </Routes>
       </div>
-      {!isAdminPath && <Footer />}
+      {!isAdminPath && (
+        <>
+          <div className="container-editorial py-8 flex justify-center border-t border-editorial-border dark:border-zinc-800">
+            <AdRenderer placement="footer" />
+          </div>
+          <Footer />
+        </>
+      )}
     </div>
   );
 };

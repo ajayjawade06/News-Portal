@@ -35,11 +35,6 @@ const Korpana = () => {
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
-      <div className="container-editorial py-4">
-        <div className="flex justify-center mb-6">
-          <AdRenderer placement="header" />
-        </div>
-      </div>
       <div className="container-editorial py-8 lg:py-10">
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-8">
           {titleText}
@@ -71,9 +66,6 @@ const Korpana = () => {
               <TrendingNewsSidebar />
             </div>
           </aside>
-        </div>
-        <div className="mt-12 flex justify-center">
-          <AdRenderer placement="footer" />
         </div>
       </div>
     </main>

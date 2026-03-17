@@ -56,11 +56,6 @@ const Home = () => {
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
-      <div className="container-editorial py-4">
-        <div className="flex justify-center mb-6">
-          <AdRenderer placement="header" />
-        </div>
-      </div>
       <div className="container-editorial py-8 lg:py-10">
         {/* category links */}
         {news.length > 0 && (
@@ -106,9 +101,6 @@ const Home = () => {
               <TrendingNewsSidebar />
             </div>
           </aside>
-        </div>
-        <div className="mt-12 flex justify-center">
-          <AdRenderer placement="footer" />
         </div>
       </div>
     </main>

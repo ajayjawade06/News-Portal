@@ -106,11 +106,6 @@ const NewsDetail = () => {
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
-      <div className="container-editorial py-4">
-        <div className="flex justify-center mb-6">
-          <AdRenderer placement="header" />
-        </div>
-      </div>
       <div className="container-editorial py-8 lg:py-10 max-w-3xl">
         <div className="flex items-center justify-between mb-8">
           <Link
@@ -233,8 +228,6 @@ const NewsDetail = () => {
           <NewsRating newsId={newsItem._id} />
         </section>
 
-        <div className="mt-10 flex justify-center">
-          <AdRenderer placement="footer" />
         </div>
       </div>
     </main>

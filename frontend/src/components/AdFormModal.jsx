@@ -181,10 +181,11 @@ const AdFormModal = ({ ad, onClose, onSave }) => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-editorial-border rounded bg-transparent focus:ring-1 focus:ring-editorial-red focus:border-editorial-red transition-colors dark:text-zinc-100 dark:bg-zinc-900"
                 >
-                  <option value="header">Header (728x90)</option>
+                  <option value="header">Global Header (728x90)</option>
                   <option value="sidebar">Sidebar (300x250 or vertical)</option>
-                  <option value="inline">Inline (Between articles)</option>
-                  <option value="footer">Footer</option>
+                  <option value="inline">Inline (In article text)</option>
+                  <option value="in-feed">In-feed (Between articles)</option>
+                  <option value="footer">Global Footer (728x90)</option>
                   <option value="popup">Popup / Overlay</option>
                 </select>
               </div>
