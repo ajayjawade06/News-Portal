@@ -4,7 +4,7 @@ import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 import ReporterHighlight from '../components/ReporterHighlight';
-import AdBanner from '../components/AdBanner';
+import AdRenderer from '../components/AdRenderer';
 
 const Chandrapur = () => {
   const titleText = useText('Chandrapur Latest News');
@@ -37,7 +37,7 @@ const Chandrapur = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-4">
         <div className="flex justify-center mb-6">
-          <AdBanner type="horizontal" adIndex={6} />
+          <AdRenderer placement="header" fallbackIndex={6} />
         </div>
       </div>
       <div className="container-editorial py-8 lg:py-10">
@@ -61,13 +61,13 @@ const Chandrapur = () => {
           <aside className="lg:col-span-4">
             <div className="lg:sticky lg:top-24 space-y-8">
               <ReporterHighlight  />
-              <AdBanner type="vertical" adIndex={6} />
+              <AdRenderer placement="sidebar" fallbackIndex={6} />
               <TrendingNewsSidebar />
             </div>
           </aside>
         </div>
         <div className="mt-12 flex justify-center">
-          <AdBanner type="horizontal" adIndex={7} />
+          <AdRenderer placement="footer" fallbackIndex={7} />
         </div>
       </div>
     </main>

@@ -20,6 +20,7 @@ import ManageNews from './pages/ManageNews';
 import Advertising from './pages/Advertising';
 import CategoryPage from './pages/CategoryPage';
 import ModerationDashboard from './pages/ModerationDashboard';
+import AdsManagement from './pages/AdsManagement';
 
 function App() {
   return (
@@ -80,6 +81,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <ModerationDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/ads"
+                element={
+                  <ProtectedRoute>
+                    <AdsManagement />
                   </ProtectedRoute>
                 }
               />

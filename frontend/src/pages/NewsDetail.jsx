@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
-import AdBanner from '../components/AdBanner';
+import AdRenderer from '../components/AdRenderer';
 import NewsRating from '../components/NewsRating';
 import api from '../utils/api';
 import { IMAGE_BASE_URL } from '../config';
@@ -108,7 +108,7 @@ const NewsDetail = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-4">
         <div className="flex justify-center mb-6">
-          <AdBanner type="horizontal" adIndex={4} />
+          <AdRenderer placement="header" fallbackIndex={4} />
         </div>
       </div>
       <div className="container-editorial py-8 lg:py-10 max-w-3xl">
@@ -228,7 +228,7 @@ const NewsDetail = () => {
         </section>
 
         <div className="mt-10 flex justify-center">
-          <AdBanner type="horizontal" adIndex={5} />
+          <AdRenderer placement="footer" fallbackIndex={5} />
         </div>
       </div>
     </main>

@@ -3,7 +3,7 @@ import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import NewsCard from '../components/NewsCard';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
-import AdBanner from '../components/AdBanner';
+import AdRenderer from '../components/AdRenderer';
 
 
 const Rajura = () => {
@@ -37,7 +37,7 @@ const Rajura = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-4">
         <div className="flex justify-center mb-6">
-          <AdBanner type="horizontal" adIndex={3} />
+          <AdRenderer placement="header" fallbackIndex={3} />
         </div>
       </div>
       <div className="container-editorial py-8 lg:py-10">
@@ -60,13 +60,13 @@ const Rajura = () => {
           </section>
           <aside className="lg:col-span-4">
             <div className="lg:sticky lg:top-24 space-y-8">
-              <AdBanner type="vertical" adIndex={7} />
+              <AdRenderer placement="sidebar" fallbackIndex={7} />
               <TrendingNewsSidebar />
             </div>
           </aside>
         </div>
         <div className="mt-12 flex justify-center">
-          <AdBanner type="horizontal" adIndex={8} />
+          <AdRenderer placement="footer" fallbackIndex={8} />
         </div>
       </div>
     </main>

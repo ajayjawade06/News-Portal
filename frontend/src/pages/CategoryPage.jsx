@@ -4,7 +4,7 @@ import { useLiveTranslation } from '../hooks/useLiveTranslation';
 import { useNews } from '../context/NewsContext';
 import { useParams, Link } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
-import AdBanner from '../components/AdBanner';
+import AdRenderer from '../components/AdRenderer';
 
 const CategoryPage = () => {
   const noNewsText = useText('No news available');
@@ -51,7 +51,7 @@ const CategoryPage = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-4">
         <div className="flex justify-center mb-6">
-          <AdBanner type="horizontal" adIndex={2} />
+          <AdRenderer placement="header" fallbackIndex={2} />
         </div>
       </div>
       <div className="container-editorial py-8 lg:py-10">
@@ -75,7 +75,7 @@ const CategoryPage = () => {
           </div>
         )}
         <div className="mt-12 flex justify-center">
-          <AdBanner type="horizontal" adIndex={3} />
+          <AdRenderer placement="footer" fallbackIndex={3} />
         </div>
       </div>
     </main>

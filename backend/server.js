@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import newsRoutes from './routes/news.js';
 import translateRoutes from './routes/translate.js';
+import adRoutes from './routes/adRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -54,6 +55,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/translate', translateRoutes);
+app.use('/api/ads', adRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
