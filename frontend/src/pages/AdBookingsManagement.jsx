@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
-import { CheckCircle, XCircle, Clock, Calendar, User, Mail, Building, CreditCard, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Calendar, User, Mail, Building, CreditCard, AlertCircle, DollarSign } from 'lucide-react';
 
 const STATUS_INFO = {
   pending: { label: 'Pending', icon: Clock, color: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200' },

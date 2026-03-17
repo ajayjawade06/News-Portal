@@ -14,6 +14,7 @@ const ManageNews = () => {
   const publishText = useText('Publish');
   const unpublishText = useText('Unpublish');
   const deleteText = useText('Delete');
+  const confirmDeleteText = useText('Are you sure you want to delete this post?');
   const { getNewsContent } = useNews();
   const [news, setNews] = useState([]);
   const [filteredNews, setFilteredNews] = useState([]);
@@ -56,7 +57,7 @@ const ManageNews = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm(useText('Are you sure you want to delete this post?'))) return;
+    if (!window.confirm(confirmDeleteText)) return;
     try {
       await api.delete(`/news/${id}`);
       fetchNews();

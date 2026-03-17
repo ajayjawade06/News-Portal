@@ -212,7 +212,7 @@ const EditNews = () => {
               {imagePreview ? (
                 <div className="space-y-2">
                   <img src={imagePreview} alt="Preview" className="max-w-xs h-48 object-cover border border-editorial-border" />
-                  <button type="button" onClick={removeImage} className="btn-editorial-outline text-sm py-2">{t('Remove image')}</button>
+                  <button type="button" onClick={removeImage} className="btn-editorial-outline text-sm py-2">{removeImageText}</button>
                 </div>
               ) : existingImage ? (
                 <div className="space-y-2">

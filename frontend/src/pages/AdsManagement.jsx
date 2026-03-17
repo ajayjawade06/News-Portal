@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
-import { Plus, Edit2, Trash2, Eye, EyeOff, Calendar, AlertCircle, ExternalLink } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, EyeOff, Calendar, AlertCircle, ExternalLink, DollarSign, MousePointer, TrendingUp } from 'lucide-react';
 import AdFormModal from '../components/AdFormModal';
 
 const AdsManagement = () => {
