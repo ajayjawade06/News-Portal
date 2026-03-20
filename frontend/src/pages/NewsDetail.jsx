@@ -228,7 +228,6 @@ const NewsDetail = () => {
           <NewsRating newsId={newsItem._id} />
         </section>
 
-        </div>
       </div>
     </main>
   );
