@@ -3,11 +3,11 @@ import { Mail, Phone, MessageCircle } from "lucide-react";
 const ReporterHighlight = () => {
   return (
     <div className="bg-white shadow-lg rounded-2xl p-6 my-10 max-w-sm mx-auto hover:shadow-xl transition-all duration-300">
-      
+
       {/* 4:3 Image */}
       <div className="w-full aspect-[4/3] overflow-hidden rounded-xl">
         <img
-          src="/photo/reporter.jpg"
+          src="/photo/reporter.JPG"
           alt="Dipak Khekare"
           className="w-full h-full object-cover"
         />
