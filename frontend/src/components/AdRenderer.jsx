@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../utils/api';
-import { API_BASE_URL } from '../config';
+import { IMAGE_BASE_URL } from '../config';
 import CtaBanner from './CtaBanner';
 
 const AdRenderer = ({ placement = 'header' }) => {
@@ -18,7 +18,12 @@ const AdRenderer = ({ placement = 'header' }) => {
         setLoading(true);
         const response = await api.get(`/ads/active?placement=${placement}`);
         if (active) {
-          setAds(response.data.data || []);
+          const fetchedAds = response.data.data || [];
+          for (let i = fetchedAds.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [fetchedAds[i], fetchedAds[j]] = [fetchedAds[j], fetchedAds[i]];
+          }
+          setAds(fetchedAds);
         }
       } catch (err) {
         console.error(`Failed to fetch ads for placement: ${placement}`, err);
@@ -89,14 +94,30 @@ const AdRenderer = ({ placement = 'header' }) => {
 
   const ad = ads[currentAdIndex];
 
+  // Determine appropriate sizing classes based on placement
+  let adMaxWidthClass = 'max-w-[728px]';
+  let adImageClasses = 'w-full max-w-[728px] max-h-[90px]'; // Default standard
+  
+  if (placement === 'header') {
+    adMaxWidthClass = 'max-w-[1140px]';
+    adImageClasses = 'w-full max-w-[1140px] max-h-[250px]'; // Premium Billboard
+  } else if (placement === 'sidebar') {
+    adMaxWidthClass = 'max-w-[300px]';
+    adImageClasses = 'w-[300px] max-h-[600px]'; // Large Sidebar / Half-Page
+  } else if (placement === 'inline' || placement === 'in-feed') {
+    adMaxWidthClass = 'max-w-[728px]';
+    adImageClasses = 'w-full max-w-[728px] max-h-[250px]'; // Large In-Article Banner
+  } else if (placement === 'footer') {
+    adMaxWidthClass = 'max-w-[1140px]';
+    adImageClasses = 'w-full max-w-[1140px] max-h-[250px]'; // Large Footer Banner
+  }
+
   // For Script/HTML Type Ads
   if (ad.type === 'script') {
     return (
       <div 
         ref={adRef}
-        className={`w-full flex justify-center my-4 ${
-          placement === 'sidebar' ? 'max-w-[300px]' : 'max-w-[728px]'
-        }`}
+        className={`w-full flex justify-center my-4 ${adMaxWidthClass}`}
         dangerouslySetInnerHTML={{ __html: ad.content }}
         onClick={() => handleAdClick(ad._id)}
       />
@@ -107,13 +128,9 @@ const AdRenderer = ({ placement = 'header' }) => {
   const adContent = (
     <div ref={adRef} className={`relative group w-full flex justify-center my-4`}>
       <img
-        src={ad.content.startsWith('http') ? ad.content : `${API_BASE_URL}${ad.content}`}
+        src={ad.content.startsWith('http') ? ad.content : `${IMAGE_BASE_URL}${ad.content}`}
         alt={ad.title || 'Advertisement'}
-        className={`object-contain bg-neutral-50 dark:bg-zinc-800 ${
-          placement === 'sidebar' 
-            ? 'w-[300px] h-[250px]' 
-            : 'w-full max-w-[728px] max-h-[90px]'
-        }`}
+        className={`object-contain bg-neutral-50 dark:bg-zinc-800 ${adImageClasses}`}
       />
       <div className="absolute top-0 right-0 bg-black/60 text-white text-[10px] px-1.5 py-0.5 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
         Ad

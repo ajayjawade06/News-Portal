@@ -4,6 +4,7 @@ import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import AdRenderer from '../components/AdRenderer';
 import NewsRating from '../components/NewsRating';
+import BackButton from '../components/BackButton';
 import api from '../utils/api';
 import { IMAGE_BASE_URL } from '../config';
 
@@ -108,13 +109,7 @@ const NewsDetail = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10 max-w-3xl">
         <div className="flex items-center justify-between mb-8">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-editorial-muted hover:text-editorial-red font-medium transition-colors"
-          >
-            <span>&#8592;</span>
-            {backText}
-          </Link>
+          <BackButton to="/" label="Home" />
           <button
             type="button"
             onClick={handleShare}
@@ -128,7 +123,7 @@ const NewsDetail = () => {
           {newsItem.image && (
             <div className="aspect-video overflow-hidden">
               <img
-                src={`${IMAGE_BASE_URL}${newsItem.image}`}
+                src={newsItem.image.startsWith('http') ? newsItem.image : `${IMAGE_BASE_URL}${newsItem.image}`}
                 alt={title}
                 className="w-full h-full object-cover"
               />

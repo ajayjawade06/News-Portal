@@ -4,6 +4,7 @@ import api from '../utils/api';
 import useText from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import { IMAGE_BASE_URL } from '../config';
+import BackButton from '../components/BackButton';
 
 const EditNews = () => {
   const { id } = useParams();
@@ -34,6 +35,7 @@ const EditNews = () => {
     location: '',
     category: '',
     published: false,
+    isFeatured: false,
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -56,6 +58,7 @@ const EditNews = () => {
           location: news.location || news.coverage || '',
           category: news.category,
           published: news.published,
+          isFeatured: news.isFeatured || false,
         });
         if (news.category && !categories.includes(news.category)) {
           setShowCustomCat(true);
@@ -123,6 +126,7 @@ const EditNews = () => {
       formDataToSend.append('location', formData.location);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('published', formData.published);
+      formDataToSend.append('isFeatured', formData.isFeatured);
       if (image) formDataToSend.append('image', image);
 
       await api.put(`/news/${id}`, formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -145,6 +149,9 @@ const EditNews = () => {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950 py-8 lg:py-10">
       <div className="container-editorial max-w-2xl">
+        <div className="mb-6">
+          <BackButton to="/dashboard/manage" label="Cancel & Back" />
+        </div>
         <h1 className="font-serif font-bold text-editorial-black text-2xl border-b-2 border-editorial-red pb-2 mb-6">
           {headerText}
         </h1>
@@ -190,6 +197,8 @@ const EditNews = () => {
                   <option value="chandrapur">Chandrapur</option>
                   <option value="korpana">Korpana</option>
                   <option value="rajura">Rajura</option>
+                  <option value="national">National</option>
+                  <option value="international">International</option>
                 </select>
               </div>
               <div>
@@ -216,8 +225,8 @@ const EditNews = () => {
                 </div>
               ) : existingImage ? (
                 <div className="space-y-2">
-                  <img src={`${IMAGE_BASE_URL}${existingImage}`} alt="Current" className="max-w-xs h-48 object-cover border border-editorial-border" />
-                  <button type="button" onClick={removeImage} className="btn-editorial-outline text-sm py-2">{t('Remove image')}</button>
+                  <img src={existingImage.startsWith('http') ? existingImage : `${IMAGE_BASE_URL}${existingImage}`} alt="Current" className="max-w-xs h-48 object-cover border border-editorial-border" />
+                  <button type="button" onClick={removeImage} className="btn-editorial-outline text-sm py-2">{removeImageText}</button>
                 </div>
               ) : (
                 <label className="flex flex-col items-center justify-center border-2 border-dashed border-editorial-border p-6 cursor-pointer">
@@ -226,9 +235,15 @@ const EditNews = () => {
                 </label>
               )}
             </div>
-            <div className="flex items-center gap-3 py-2">
-              <input type="checkbox" name="published" checked={formData.published} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
-              <label className="text-sm font-medium text-editorial-ink">{publishedLabel}</label>
+            <div className="flex flex-col sm:flex-row gap-4 py-2 border-y border-editorial-border my-4">
+              <div className="flex items-center gap-3">
+                <input type="checkbox" name="published" id="published" checked={formData.published} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
+                <label htmlFor="published" className="text-sm font-medium text-editorial-ink">{publishedLabel}</label>
+              </div>
+              <div className="flex items-center gap-3">
+                <input type="checkbox" name="isFeatured" id="isFeatured" checked={formData.isFeatured} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
+                <label htmlFor="isFeatured" className="text-sm font-medium text-editorial-red font-bold uppercase tracking-wider">⭐ Featured News</label>
+              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button type="submit" disabled={loading} className="btn-editorial flex-1 py-3">

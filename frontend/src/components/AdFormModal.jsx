@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { X, Upload, Save, Eye, Code } from 'lucide-react';
 import api from '../utils/api';
-import { API_BASE_URL } from '../config';
+import { IMAGE_BASE_URL } from '../config';
 
 const AdFormModal = ({ ad, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -42,7 +42,7 @@ const AdFormModal = ({ ad, onClose, onSave }) => {
       });
 
       if (ad.type === 'image' && ad.content) {
-        setPreviewImage(ad.content.startsWith('http') ? ad.content : `${API_BASE_URL}${ad.content}`);
+        setPreviewImage(ad.content.startsWith('http') ? ad.content : `${IMAGE_BASE_URL}${ad.content}`);
       }
     }
   }, [ad]);

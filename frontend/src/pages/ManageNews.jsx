@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import api from '../utils/api';
+import BackButton from '../components/BackButton';
 
 const ManageNews = () => {
   const manageTitle = useText('Manage News Posts');
@@ -117,6 +118,9 @@ const ManageNews = () => {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950 py-8 lg:py-10">
       <div className="container-editorial">
+        <div className="mb-6">
+          <BackButton to="/dashboard" label="Back to Dashboard" />
+        </div>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-8">
           <div>
             <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-1">

@@ -78,19 +78,24 @@ const Advertising = () => {
           <h2 className="text-3xl font-serif font-bold text-center mb-10 text-editorial-black dark:text-zinc-100">Ad Placement Options</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="border border-editorial-border dark:border-zinc-700 p-5 rounded hover:border-editorial-red transition-colors dark:bg-zinc-900">
-              <h4 className="font-bold text-lg mb-1 dark:text-zinc-100">Top Banner</h4>
-              <p className="text-sm text-editorial-muted dark:text-zinc-400 mb-3">Visible at the very top of all pages.</p>
-              <div className="bg-neutral-100 dark:bg-zinc-800 h-10 w-full flex items-center justify-center text-xs text-neutral-400 border border-dashed border-neutral-300">728x90</div>
+              <h4 className="font-bold text-lg mb-1 dark:text-zinc-100">Premium Header Billboard</h4>
+              <p className="text-sm text-editorial-muted dark:text-zinc-400 mb-3">Massive visibility at the very top of all pages.</p>
+              <div className="bg-neutral-100 dark:bg-zinc-800 h-10 w-full flex items-center justify-center text-xs text-neutral-400 border border-dashed border-neutral-300">Up to 1140x250</div>
             </div>
             <div className="border border-editorial-border dark:border-zinc-700 p-5 rounded hover:border-editorial-red transition-colors dark:bg-zinc-900">
-              <h4 className="font-bold text-lg mb-1 dark:text-zinc-100">In-Article Ads</h4>
+              <h4 className="font-bold text-lg mb-1 dark:text-zinc-100">In-Article Large Banner</h4>
               <p className="text-sm text-editorial-muted dark:text-zinc-400 mb-3">Appears smoothly between paragraphs.</p>
-              <div className="bg-neutral-100 dark:bg-zinc-800 h-16 w-full flex items-center justify-center text-xs text-neutral-400 border border-dashed border-neutral-300">Responsive</div>
+              <div className="bg-neutral-100 dark:bg-zinc-800 h-16 w-full flex items-center justify-center text-xs text-neutral-400 border border-dashed border-neutral-300">Max 728x250</div>
             </div>
             <div className="border border-editorial-border dark:border-zinc-700 p-5 rounded hover:border-editorial-red transition-colors dark:bg-zinc-900">
-              <h4 className="font-bold text-lg mb-1 dark:text-zinc-100">Sidebar Ads</h4>
-              <p className="text-sm text-editorial-muted dark:text-zinc-400 mb-3">Sticky placements on desktop sidebar.</p>
-              <div className="bg-neutral-100 dark:bg-zinc-800 h-32 w-full flex items-center justify-center text-xs text-neutral-400 border border-dashed border-neutral-300">300x250</div>
+              <h4 className="font-bold text-lg mb-1 dark:text-zinc-100">Sidebar Half-Page Ads</h4>
+              <p className="text-sm text-editorial-muted dark:text-zinc-400 mb-3">Sticky high-impact placements on desktop sidebar.</p>
+              <div className="bg-neutral-100 dark:bg-zinc-800 h-32 w-full flex items-center justify-center text-xs text-neutral-400 border border-dashed border-neutral-300">Up to 300x600</div>
+            </div>
+            <div className="border border-editorial-border dark:border-zinc-700 p-5 rounded hover:border-editorial-red transition-colors dark:bg-zinc-900">
+              <h4 className="font-bold text-lg mb-1 dark:text-zinc-100">Footer Banner</h4>
+              <p className="text-sm text-editorial-muted dark:text-zinc-400 mb-3">Wide visibility at the bottom of the content area.</p>
+              <div className="bg-neutral-100 dark:bg-zinc-800 h-10 w-full flex items-center justify-center text-xs text-neutral-400 border border-dashed border-neutral-300">Up to 1140x250</div>
             </div>
           </div>
         </div>

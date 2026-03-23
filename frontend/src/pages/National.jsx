@@ -6,15 +6,14 @@ import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 import AdRenderer from '../components/AdRenderer';
 import BackButton from '../components/BackButton';
 
-
-const Maharashtra = () => {
-  const titleText = useText('Maharashtra Latest News');
+const National = () => {
+  const titleText = useText('National News');
   const noNewsText = useText('No news available');
   const allNewsText = useText('All news');
   const { news, loading, error, fetchNews } = useNews();
 
   useEffect(() => {
-    fetchNews('maharashtra');
+    fetchNews('national');
   }, []);
 
   if (loading) {
@@ -41,7 +40,7 @@ const Maharashtra = () => {
         <div className="mb-6">
           <BackButton to="/" label={allNewsText} />
         </div>
-        <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-8">
+        <h1 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-8">
           {titleText}
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
@@ -77,4 +76,4 @@ const Maharashtra = () => {
   );
 };
 
-export default Maharashtra;
+export default National;

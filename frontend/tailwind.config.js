@@ -9,17 +9,17 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        serif: ['Lora', 'Georgia', 'ui-serif', 'serif'],
+        serif: ['"Playfair Display"', 'ui-serif', 'Georgia', 'serif'],
       },
       colors: {
         editorial: {
-          black: '#0a0a0a',
-          ink: '#171717',
-          muted: '#525252',
-          border: '#e5e5e5',
-          red: '#991b1b',
-          'red-dark': '#7f1d1d',
-          'red-muted': '#fef2f2',
+          black: '#09090b',     // Deeper, richer zinc-950 black
+          ink: '#18181b',       // zinc-900 for text
+          muted: '#71717a',     // zinc-500 for secondary text
+          border: '#e4e4e7',    // zinc-200 for subtle borders
+          red: '#dc2626',       // Vibrant pure red (red-600)
+          'red-dark': '#991b1b',// Deep red for hover states
+          'red-muted': '#fef2f2',// Soft red background
         },
       },
       fontSize: {
@@ -38,8 +38,12 @@ export default {
         '112': '28rem',
       },
       borderColor: {
-        DEFAULT: '#e5e5e5',
+        DEFAULT: '#e4e4e7',
       },
+      boxShadow: {
+        'premium': '0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 0 3px rgba(0,0,0,0.02)',
+        'premium-hover': '0 12px 30px -4px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04)',
+      }
     },
   },
   plugins: [],

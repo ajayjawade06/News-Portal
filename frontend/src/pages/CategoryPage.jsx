@@ -5,13 +5,16 @@ import { useNews } from '../context/NewsContext';
 import { useParams, Link } from 'react-router-dom';
 import NewsCard from '../components/NewsCard';
 import AdRenderer from '../components/AdRenderer';
+import BackButton from '../components/BackButton';
 
 const CategoryPage = () => {
   const noNewsText = useText('No news available');
   const homeTitle = useText('Latest News');
   const categoryLabel = useText('Category');
+  const allNewsText = useText('All news');
   const { news, loading, error, fetchNews } = useNews();
   const { category } = useParams();
+  const translatedCategory = useLiveTranslation(category, 'en');
 
   useEffect(() => {
     // fetch all news on mount (if not already fetched)
@@ -22,6 +25,8 @@ const CategoryPage = () => {
 
   const filtered = useMemo(() => {
     if (!category) return [];
+    const isAll = category.toLowerCase() === 'all';
+    if (isAll) return news;
     return news.filter(item =>
       item.category &&
       item.category.toLowerCase() === category.toLowerCase()
@@ -46,17 +51,14 @@ const CategoryPage = () => {
     );
   }
 
-  const translatedCategory = useLiveTranslation(category, 'en');
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10">
-        <div className="mb-4">
-          <Link to="/" className="text-sm text-editorial-red hover:underline">
-            ← {useText('All news')}
-          </Link>
+        <div className="mb-6">
+          <BackButton to="/" label={allNewsText} />
         </div>
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl mb-8">
-          {homeTitle} - {categoryLabel} : {translatedCategory}
+          {category.toLowerCase() === 'all' ? allNewsText : `${categoryLabel} : ${translatedCategory}`}
         </h1>
         {filtered.length === 0 ? (
           <div className="card-editorial p-12 text-center">

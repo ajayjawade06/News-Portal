@@ -408,7 +408,8 @@ router.post('/', authenticateReporter, upload.single('image'), async (req, res) 
       baseLanguage = 'en',
       location,
       category,
-      published
+      published,
+      isFeatured
     } = req.body;
 
     if (!title || !content || !location || !category) {
@@ -443,6 +444,7 @@ router.post('/', authenticateReporter, upload.single('image'), async (req, res) 
       location,
       category,
       published: published === 'true' || published === true,
+      isFeatured: isFeatured === 'true' || isFeatured === true,
       views: 0,
       createdBy: req.reporter._id
     };

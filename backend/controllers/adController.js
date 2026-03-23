@@ -191,9 +191,42 @@ export const toggleAdActiveStatus = async (req, res) => {
   }
 };
 
+const viewTracker = new Map();
+const clickTracker = new Map();
+const TTL = 3600000; // 1 hour
+
+// Clean up maps periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, timestamp] of viewTracker.entries()) {
+    if (now - timestamp > TTL) viewTracker.delete(key);
+  }
+  for (const [key, timestamp] of clickTracker.entries()) {
+    if (now - timestamp > TTL) clickTracker.delete(key);
+  }
+}, TTL);
+
+const isTrackedRecently = (tracker, key) => {
+  const now = Date.now();
+  if (tracker.has(key)) {
+    if (now - tracker.get(key) < TTL) {
+      return true;
+    }
+  }
+  tracker.set(key, now);
+  return false;
+};
+
 // Public: Track a view (called by frontend when ad enters viewport)
 export const trackView = async (req, res) => {
   try {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const trackKey = `${ip}_${req.params.id}`;
+    
+    if (isTrackedRecently(viewTracker, trackKey)) {
+      return res.json({ success: true, message: 'Already tracked view recently' });
+    }
+
     await Ad.findByIdAndUpdate(req.params.id, { $inc: { views: 1 } });
     res.json({ success: true });
   } catch {
@@ -204,6 +237,13 @@ export const trackView = async (req, res) => {
 // Public: Track a click (called by frontend when ad link is clicked)
 export const trackClick = async (req, res) => {
   try {
+    const ip = req.ip || req.socket.remoteAddress || 'unknown';
+    const trackKey = `${ip}_${req.params.id}`;
+    
+    if (isTrackedRecently(clickTracker, trackKey)) {
+      return res.json({ success: true, message: 'Already tracked click recently' });
+    }
+
     await Ad.findByIdAndUpdate(req.params.id, { $inc: { clicks: 1 } });
     res.json({ success: true });
   } catch {

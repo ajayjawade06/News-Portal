@@ -10,6 +10,8 @@ import Maharashtra from './pages/Maharashtra';
 import Chandrapur from './pages/Chandrapur';
 import Korpana from './pages/Korpana';
 import Rajura from './pages/Rajura';
+import International from './pages/International';
+import National from './pages/National';
 import NewsDetail from './pages/NewsDetail';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -43,6 +45,8 @@ const AppContent = () => {
       <div className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/international" element={<International />} />
+          <Route path="/national" element={<National />} />
           <Route path="/maharashtra" element={<Maharashtra />} />
           <Route path="/chandrapur" element={<Chandrapur />} />
           <Route path="/korpana" element={<Korpana />} />

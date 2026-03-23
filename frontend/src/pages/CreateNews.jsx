@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../utils/api';
 import useText from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
+import BackButton from '../components/BackButton';
 
 const CreateNews = () => {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ const CreateNews = () => {
     location: '',
     category: '',
     published: false,
+    isFeatured: false,
   });
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -87,6 +89,7 @@ const CreateNews = () => {
       formDataToSend.append('location', formData.location);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('published', formData.published);
+      formDataToSend.append('isFeatured', formData.isFeatured);
       if (image) formDataToSend.append('image', image);
 
       await api.post('/news', formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
@@ -103,6 +106,9 @@ const CreateNews = () => {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950 py-8 lg:py-10">
       <div className="container-editorial max-w-2xl">
+        <div className="mb-6">
+          <BackButton to="/dashboard/manage" label="Cancel & Back" />
+        </div>
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-2">
           {pageTitle || 'Create news'}
         </h1>
@@ -161,6 +167,8 @@ const CreateNews = () => {
                   <option value="chandrapur">Chandrapur</option>
                   <option value="korpana">Korpana</option>
                   <option value="rajura">Rajura</option>
+                  <option value="national">National</option>
+                  <option value="international">International</option>
                 </select>
               </div>
               <div>
@@ -194,9 +202,15 @@ const CreateNews = () => {
                 </label>
               )}
             </div>
-            <div className="flex items-center gap-3 py-2">
-              <input type="checkbox" name="published" checked={formData.published} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
-              <label className="text-sm font-medium text-editorial-ink">{labelPublished}</label>
+            <div className="flex flex-col sm:flex-row gap-4 py-2 border-y border-editorial-border my-4">
+              <div className="flex items-center gap-3">
+                <input type="checkbox" name="published" id="published" checked={formData.published} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
+                <label htmlFor="published" className="text-sm font-medium text-editorial-ink">{labelPublished}</label>
+              </div>
+              <div className="flex items-center gap-3">
+                <input type="checkbox" name="isFeatured" id="isFeatured" checked={formData.isFeatured} onChange={handleChange} className="w-4 h-4 border-editorial-border text-editorial-red focus:ring-editorial-red" />
+                <label htmlFor="isFeatured" className="text-sm font-medium text-editorial-red font-bold uppercase tracking-wider">⭐ Featured News</label>
+              </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button type="submit" disabled={loading || translating} className="btn-editorial flex-1 py-3">

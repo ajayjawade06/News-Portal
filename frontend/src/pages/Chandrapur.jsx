@@ -5,10 +5,12 @@ import NewsCard from '../components/NewsCard';
 import TrendingNewsSidebar from '../components/TrendingNewsSidebar';
 import ReporterHighlight from '../components/ReporterHighlight';
 import AdRenderer from '../components/AdRenderer';
+import BackButton from '../components/BackButton';
 
 const Chandrapur = () => {
   const titleText = useText('Chandrapur Latest News');
   const noNewsText = useText('No news available');
+  const allNewsText = useText('All news');
   const { news, loading, error, fetchNews } = useNews();
 
   useEffect(() => {
@@ -36,6 +38,9 @@ const Chandrapur = () => {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10">
+        <div className="mb-6">
+          <BackButton to="/" label={allNewsText} />
+        </div>
         <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-8">
           {titleText}
         </h1>

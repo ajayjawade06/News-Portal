@@ -6,6 +6,8 @@ import { Layout, LogOut, Moon, Sun, Globe, Monitor, ShieldCheck } from 'lucide-r
 
 const CATEGORIES = [
   { path: '/', labelKey: 'nav.home' },
+  { path: '/international', label: 'International' },
+  { path: '/national', label: 'National' },
   { path: '/maharashtra', label: 'Maharashtra' },
   { path: '/chandrapur', label: 'Chandrapur' },
   { path: '/korpana', label: 'Korpana' },
@@ -110,9 +112,9 @@ const Navbar = () => {
 
   // --- STANDARD WEBSITE STYLES ---
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-editorial-border dark:border-zinc-800">
+    <header className="sticky top-0 z-50 glass-nav transition-all duration-300">
       <div className="container-editorial">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 sm:h-20">
 
           {/* LOGO ONLY */}
           <Link

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useText } from '../hooks/useText';
 import api from '../utils/api';
+import BackButton from '../components/BackButton';
 
 const ModerationDashboard = () => {
   const [activeTab, setActiveTab] = useState('comments'); // 'comments' or 'ratings'
@@ -159,6 +160,9 @@ const ModerationDashboard = () => {
     <main className="min-h-screen bg-white dark:bg-zinc-950 p-4 sm:p-6 lg:p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
+        <div className="mb-6">
+          <BackButton to="/dashboard" label="Back to Dashboard" />
+        </div>
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-editorial-black dark:text-white mb-2">
             Moderation Dashboard

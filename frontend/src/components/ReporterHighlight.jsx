@@ -7,7 +7,7 @@ const ReporterHighlight = () => {
       {/* 4:3 Image */}
       <div className="w-full aspect-[4/3] overflow-hidden rounded-xl">
         <img
-          src="/photo/reporter.JPG"
+          src="/photo/reporter.jpg"
           alt="Dipak Khekare"
           className="w-full h-full object-cover"
         />

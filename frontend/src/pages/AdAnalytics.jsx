@@ -6,6 +6,7 @@ import {
   PieChart, Pie, Cell 
 } from 'recharts';
 import { TrendingUp, DollarSign, MousePointer, Users, ArrowLeft, ExternalLink, Sparkles, PieChart as PieIcon, BarChart3 } from 'lucide-react';
+import BackButton from '../components/BackButton';
 
 const AdAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
@@ -42,13 +43,8 @@ const AdAnalytics = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-neutral-200 dark:border-zinc-800 pb-8">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Link to="/dashboard" className="group flex items-center gap-2 text-editorial-muted hover:text-editorial-red transition-all duration-300">
-                <div className="p-1.5 rounded-lg bg-neutral-100 dark:bg-zinc-800 group-hover:bg-editorial-red/10 transition-colors">
-                  <ArrowLeft size={16} />
-                </div>
-                <span className="text-[10px] font-bold uppercase tracking-widest">Back to Console</span>
-              </Link>
+            <div className="mb-4">
+              <BackButton to="/dashboard" label="Back to Console" />
             </div>
             <h1 className="font-serif font-black text-editorial-black dark:text-white text-4xl tracking-tight">
               Ad Intelligence <span className="text-editorial-red">&</span> Revenue

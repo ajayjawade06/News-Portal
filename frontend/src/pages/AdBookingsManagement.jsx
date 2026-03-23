@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
 import { CheckCircle, XCircle, Clock, Calendar, User, Mail, Building, CreditCard, AlertCircle, DollarSign } from 'lucide-react';
+import BackButton from '../components/BackButton';
 
 const STATUS_INFO = {
   pending: { label: 'Pending', icon: Clock, color: 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200' },
@@ -69,6 +70,9 @@ const AdBookingsManagement = () => {
     <main className="min-h-screen bg-neutral-50 dark:bg-zinc-950">
       <div className="container-editorial py-8 lg:py-10">
         {/* Header */}
+        <div className="mb-6">
+          <BackButton to="/dashboard" label="Back to Dashboard" />
+        </div>
         <div className="mb-8">
           <h1 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 inline-block">
             Ad Bookings

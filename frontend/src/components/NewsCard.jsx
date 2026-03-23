@@ -12,25 +12,30 @@ const NewsCard = ({ newsItem }) => {
   const location = newsItem.location || newsItem.coverage || '';
   console.log("Image value:", newsItem.image);
   return (
-    <article className="card-editorial group">
-      <Link to={`/news/${newsItem._id}`} className="block">
+    <article className="premium-card group relative">
+      <Link to={`/news/${newsItem._id}`} className="block h-full">
         {newsItem.image && (
-          <div className="aspect-[16/10] overflow-hidden">
+          <div className="aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
             <img
-              src={`${IMAGE_BASE_URL}${newsItem.image}`}
+              src={newsItem.image.startsWith('http') ? newsItem.image : `${IMAGE_BASE_URL}${newsItem.image}`}
               alt={title}
-              className="w-full h-full object-cover group-hover:opacity-95 transition-opacity duration-200"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
             />
           </div>
         )}
         <div className="p-5 sm:p-6">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
             <span className="caption text-editorial-red">
               {location || 'News'}
             </span>
-            <span className="text-editorial-muted dark:text-zinc-400 text-caption font-sans normal-case">
-              {new Date(newsItem.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            <span className="text-zinc-400 text-[11px] font-sans uppercase tracking-wider">
+              {new Date(newsItem.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
             </span>
+            {newsItem.views !== undefined && (
+              <span className="text-zinc-400 text-[11px] font-sans uppercase tracking-wider flex items-center gap-1">
+                • 👁️ {newsItem.views.toLocaleString()} views
+              </span>
+            )}
           </div>
           <h2 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-lg sm:text-xl leading-tight mb-2 line-clamp-2 group-hover:text-editorial-red transition-colors">
             {title}

@@ -1,11 +1,11 @@
 import AdBooking from '../models/AdBooking.js';
 import Ad from '../models/Ad.js';
 
-// Max simultaneous bookings per placement. Set to 1 = only one advertiser per slot at a time.
+// Max simultaneous bookings per placement. Increased to 5 to allow rotational setups.
 const MAX_ADS_PER_PLACEMENT = {
-  'header': 1,
-  'sidebar': 1,
-  'in-feed': 1
+  'header': 5,
+  'sidebar': 5,
+  'in-feed': 5
 };
 
 // Public: Book a new advertisement slot

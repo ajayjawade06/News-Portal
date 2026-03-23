@@ -74,12 +74,11 @@ const newsSchema = new mongoose.Schema({
       default: ''
     }
   },
-  // Location-based coverage: Replaces old coverage field (local/national/international)
-  // Allows filtering news by specific locations: maharashtra, chandrapur, korpana, rajura
-  // This is more useful for regional news portals that focus on specific geographic areas
+  // Location-based coverage for news filtering
+  // Includes national, international, and regional locations
   location: {
     type: String,
-    enum: ['maharashtra', 'chandrapur', 'korpana', 'rajura'],
+    enum: ['international', 'national', 'maharashtra', 'chandrapur', 'korpana', 'rajura'],
     required: true
   },
   category: {
@@ -92,6 +91,10 @@ const newsSchema = new mongoose.Schema({
     default: null
   },
   published: {
+    type: Boolean,
+    default: false
+  },
+  isFeatured: {
     type: Boolean,
     default: false
   },
