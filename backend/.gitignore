@@ -1,5 +1,6 @@
 node_modules/
 .env
-uploads/
+!uploads/ads/
+# uploads/
 *.log
 scripts/seedData.js
