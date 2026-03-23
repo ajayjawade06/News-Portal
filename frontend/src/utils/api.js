@@ -40,13 +40,17 @@ api.interceptors.response.use(
 // Utility to get user info from token
 export const getUserFromToken = () => {
   const token = localStorage.getItem('token');
-  if (!token) return null;
+  if (!token || typeof token !== 'string') return null;
 
   try {
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+    
     // Simple JWT decode (without library)
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(parts[1]));
     return payload;
-  } catch {
+  } catch (error) {
+    console.error('Error decoding token:', error);
     return null;
   }
 };
