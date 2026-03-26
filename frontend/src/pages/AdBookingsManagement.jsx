@@ -18,6 +18,14 @@ const AdBookingsManagement = () => {
   const [filter, setFilter] = useState('all');
   const [updatingId, setUpdatingId] = useState(null);
   const [totalRevenue, setTotalRevenue] = useState(0);
+  const fetchAnalytics = async () => {
+    try {
+      const analRes = await api.get('/ads/analytics');
+      setTotalRevenue(analRes.data.data.totalRevenue);
+    } catch (err) {
+      console.error('Failed to fetch analytics:', err);
+    }
+  };
 
   const fetchBookings = async () => {
     try {
@@ -43,6 +51,10 @@ const AdBookingsManagement = () => {
     try {
       const res = await api.patch(`/bookings/${id}/status`, { status });
       setBookings(prev => prev.map(b => b._id === id ? res.data.data : b));
+      // Update revenue immediately after status change
+      if (status === 'approved') {
+        fetchAnalytics();
+      }
     } catch {
       alert('Failed to update booking status.');
     } finally {
@@ -74,7 +86,7 @@ const AdBookingsManagement = () => {
           <BackButton to="/dashboard" label="Back to Dashboard" />
         </div>
         <div className="mb-8">
-          <h1 className="font-serif font-bold text-editorial-black dark:text-zinc-100 text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 inline-block">
+          <h1 className="font-bold text-editorial-black dark:text-zinc-100 text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 inline-block">
             Ad Bookings
           </h1>
           <p className="text-editorial-muted text-sm mt-2">Review and manage advertisement slot requests</p>

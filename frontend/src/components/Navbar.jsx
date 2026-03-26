@@ -18,7 +18,7 @@ const CATEGORIES = [
 const Navbar = () => {
   const { pathname } = useLocation();
   const isAdminPath = pathname.startsWith('/dashboard');
-  
+
   const setSelectedLanguage = useNews().setSelectedLanguage;
   const homeText = useText('Home');
   const dashboardText = useText('Dashboard');
@@ -66,21 +66,14 @@ const Navbar = () => {
         <div className="container-editorial">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-8">
-              <Link to="/" className="flex items-center gap-2 group">
-                <div className="w-10 h-10 bg-editorial-red rounded-xl flex items-center justify-center shadow-lg shadow-editorial-red/20 group-hover:rotate-12 transition-transform">
-                  <Monitor size={20} className="text-white" />
-                </div>
+              <Link to="/" className="flex items-center gap-3 group">
+                <img src="/image.png" alt="Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
+                <div className="h-8 w-px bg-neutral-200 dark:bg-zinc-800 hidden sm:block"></div>
                 <div className="hidden sm:block">
-                  <h2 className="font-serif font-black text-xl text-editorial-black dark:text-white leading-none">Console</h2>
-                  <p className="text-[10px] text-editorial-muted font-bold uppercase tracking-widest mt-0.5 opacity-60">Admin Systems</p>
+                  <h2 className="font-bold text-lg text-editorial-black dark:text-white leading-none">Dashboard</h2>
+                  <p className="text-[10px] text-editorial-red font-bold uppercase tracking-widest mt-0.5">Admin Control</p>
                 </div>
               </Link>
-
-              <nav className="hidden md:flex items-center gap-1 bg-neutral-100 dark:bg-zinc-800 p-1 rounded-xl">
-                 <Link to="/dashboard" className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${pathname === '/dashboard' ? 'bg-white dark:bg-zinc-700 text-editorial-red shadow-sm' : 'text-editorial-muted hover:text-editorial-black dark:hover:text-white'}`}>Central</Link>
-                 <Link to="/dashboard/manage" className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${pathname.includes('/manage') ? 'bg-white dark:bg-zinc-700 text-editorial-red shadow-sm' : 'text-editorial-muted hover:text-editorial-black dark:hover:text-white'}`}>Articles</Link>
-                 <Link to="/dashboard/analytics" className={`px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${pathname.includes('/analytics') ? 'bg-white dark:bg-zinc-700 text-editorial-red shadow-sm' : 'text-editorial-muted hover:text-editorial-black dark:hover:text-white'}`}>ROI Intel</Link>
-              </nav>
             </div>
 
             <div className="flex items-center gap-4">
@@ -91,17 +84,17 @@ const Navbar = () => {
               <div className="h-8 w-px bg-neutral-200 dark:bg-zinc-800 hidden sm:block"></div>
 
               <div className="flex items-center gap-3">
-                 <div className="hidden sm:flex flex-col items-end mr-1">
-                    <span className="text-xs font-black text-editorial-black dark:text-white">Editorial Admin</span>
-                    <span className="text-[10px] text-emerald-500 font-bold uppercase flex items-center gap-1"><ShieldCheck size={10}/> Verified Session</span>
-                 </div>
-                 <button 
+                <div className="hidden sm:flex flex-col items-end mr-1">
+                  <span className="text-xs font-black text-editorial-black dark:text-white">Editorial Admin</span>
+                  <span className="text-[10px] text-emerald-500 font-bold uppercase flex items-center gap-1"><ShieldCheck size={10} /> Verified Session</span>
+                </div>
+                <button
                   onClick={handleLogout}
                   className="w-10 h-10 flex items-center justify-center rounded-xl bg-editorial-red/10 text-editorial-red hover:bg-editorial-red hover:text-white transition-all shadow-sm"
                   title="Secure Logout"
-                 >
-                   <LogOut size={18} />
-                 </button>
+                >
+                  <LogOut size={18} />
+                </button>
               </div>
             </div>
           </div>

@@ -123,7 +123,7 @@ const AdsManagement = () => {
         </div>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
           <div>
-            <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 inline-block">
+            <h1 className="font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 inline-block">
               Ads Management
             </h1>
             <p className="text-editorial-muted text-sm mt-2">Manage website advertisements and placements</p>

@@ -46,7 +46,7 @@ const AdAnalytics = () => {
             <div className="mb-4">
               <BackButton to="/dashboard" label="Back to Console" />
             </div>
-            <h1 className="font-serif font-black text-editorial-black dark:text-white text-4xl tracking-tight">
+            <h1 className="font-black text-editorial-black dark:text-white text-4xl tracking-tight">
               Ad Intelligence <span className="text-editorial-red">&</span> Revenue
             </h1>
             <p className="text-editorial-muted text-base mt-2 max-w-lg">
@@ -85,7 +85,7 @@ const AdAnalytics = () => {
           {/* Plan Distribution */}
           <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-neutral-200 dark:border-zinc-800 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-               <h3 className="font-serif font-bold text-xl text-editorial-black dark:text-white flex items-center gap-2">
+               <h3 className="font-bold text-xl text-editorial-black dark:text-white flex items-center gap-2">
                  <PieIcon size={20} className="text-editorial-red" /> Plan Utilization
                </h3>
                <span className="text-[10px] font-bold text-editorial-muted uppercase tracking-widest">Market Share</span>
@@ -118,7 +118,7 @@ const AdAnalytics = () => {
           {/* Click Performance */}
           <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-neutral-200 dark:border-zinc-800 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-               <h3 className="font-serif font-bold text-xl text-editorial-black dark:text-white flex items-center gap-2">
+               <h3 className="font-bold text-xl text-editorial-black dark:text-white flex items-center gap-2">
                  <BarChart3 size={20} className="text-blue-500" /> Interaction Leaders
                </h3>
                <span className="text-[10px] font-bold text-editorial-muted uppercase tracking-widest">Engagement stats</span>
@@ -144,7 +144,7 @@ const AdAnalytics = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-5 bg-white dark:bg-zinc-900 rounded-3xl border border-neutral-200 dark:border-zinc-800 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
-               <h3 className="font-serif font-bold text-xl text-editorial-black dark:text-white">Placement ROI</h3>
+               <h3 className="font-bold text-xl text-editorial-black dark:text-white">Placement ROI</h3>
                <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-zinc-800 flex items-center justify-center">
                   <DollarSign size={14} className="text-emerald-500" />
                </div>
@@ -175,7 +175,7 @@ const AdAnalytics = () => {
 
           <div className="lg:col-span-7 bg-white dark:bg-zinc-900 rounded-3xl border border-neutral-200 dark:border-zinc-800 overflow-hidden shadow-sm">
             <div className="p-8 border-b border-neutral-100 dark:border-zinc-800 flex items-center justify-between">
-              <h3 className="font-serif font-bold text-xl text-editorial-black dark:text-white">Performance Leaderboard</h3>
+              <h3 className="font-bold text-xl text-editorial-black dark:text-white">Performance Leaderboard</h3>
               <div className="bg-editorial-red/10 text-editorial-red px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">
                  Top 10 Performers
               </div>

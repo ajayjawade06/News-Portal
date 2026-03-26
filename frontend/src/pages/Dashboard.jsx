@@ -80,7 +80,7 @@ const Dashboard = () => {
                   <Calendar size={12} /> {formatDate()}
                 </div>
               </div>
-              <h1 className="font-serif font-bold text-4xl text-editorial-black dark:text-white tracking-tight leading-tight">
+              <h1 className="font-bold text-4xl text-editorial-black dark:text-white tracking-tight leading-tight">
                 {greeting}, <span className="text-editorial-red">Admin</span>
               </h1>
               <p className="text-editorial-muted text-base mt-2 max-w-lg">
@@ -123,92 +123,18 @@ const Dashboard = () => {
                 <span className="bg-neutral-100 dark:bg-zinc-800 text-[10px] font-bold px-2 py-0.5 rounded text-editorial-muted">Live</span>
               </div>
               <p className="text-editorial-muted text-xs font-bold uppercase tracking-wider mb-1 opacity-70">{stat.label}</p>
-              <h3 className="text-3xl font-serif font-black text-editorial-black dark:text-white tracking-tight">
+              <h3 className="text-3xl font-black text-editorial-black dark:text-white tracking-tight">
                 {stat.value}
               </h3>
             </div>
           ))}
         </div>
 
-        {/* High-Impact Grid Sections */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Visual Entry: News Management */}
-          <div className="lg:col-span-2 group relative overflow-hidden bg-white dark:bg-zinc-900 rounded-3xl border border-neutral-200 dark:border-zinc-800 p-10 flex flex-col justify-between shadow-sm hover:shadow-2xl transition-all duration-700">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-editorial-red/5 rounded-full -mr-20 -mt-20 blur-3xl transition-opacity group-hover:opacity-100 opacity-50"></div>
-            
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-14 h-14 rounded-2xl bg-editorial-black dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center shadow-lg group-hover:rotate-6 transition-transform duration-500">
-                  <BookOpen size={28} />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-serif font-bold text-editorial-black dark:text-white">Editorial Control Center</h3>
-                  <p className="text-editorial-muted text-sm italic">Mastering the narrative</p>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-8 mb-10">
-                <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-zinc-950 border border-neutral-100 dark:border-zinc-800">
-                  <p className="text-editorial-muted text-xs font-bold uppercase mb-1">Efficiency Ratio</p>
-                  <p className="text-2xl font-black text-editorial-black dark:text-white">92.4%</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-neutral-50 dark:bg-zinc-950 border border-neutral-100 dark:border-zinc-800">
-                  <p className="text-editorial-muted text-xs font-bold uppercase mb-1">Weekly Growth</p>
-                  <p className="text-2xl font-black text-emerald-500">+14.2%</p>
-                </div>
-              </div>
-
-              <p className="text-editorial-muted text-lg leading-relaxed mb-10 max-w-xl">
-                Your content pipeline is active. Review, categorize, and deploy breaking news to maintain your portal's leading edge.
-              </p>
-            </div>
-
-            <Link 
-              to="/dashboard/manage" 
-              className="inline-flex items-center gap-3 text-editorial-black dark:text-white font-black text-lg group/btn hover:gap-5 transition-all duration-300"
-            >
-              Enterprise Article Manager <ChevronRight size={20} className="text-editorial-red" />
-            </Link>
-          </div>
-
-          {/* Premium Entry: Ad Analytics */}
-          <div className="group relative overflow-hidden bg-zinc-900 dark:bg-zinc-950 rounded-3xl p-10 flex flex-col justify-between shadow-2xl hover:scale-[1.02] transition-all duration-500">
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 via-transparent to-editorial-red/20 opacity-30"></div>
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl"></div>
-            
-            <div className="relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center mb-10 ring-1 ring-emerald-500/30">
-                <BarChart2 size={28} />
-              </div>
-              <h3 className="text-2xl font-serif font-bold text-white mb-4">Ad Performance Intel</h3>
-              <p className="text-zinc-400 text-base leading-relaxed mb-10">
-                Deep dive into revenue streams, click-through patterns, and plan ROI distribution.
-              </p>
-
-              <div className="space-y-4 mb-10">
-                <div className="flex items-center justify-between py-2 border-b border-white/10">
-                  <span className="text-zinc-500 text-sm">Ad Revenue</span>
-                  <span className="text-emerald-400 font-bold">₹{stats.totalRevenue.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-white/10">
-                  <span className="text-zinc-500 text-sm">Active Ads</span>
-                  <span className="text-white font-bold">{stats.totalAdsRunning}</span>
-                </div>
-              </div>
-            </div>
-
-            <Link 
-              to="/dashboard/analytics" 
-              className="relative z-10 w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-black transition-all duration-300 flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40"
-            >
-              <TrendingUp size={20} /> Open Analytics Suite
-            </Link>
-          </div>
-        </div>
-
-        {/* Secondary Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Action Grid: All Equal Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {[
+            { to: '/dashboard/manage', label: 'News Management', desc: 'Manage all articles & drafts', icon: BookOpen, color: 'text-editorial-red', bg: 'bg-editorial-red/10' },
+            { to: '/dashboard/analytics', label: 'Revenue Analytics', desc: 'Financial & ROI telemetry', icon: BarChart2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
             { to: '/dashboard/ads', label: 'Campaign Manager', desc: 'Schedule & design ads', icon: Layout, color: 'text-amber-500', bg: 'bg-amber-500/10' },
             { to: '/dashboard/ad-bookings', label: 'Client Bookings', desc: 'Manage incoming requests', icon: PlusCircle, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
             { to: '/dashboard/moderation', label: 'Content Guard', desc: 'Review & approve posts', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' }
@@ -216,18 +142,20 @@ const Dashboard = () => {
             <Link 
               key={i}
               to={item.to} 
-              className="group card-editorial p-6 bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 flex items-center justify-between hover:border-neutral-800 dark:hover:border-zinc-400 hover:shadow-xl transition-all duration-300"
+              className="group bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 p-8 rounded-3xl flex flex-col items-start justify-between hover:border-editorial-red dark:hover:border-editorial-red hover:shadow-2xl transition-all duration-500 hover:-translate-y-1"
             >
-              <div className="flex items-center gap-4">
-                <div className={`${item.bg} ${item.color} w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110`}>
-                  <item.icon size={22} />
+              <div className="w-full">
+                <div className={`${item.bg} ${item.color} w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110 group-hover:rotate-6 duration-500`}>
+                  <item.icon size={28} />
                 </div>
-                <div>
-                  <h4 className="font-bold text-editorial-black dark:text-zinc-100 text-lg tracking-tight">{item.label}</h4>
-                  <p className="text-xs text-editorial-muted font-medium">{item.desc}</p>
-                </div>
+                <h4 className="font-bold text-editorial-black dark:text-zinc-100 text-xl tracking-tight mb-2">{item.label}</h4>
+                <p className="text-sm text-editorial-muted font-medium mb-8 leading-relaxed">{item.desc}</p>
               </div>
-              <ChevronRight size={20} className="text-editorial-muted group-hover:text-editorial-red opacity-0 group-hover:opacity-100 -translate-x-4 group-hover:translate-x-0 transition-all" />
+              
+              <div className="flex items-center gap-2 text-editorial-red text-xs font-black uppercase tracking-widest group/btn">
+                <span>Manage Suite</span>
+                <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+              </div>
             </Link>
           ))}
         </div>

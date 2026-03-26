@@ -151,8 +151,8 @@ const CheckoutModal = ({ plan, onClose }) => {
       if (isEnterprise && !endDate) {
         return setError('Please select an end date for your custom campaign.');
       }
-      if (isEnterprise && new Date(startDate) >= new Date(endDate)) {
-        return setError('End date must be after the start date.');
+      if (isEnterprise && new Date(startDate) > new Date(endDate)) {
+        return setError('End date must be on or after the start date.');
       }
       if (isEnterprise && total < 1) {
         return setError('Please select at least 1 day.');
@@ -244,8 +244,7 @@ const CheckoutModal = ({ plan, onClose }) => {
         },
         prefill: {
           name: advertiserName,
-          email: email,
-          contact: ""
+          email: email
         },
         notes: {
           address: "Lokawani Corporate Office"
@@ -359,7 +358,7 @@ const CheckoutModal = ({ plan, onClose }) => {
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    min={startDate ? addDays(startDate, 1) : new Date().toISOString().split('T')[0]}
+                    min={startDate || new Date().toISOString().split('T')[0]}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
                   />
                 </div>
