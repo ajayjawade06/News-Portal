@@ -103,10 +103,6 @@ const CheckoutModal = ({ plan, onClose }) => {
   const [email, setEmail] = useState('');
   const [businessName, setBusinessName] = useState('');
 
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-
   // Fetch booked date ranges whenever placement changes
   const fetchBookedDates = useCallback(async (pl) => {
     setBookedLoading(true);
@@ -178,41 +174,98 @@ const CheckoutModal = ({ plan, onClose }) => {
   const prevStep = () => setStep(step - 1);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!cardNumber || !expiry || !cvv) {
-      return setError('Please fill in mock payment details.');
-    }
-
+    if (e) e.preventDefault();
+    
     setLoading(true);
     setError('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const amountPaid = isEnterprise
+      const amountToPay = isEnterprise
         ? enterpriseCost
         : parseInt(plan.price.replace(/,/g, ''), 10);
 
-      const response = await api.post('/bookings/book', {
-        advertiserName,
-        email,
-        businessName,
-        planId: plan.id,
-        placement,
-        startDate,
-        endDate: effectiveEndDate,
-        amountPaid
+      // 1. Create Order on Backend
+      const orderRes = await api.post('/razorpay/order', {
+        amount: amountToPay,
+        receipt: `receipt_booking_${Date.now()}`
       });
 
-      if (!response.data?.success) {
-        throw new Error(response.data?.message || 'Error booking advertisement');
+      if (!orderRes.data?.success) {
+        throw new Error(orderRes.data?.message || 'Failed to create order');
       }
 
-      setStep(4);
+      const { order } = orderRes.data;
+
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+        amount: order.amount,
+        currency: order.currency,
+        name: "Lokawani News",
+        description: `${plan.name} Ad Booking`,
+        image: "/image.png",
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            // 3. Verify Payment on Backend
+            const verifyRes = await api.post('/razorpay/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            if (verifyRes.data?.success) {
+              // 4. Finalize Booking
+              const bookingRes = await api.post('/bookings/book', {
+                advertiserName,
+                email,
+                businessName,
+                planId: plan.id,
+                placement,
+                startDate,
+                endDate: effectiveEndDate,
+                amountPaid: amountToPay,
+                razorpay_payment_id: response.razorpay_payment_id // Optional: store payment ID
+              });
+
+              if (bookingRes.data?.success) {
+                setStep(4);
+              } else {
+                setError(bookingRes.data?.message || 'Payment verified but booking failed. Please contact support.');
+              }
+            } else {
+              setError('Payment verification failed. Please contact support.');
+            }
+          } catch (err) {
+            setError('Error during payment verification: ' + (err.response?.data?.message || err.message));
+          } finally {
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: advertiserName,
+          email: email,
+          contact: ""
+        },
+        notes: {
+          address: "Lokawani Corporate Office"
+        },
+        theme: {
+          color: "#dc2626" // editorial-red
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+          }
+        }
+      };
+
+      const rzp1 = new window.Razorpay(options);
+      rzp1.open();
+
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || 'Server error. Dates might be fully booked.';
+      const msg = err.response?.data?.message || err.message || 'Error initiating payment.';
       setError(msg);
-    } finally {
       setLoading(false);
     }
   };
@@ -389,54 +442,39 @@ const CheckoutModal = ({ plan, onClose }) => {
             </div>
           )}
 
-          {/* STEP 3: Mock Payment */}
+                  {/* STEP 3: Review & Pay */}
           {step === 3 && (
-            <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
-              <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 3: Mock Payment</h3>
-              <p className="text-xs text-editorial-muted mb-2">This is a mock checkout. Enter any dummy card data.</p>
+            <div className="space-y-4 animate-fade-in">
+              <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 3: Review & Pay</h3>
+              <p className="text-xs text-editorial-muted mb-4">Please review your booking details before proceeding to payment.</p>
 
-              {/* Summary box */}
-              <div className="bg-neutral-50 dark:bg-zinc-800 rounded-md px-4 py-3 text-sm flex justify-between items-center mb-2">
-                <span className="text-gray-600 dark:text-zinc-400">Total Due</span>
-                <span className="font-bold text-editorial-red text-base">₹{displayAmount}</span>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Card Number</label>
-                <input
-                  type="text"
-                  value={cardNumber}
-                  onChange={(e) => setCardNumber(e.target.value)}
-                  placeholder="0000 0000 0000 0000"
-                  maxLength="16"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100 tracking-widest"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Expiry Date</label>
-                  <input
-                    type="text"
-                    value={expiry}
-                    onChange={(e) => setExpiry(e.target.value)}
-                    placeholder="MM/YY"
-                    maxLength="5"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
-                  />
+              <div className="bg-neutral-50 dark:bg-zinc-800 rounded-lg p-4 space-y-3 text-sm">
+                <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                  <span className="text-gray-600 dark:text-zinc-400">Plan</span>
+                  <span className="font-semibold text-editorial-black dark:text-zinc-100">{plan.name}</span>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">CVV</label>
-                  <input
-                    type="text"
-                    value={cvv}
-                    onChange={(e) => setCvv(e.target.value)}
-                    placeholder="123"
-                    maxLength="3"
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
-                  />
+                <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                  <span className="text-gray-600 dark:text-zinc-400">Placement</span>
+                  <span className="font-semibold text-editorial-black dark:text-zinc-100 capitalize">{placement}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                  <span className="text-gray-600 dark:text-zinc-400">Campaign Dates</span>
+                  <span className="font-semibold text-editorial-black dark:text-zinc-100">{startDate} to {effectiveEndDate}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                  <span className="text-gray-600 dark:text-zinc-400">Advertiser</span>
+                  <span className="font-semibold text-editorial-black dark:text-zinc-100">{advertiserName} ({businessName})</span>
+                </div>
+                <div className="flex justify-between pt-1">
+                  <span className="text-gray-600 dark:text-zinc-400 font-bold">Total Amount</span>
+                  <span className="font-bold text-editorial-red text-lg">₹{displayAmount}</span>
                 </div>
               </div>
-            </form>
+
+              <div className="text-[10px] text-gray-400 text-center px-4">
+                By clicking "Pay Now", you'll be redirected to Razorpay's secure payment gateway.
+              </div>
+            </div>
           )}
 
           {/* STEP 4: Success */}
