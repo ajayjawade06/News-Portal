@@ -152,9 +152,9 @@ const Advertising = () => {
                 className="w-full py-2 bg-white text-editorial-red rounded hover:bg-gray-100 transition-colors font-bold">Choose Premium</button>
             </div>
 
-            {/* Enterprise Plan */}
+            {/* Custom Plan (Internal ID: enterprise) */}
             <div className="bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow relative flex flex-col">
-              <h3 className="text-xl font-bold dark:text-zinc-100">Enterprise</h3>
+              <h3 className="text-xl font-bold dark:text-zinc-100">Custom</h3>
               <div className="text-3xl font-bold text-neutral-800 dark:text-neutral-200 my-4">Custom</div>
               <ul className="text-neutral-600 dark:text-zinc-400 space-y-3 mb-8 flex-1">
                 <li className="flex items-start gap-2"><span className="text-green-500">✓</span> Sponsored articles</li>
@@ -163,7 +163,7 @@ const Advertising = () => {
                 <li className="flex items-start gap-2"><span className="text-green-500">✓</span> Account manager</li>
               </ul>
               <button
-                onClick={() => handleOpenCheckout('enterprise', 'Enterprise', 'Custom')}
+                onClick={() => handleOpenCheckout('enterprise', 'Custom', 'Custom')}
                 className="w-full py-2 border border-neutral-400 text-neutral-600 dark:text-neutral-300 dark:border-zinc-500 rounded hover:bg-neutral-100 dark:hover:bg-zinc-700 transition-colors">Get Custom Quote</button>
             </div>
           </div>

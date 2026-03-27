@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
-import { CheckCircle, XCircle, Clock, Calendar, User, Mail, Building, CreditCard, AlertCircle, DollarSign } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Calendar, User, Mail, Building, CreditCard, AlertCircle, DollarSign, Phone } from 'lucide-react';
 import BackButton from '../components/BackButton';
 
 const STATUS_INFO = {
@@ -169,7 +169,11 @@ const AdBookingsManagement = () => {
                         </div>
                         <div className="flex items-center gap-2 text-editorial-muted">
                           <Mail size={14} className="shrink-0" />
-                          <a href={`mailto:${booking.email}`} className="text-editorial-red hover:underline">{booking.email}</a>
+                          <a href={`mailto:${booking.email}`} className="text-editorial-red hover:underline break-all">{booking.email}</a>
+                        </div>
+                        <div className="flex items-center gap-2 text-editorial-muted">
+                          <Phone size={14} className="shrink-0" />
+                          <a href={`tel:${booking.phone}`} className="text-editorial-black dark:text-zinc-200 hover:text-editorial-red transition-colors">{booking.phone}</a>
                         </div>
                         <div className="flex items-center gap-2 text-editorial-muted">
                           <Building size={14} className="shrink-0" />
