@@ -102,6 +102,7 @@ const CheckoutModal = ({ plan, onClose }) => {
   const [advertiserName, setAdvertiserName] = useState('');
   const [email, setEmail] = useState('');
   const [businessName, setBusinessName] = useState('');
+  const [phone, setPhone] = useState('');
 
   // Fetch booked date ranges whenever placement changes
   const fetchBookedDates = useCallback(async (pl) => {
@@ -163,8 +164,8 @@ const CheckoutModal = ({ plan, onClose }) => {
     }
 
     if (step === 2) {
-      if (!advertiserName || !email || !businessName) {
-        return setError('Please fill in all advertiser details.');
+      if (!advertiserName || !email || !businessName || !phone) {
+        return setError('Please fill in all advertiser details (including phone).');
       }
     }
 
@@ -220,6 +221,7 @@ const CheckoutModal = ({ plan, onClose }) => {
                 advertiserName,
                 email,
                 businessName,
+                phone,
                 planId: plan.id,
                 placement,
                 startDate,
@@ -270,8 +272,8 @@ const CheckoutModal = ({ plan, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
-      <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl w-full max-w-lg overflow-hidden relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4 py-6">
+      <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-xl w-full max-w-lg max-h-full overflow-y-auto relative custom-scrollbar">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 dark:text-zinc-400 dark:hover:text-zinc-100 z-10 text-lg leading-none"
@@ -438,6 +440,16 @@ const CheckoutModal = ({ plan, onClose }) => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Phone Number</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+91 98765 43210"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
+                />
+              </div>
             </div>
           )}
 
@@ -461,8 +473,12 @@ const CheckoutModal = ({ plan, onClose }) => {
                   <span className="font-semibold text-editorial-black dark:text-zinc-100">{startDate} to {effectiveEndDate}</span>
                 </div>
                 <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
-                  <span className="text-gray-600 dark:text-zinc-400">Advertiser</span>
-                  <span className="font-semibold text-editorial-black dark:text-zinc-100">{advertiserName} ({businessName})</span>
+                  <span className="text-gray-600 dark:text-zinc-400">Business</span>
+                  <span className="font-semibold text-editorial-black dark:text-zinc-100">{businessName}</span>
+                </div>
+                <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                  <span className="text-gray-600 dark:text-zinc-400">Contact</span>
+                  <span className="font-semibold text-editorial-black dark:text-zinc-100">{advertiserName} ({phone})</span>
                 </div>
                 <div className="flex justify-between pt-1">
                   <span className="text-gray-600 dark:text-zinc-400 font-bold">Total Amount</span>

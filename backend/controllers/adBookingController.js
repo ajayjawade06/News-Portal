@@ -11,7 +11,7 @@ const MAX_ADS_PER_PLACEMENT = {
 // Public: Book a new advertisement slot
 export const bookAdvertisement = async (req, res) => {
   try {
-    const { advertiserName, email, businessName, planId, placement, startDate, endDate, amountPaid } = req.body;
+    const { advertiserName, email, phone, businessName, planId, placement, startDate, endDate, amountPaid } = req.body;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -65,6 +65,7 @@ export const bookAdvertisement = async (req, res) => {
       advertiserName,
       email,
       businessName,
+      phone,
       planId,
       placement,
       startDate: start,

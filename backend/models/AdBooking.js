@@ -18,9 +18,14 @@ const adBookingSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    phone: {
+      type: String,
+      required: true,
+      trim: true
+    },
     planId: {
       type: String,
-      enum: ['basic', 'standard', 'premium'],
+      enum: ['basic', 'standard', 'premium', 'enterprise'],
       required: true
     },
     placement: {
