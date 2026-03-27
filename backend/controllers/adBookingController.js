@@ -16,10 +16,10 @@ export const bookAdvertisement = async (req, res) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
-    if (start >= end) {
+    if (start > end) {
       return res.status(400).json({
         success: false,
-        message: 'End date must be after start date'
+        message: 'End date must be on or after start date'
       });
     }
 

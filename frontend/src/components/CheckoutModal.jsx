@@ -138,7 +138,7 @@ const CheckoutModal = ({ plan, onClose }) => {
 
   const handleStartDateChange = (val) => {
     setStartDate(val);
-    if (isEnterprise && endDate && val >= endDate) setEndDate('');
+    if (isEnterprise && endDate && val > endDate) setEndDate('');
   };
 
   const nextStep = () => {
