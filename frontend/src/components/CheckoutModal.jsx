@@ -195,9 +195,9 @@ const CheckoutModal = ({ plan, onClose }) => {
         throw new Error(orderRes.data?.message || 'Failed to create order');
       }
 
-      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
+      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || import.meta.env.VITE_RAZORPAY_ID;
       if (!keyId) {
-        throw new Error('Razorpay Key ID is missing. Please check your environment variables (VITE_RAZORPAY_KEY_ID).');
+        throw new Error('Razorpay Key ID is missing. Please check your environment variables (VITE_RAZORPAY_KEY_ID or VITE_RAZORPAY_ID).');
       }
 
       // 2. Open Razorpay Checkout
