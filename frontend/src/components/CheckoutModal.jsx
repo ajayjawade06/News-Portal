@@ -195,11 +195,14 @@ const CheckoutModal = ({ plan, onClose }) => {
         throw new Error(orderRes.data?.message || 'Failed to create order');
       }
 
-      const { order } = orderRes.data;
+      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID;
+      if (!keyId) {
+        throw new Error('Razorpay Key ID is missing. Please check your environment variables (VITE_RAZORPAY_KEY_ID).');
+      }
 
       // 2. Open Razorpay Checkout
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Enter the Key ID generated from the Dashboard
+        key: keyId,
         amount: order.amount,
         currency: order.currency,
         name: "Lokawani News",
