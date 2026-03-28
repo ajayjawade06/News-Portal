@@ -204,7 +204,7 @@ const CheckoutModal = ({ plan, onClose }) => {
         currency: order.currency,
         name: "Lokawani News",
         description: `${plan.name} Ad Booking`,
-        image: "/image.png",
+        image: "/photo/image.png",
         order_id: order.id,
         handler: async function (response) {
           try {

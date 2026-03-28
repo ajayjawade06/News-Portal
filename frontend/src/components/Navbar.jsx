@@ -3,7 +3,8 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
 import { Layout, LogOut, Moon, Sun, Globe, Monitor, ShieldCheck } from 'lucide-react';
-import logo from '../image.png';
+// logo import removed - using public asset /photo/image.png instead
+const logo = '/photo/image.png';
 
 const CATEGORIES = [
   { path: '/', labelKey: 'nav.home' },
@@ -68,7 +69,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-8">
               <Link to="/" className="flex items-center gap-3 group">
-                <img src={logo} alt="Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
+                <img src={logo} alt="Lokawani Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
                 <div className="h-8 w-px bg-neutral-200 dark:bg-zinc-800 hidden sm:block"></div>
                 <div className="hidden sm:block">
                   <h2 className="font-bold text-lg text-editorial-black dark:text-white leading-none">Dashboard</h2>
