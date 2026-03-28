@@ -200,6 +200,8 @@ const CheckoutModal = ({ plan, onClose }) => {
         throw new Error('Razorpay Key ID is missing. Please check your environment variables (VITE_RAZORPAY_KEY_ID or VITE_RAZORPAY_ID).');
       }
 
+      const { order } = orderRes.data;
+
       // 2. Open Razorpay Checkout
       const options = {
         key: keyId,
