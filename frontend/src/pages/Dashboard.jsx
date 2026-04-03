@@ -4,7 +4,7 @@ import api from '../utils/api';
 import useText from '../hooks/useText';
 import { 
   TrendingUp, Users, DollarSign, MousePointer, BarChart2, 
-  PlusCircle, Layout, BookOpen, Clock, Calendar, ChevronRight, Sparkles 
+  PlusCircle, Layout, BookOpen, Clock, Calendar, ChevronRight, Sparkles, Tag, Download
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -136,8 +136,10 @@ const Dashboard = () => {
             { to: '/dashboard/manage', label: 'News Management', desc: 'Manage all articles & drafts', icon: BookOpen, color: 'text-editorial-red', bg: 'bg-editorial-red/10' },
             { to: '/dashboard/analytics', label: 'Revenue Analytics', desc: 'Financial & ROI telemetry', icon: BarChart2, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
             { to: '/dashboard/ads', label: 'Campaign Manager', desc: 'Schedule & design ads', icon: Layout, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+            { to: '/dashboard/plans', label: 'Ad Plans & Pricing', desc: 'Manage packages & discounts', icon: Tag, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
             { to: '/dashboard/ad-bookings', label: 'Client Bookings', desc: 'Manage incoming requests', icon: PlusCircle, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-            { to: '/dashboard/moderation', label: 'Content Guard', desc: 'Review & approve posts', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' }
+            { to: '/dashboard/moderation', label: 'Content Guard', desc: 'Review & approve posts', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+            { to: '/dashboard/reports', label: 'Data & Reports', desc: 'Download CSV & PDF logs', icon: Download, color: 'text-cyan-500', bg: 'bg-cyan-500/10' }
           ].map((item, i) => (
             <Link 
               key={i}

@@ -25,6 +25,8 @@ import ModerationDashboard from './pages/ModerationDashboard';
 import AdsManagement from './pages/AdsManagement';
 import AdBookingsManagement from './pages/AdBookingsManagement';
 import AdAnalytics from './pages/AdAnalytics';
+import AdPlansManagement from './pages/AdPlansManagement';
+import AdminReports from './pages/AdminReports';
 
 const AppContent = () => {
   const { pathname } = useLocation();
@@ -111,10 +113,26 @@ const AppContent = () => {
             }
           />
           <Route
+            path="/dashboard/plans"
+            element={
+              <ProtectedRoute>
+                <AdPlansManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/dashboard/analytics"
             element={
               <ProtectedRoute>
                 <AdAnalytics />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/reports"
+            element={
+              <ProtectedRoute>
+                <AdminReports />
               </ProtectedRoute>
             }
           />

@@ -275,18 +275,31 @@ export const getAnalyticsSummary = async (req, res) => {
     const totalClicks = ads.reduce((s, a) => s + (a.clicks || 0), 0);
     const avgCtr = totalViews > 0 ? ((totalClicks / totalViews) * 100).toFixed(2) : '0.00';
 
-    // Chart Data: Plan Distribution
-    const planCounts = ads.reduce((acc, ad) => {
-      acc[ad.plan] = (acc[ad.plan] || 0) + 1;
-      return acc;
-    }, {});
-    
-    const planDistribution = [
-      { name: 'Basic', value: planCounts['basic'] || 0, color: '#ef4444' }, // editorial red
-      { name: 'Standard', value: planCounts['standard'] || 0, color: '#1f2937' }, // ink
-      { name: 'Premium', value: planCounts['premium'] || 0, color: '#2563eb' }, // blue
-      { name: 'Enterprise', value: planCounts['enterprise'] || 0, color: '#fbbf24' } // yellow
-    ];
+    // Chart Data: dynamic Plan Distribution and Plan Telemetry
+    const colors = ['#ef4444', '#1f2937', '#2563eb', '#fbbf24', '#10b981', '#8b5cf6', '#ec4899'];
+    const uniquePlans = [...new Set([...ads.map(a => a.plan || 'No Plan'), ...approvedBookings.map(b => b.planId || 'No Plan')])];
+
+    const planDistribution = uniquePlans.map((plan, idx) => {
+      const matchBookings = approvedBookings.filter(b => (b.planId || 'No Plan') === plan).length;
+      const matchAds = ads.filter(a => (a.plan || 'No Plan') === plan).length;
+      return {
+        name: typeof plan === 'string' ? plan.replace('-', ' ') : 'Unknown',
+        value: matchBookings + matchAds,
+        color: colors[idx % colors.length]
+      };
+    }).filter(p => p.value > 0);
+
+    const planTelemetryData = uniquePlans.map((plan) => {
+      const manualRev = activeAds.filter(a => (a.plan || 'No Plan') === plan).reduce((sum, a) => sum + (a.price || 0), 0);
+      const bookingRev = approvedBookings.filter(b => (b.planId || 'No Plan') === plan).reduce((sum, b) => sum + (b.amountPaid || 0), 0);
+      const clicks = ads.filter(a => (a.plan || 'No Plan') === plan).reduce((sum, a) => sum + (a.clicks || 0), 0);
+      
+      return {
+        name: typeof plan === 'string' ? plan.replace('-', ' ') : 'Unknown',
+        revenue: manualRev + bookingRev,
+        clicks: clicks
+      };
+    }).filter(p => p.revenue > 0 || p.clicks > 0);
 
     // Chart Data: Click Performance (Top 5)
     const topAdsByClicks = [...ads]
@@ -319,6 +332,7 @@ export const getAnalyticsSummary = async (req, res) => {
         totalViews,
         avgCtr,
         planDistribution,
+        planTelemetryData,
         topAdsByClicks,
         placementRevenueData,
         ads // full list for tables

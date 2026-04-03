@@ -25,7 +25,6 @@ const adBookingSchema = new mongoose.Schema(
     },
     planId: {
       type: String,
-      enum: ['basic', 'standard', 'premium', 'enterprise'],
       required: true
     },
     placement: {

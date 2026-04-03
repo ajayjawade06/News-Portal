@@ -49,7 +49,6 @@ const adSchema = new mongoose.Schema(
     clicks: { type: Number, default: 0 },
     plan: {
       type: String,
-      enum: ['basic', 'standard', 'premium', 'enterprise', 'none'],
       default: 'none'
     },
     price: {

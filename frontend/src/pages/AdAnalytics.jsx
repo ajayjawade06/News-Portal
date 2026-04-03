@@ -81,7 +81,7 @@ const AdAnalytics = () => {
         </div>
 
         {/* Charts Section with Glass Containers */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           {/* Plan Distribution */}
           <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-neutral-200 dark:border-zinc-800 p-8 shadow-sm">
             <div className="flex items-center justify-between mb-8">
@@ -134,6 +134,30 @@ const AdAnalytics = () => {
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}
                   />
                   <Bar dataKey="clicks" fill="#2563eb" radius={[6, 6, 0, 0]} barSize={32} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          {/* Revenue by Plan */}
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-neutral-200 dark:border-zinc-800 p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-8">
+               <h3 className="font-bold text-xl text-editorial-black dark:text-white flex items-center gap-2">
+                 <DollarSign size={20} className="text-emerald-500" /> Plan Revenue Yield
+               </h3>
+               <span className="text-[10px] font-bold text-editorial-muted uppercase tracking-widest">Financial metrics</span>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={analytics?.planTelemetryData || []}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                  <XAxis dataKey="name" fontSize={10} axisLine={false} tickLine={false} tick={{fill: '#94a3b8'}} className="capitalize" />
+                  <YAxis fontSize={10} axisLine={false} tickLine={false} tick={{fill: '#94a3b8'}} />
+                  <Tooltip 
+                    cursor={{fill: '#f8fafc'}}
+                    formatter={(value) => `₹${value.toLocaleString()}`}
+                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.05)' }}
+                  />
+                  <Bar dataKey="revenue" fill="#10b981" radius={[6, 6, 0, 0]} barSize={32} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
