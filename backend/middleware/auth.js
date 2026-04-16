@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import Reporter from '../models/Reporter.js';
+import User from '../models/User.js';
 
 /**
  * Middleware to authenticate reporter using JWT token
@@ -53,6 +54,45 @@ export const authenticateReporter = async (req, res, next) => {
       message: 'Authentication error', 
       error: error.message 
     });
+  }
+};
+
+/**
+ * Middleware to authenticate regular user using JWT token
+ */
+export const authenticateUser = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'No token provided. Access denied.' 
+      });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findById(decoded.id).select('-password');
+    
+    if (!user) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Invalid token. User not found.' 
+      });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ success: false, message: 'Invalid token.' });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, message: 'Token expired.' });
+    }
+    res.status(500).json({ success: false, message: 'Authentication error', error: error.message });
   }
 };
 

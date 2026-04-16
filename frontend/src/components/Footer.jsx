@@ -61,8 +61,8 @@ const Footer = () => {
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/login" className="text-sm text-editorial-muted dark:text-zinc-400 hover:text-editorial-red hover:translate-x-1 inline-block transition-transform">
-                  Reporter {loginText}
+                <Link to="/user/login" className="text-sm text-editorial-muted dark:text-zinc-400 hover:text-editorial-red hover:translate-x-1 inline-block transition-transform">
+                  {loginText}
                 </Link>
               </li>
               <li>

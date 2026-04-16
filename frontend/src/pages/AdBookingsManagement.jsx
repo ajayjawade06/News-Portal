@@ -149,6 +149,11 @@ const AdBookingsManagement = () => {
                     <div className="flex-1 space-y-3">
                       {/* Plan + Status Badge */}
                       <div className="flex flex-wrap items-center gap-2">
+                        {booking.bookingId && (
+                          <span className="text-xs font-bold text-editorial-red bg-red-50 dark:bg-red-950/20 px-2 py-0.5 rounded-full border border-editorial-red/20">
+                            {booking.bookingId}
+                          </span>
+                        )}
                         <span className="font-bold text-editorial-black dark:text-zinc-100 text-lg">
                           {PLAN_LABELS[booking.planId] || booking.planId} Plan
                         </span>

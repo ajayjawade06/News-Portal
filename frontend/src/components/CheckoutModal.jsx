@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import api from '../utils/api';
+import { useUserAuth } from '../context/UserAuthContext';
+import { Link } from 'react-router-dom';
 
 // Per-day rates for Enterprise custom pricing
 const ENTERPRISE_RATES = {
@@ -42,6 +44,7 @@ function countOverlaps(bookedRanges, start, end) {
 }
 
 const CheckoutModal = ({ plan, onClose }) => {
+  const { user, isAuthenticated } = useUserAuth();
   const isCustom = plan.isCustom;
   const durationDays = plan.durationDays || 7;
   const isFixedDuration = !isCustom;
@@ -49,6 +52,7 @@ const CheckoutModal = ({ plan, onClose }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [bookingId, setBookingId] = useState('');
 
   // Fetch Full Plan details to get allowed placements
   const [planDetails, setPlanDetails] = useState(null);
@@ -62,11 +66,21 @@ const CheckoutModal = ({ plan, onClose }) => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [placement, setPlacement] = useState('');
-  
-  const [advertiserName, setAdvertiserName] = useState('');
-  const [email, setEmail] = useState('');
-  const [businessName, setBusinessName] = useState('');
-  const [phone, setPhone] = useState('');
+
+  const [advertiserName, setAdvertiserName] = useState(user ? `${user.firstName} ${user.lastName}` : '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [businessName, setBusinessName] = useState(user?.businessName || '');
+  const [phone, setPhone] = useState(user?.phone || '');
+
+  // Pre-fill user data if available
+  useEffect(() => {
+    if (user) {
+      if (!advertiserName) setAdvertiserName(`${user.firstName} ${user.lastName}`);
+      if (!email) setEmail(user.email);
+      if (!businessName) setBusinessName(user.businessName || '');
+      if (!phone) setPhone(user.phone || '');
+    }
+  }, [user]);
 
   // Fetch plan info
   useEffect(() => {
@@ -119,9 +133,9 @@ const CheckoutModal = ({ plan, onClose }) => {
     () => countDays(startDate, effectiveEndDate),
     [startDate, effectiveEndDate]
   );
-  
+
   const enterpriseCost = weekdays * ENTERPRISE_RATES.weekday + weekends * ENTERPRISE_RATES.weekend;
-  
+
   // Calculate price with discount
   const basePrice = isCustom ? enterpriseCost : plan.price;
   const finalPrice = Math.round(basePrice * (1 - (plan.discountPercentage / 100)));
@@ -166,7 +180,7 @@ const CheckoutModal = ({ plan, onClose }) => {
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
-    
+
     setLoading(true);
     setError('');
 
@@ -224,6 +238,7 @@ const CheckoutModal = ({ plan, onClose }) => {
               });
 
               if (bookingRes.data?.success) {
+                setBookingId(bookingRes.data.data?.bookingId || '');
                 setStep(4);
               } else {
                 setError(bookingRes.data?.message || 'Payment verified but booking failed.');
@@ -245,7 +260,7 @@ const CheckoutModal = ({ plan, onClose }) => {
           color: "#dc2626"
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             setLoading(false);
           }
         }
@@ -283,11 +298,11 @@ const CheckoutModal = ({ plan, onClose }) => {
             {isCustom
               ? 'Custom Pricing (Calculated dynamically)'
               : (
-                  <span>
-                    {plan.discountPercentage > 0 && <span className="line-through text-red-200 mr-1">₹{plan.price}</span>}
-                    ₹{finalPrice} / {durationDays} days
-                  </span>
-                )}
+                <span>
+                  {plan.discountPercentage > 0 && <span className="line-through text-red-200 mr-1">₹{plan.price}</span>}
+                  ₹{finalPrice} / {durationDays} days
+                </span>
+              )}
           </p>
           {planDetails && (
             <div className="flex flex-wrap gap-x-3 gap-y-1">
@@ -308,195 +323,238 @@ const CheckoutModal = ({ plan, onClose }) => {
           )}
 
           {fetchingPlan && <div className="py-8 text-center text-gray-500">Loading plan configuration...</div>}
-          
+
           {!fetchingPlan && planDetails && (
-            <>
-              {/* STEP 1: Dates */}
-              {step === 1 && (
-                <div className="space-y-4 animate-fade-in">
-                  <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 1: Campaign Dates</h3>
-
-                  {/* Placement */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-                      Ad Placement
-                    </label>
-                    <select
-                      value={placement}
-                      onChange={(e) => setPlacement(e.target.value)}
-                      disabled={planDetails.placements.length <= 1}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100 disabled:opacity-70 disabled:cursor-not-allowed capitalize"
-                    >
-                      {planDetails.placements.map(p => (
-                        <option key={p} value={p}>{p.replace('-', ' ')} Placement</option>
-                      ))}
-                    </select>
+              /* Login Check */
+              !isAuthenticated ? (
+                <div className="py-12 px-6 text-center animate-fade-in">
+                  <div className="w-16 h-16 bg-red-50 text-editorial-red rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
                   </div>
+                  <h3 className="text-xl font-bold mb-2 dark:text-zinc-100">Sign in to Continue</h3>
+                  <p className="text-editorial-muted dark:text-zinc-400 mb-8 text-sm max-w-xs mx-auto">
+                    You need a Lokawani account to book advertisements and manage your campaigns.
+                  </p>
+                  <Link
+                    to="/user/login"
+                    state={{ 
+                      from: { pathname: '/advertising' },
+                      pendingPlanId: plan.id 
+                    }}
+                    className="block w-full btn-editorial py-3 mb-3"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    to="/user/register"
+                    state={{ 
+                      from: { pathname: '/advertising' },
+                      pendingPlanId: plan.id 
+                    }}
+                    className="block w-full py-2 text-sm text-editorial-muted hover:text-editorial-red font-bold"
+                  >
+                    Create Account
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  {/* STEP 1: Dates */}
+                  {step === 1 && (
+                    <div className="space-y-4 animate-fade-in">
+                      <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 1: Campaign Dates</h3>
 
-                  {/* Start Date */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
-                      {isFixedDuration ? 'Campaign Start Date' : 'Start Date'}
-                    </label>
-                    <input
-                      type="date"
-                      value={startDate}
-                      onChange={(e) => handleStartDateChange(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
-                    />
-                  </div>
+                      {/* Placement */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                          Ad Placement
+                        </label>
+                        <select
+                          value={placement}
+                          onChange={(e) => setPlacement(e.target.value)}
+                          disabled={planDetails.placements.length <= 1}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100 disabled:opacity-70 disabled:cursor-not-allowed capitalize"
+                        >
+                          {planDetails.placements.map(p => (
+                            <option key={p} value={p}>{p.replace('-', ' ')} Placement</option>
+                          ))}
+                        </select>
+                      </div>
 
-                  {isFixedDuration && startDate && (
-                    <div className="bg-neutral-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-md px-4 py-3 text-sm flex justify-between">
-                      <span className="text-gray-600 dark:text-zinc-300">Campaign ends:</span>
-                      <span className="font-semibold text-editorial-black dark:text-zinc-100">{effectiveEndDate} ({durationDays} days)</span>
-                    </div>
-                  )}
+                      {/* Start Date */}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">
+                          {isFixedDuration ? 'Campaign Start Date' : 'Start Date'}
+                        </label>
+                        <input
+                          type="date"
+                          value={startDate}
+                          onChange={(e) => handleStartDateChange(e.target.value)}
+                          min={new Date().toISOString().split('T')[0]}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
+                        />
+                      </div>
 
-                  {isCustom && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">End Date</label>
-                      <input
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        min={startDate || new Date().toISOString().split('T')[0]}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
-                      />
-                    </div>
-                  )}
+                      {isFixedDuration && startDate && (
+                        <div className="bg-neutral-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-md px-4 py-3 text-sm flex justify-between">
+                          <span className="text-gray-600 dark:text-zinc-300">Campaign ends:</span>
+                          <span className="font-semibold text-editorial-black dark:text-zinc-100">{effectiveEndDate} ({durationDays} days)</span>
+                        </div>
+                      )}
 
-                  {/* Availability */}
-                  {startDate && effectiveEndDate && (
-                    <div>
-                      {bookedLoading ? (
-                        <div className="text-xs text-editorial-muted">Checking availability...</div>
-                      ) : datesAvailability ? (
-                        datesAvailability.isFull ? (
-                          <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-md px-4 py-3 font-medium">
-                            ⚠️ The <span className="capitalize">{placement}</span> placement is fully booked. Please choose different dates.
+                      {isCustom && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">End Date</label>
+                          <input
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            min={startDate || new Date().toISOString().split('T')[0]}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100"
+                          />
+                        </div>
+                      )}
+
+                      {/* Availability */}
+                      {startDate && effectiveEndDate && (
+                        <div>
+                          {bookedLoading ? (
+                            <div className="text-xs text-editorial-muted">Checking availability...</div>
+                          ) : datesAvailability ? (
+                            datesAvailability.isFull ? (
+                              <div className="bg-red-50 border border-red-200 text-red-600 text-sm rounded-md px-4 py-3 font-medium">
+                                ⚠️ The <span className="capitalize">{placement}</span> placement is fully booked. Please choose different dates.
+                              </div>
+                            ) : (
+                              <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-md px-4 py-3">
+                                ✅ <strong>{datesAvailability.remaining} slot{datesAvailability.remaining !== 1 ? 's' : ''} available</strong>.
+                              </div>
+                            )
+                          ) : null}
+                        </div>
+                      )}
+
+                      {/* Enterprise: Live pricing breakdown */}
+                      {isCustom && startDate && endDate && total > 0 && (
+                        <div className="bg-amber-50 dark:bg-zinc-800 border border-amber-200 dark:border-zinc-700 rounded-md px-4 py-3 space-y-1 text-sm">
+                          <p className="font-semibold text-gray-700 dark:text-zinc-200 mb-2">Pricing Breakdown</p>
+                          <div className="flex justify-between text-gray-600 dark:text-zinc-400">
+                            <span>{weekdays} weekdays × ₹{ENTERPRISE_RATES.weekday}</span>
+                            <span>₹{(weekdays * ENTERPRISE_RATES.weekday).toLocaleString('en-IN')}</span>
                           </div>
-                        ) : (
-                          <div className="bg-green-50 border border-green-200 text-green-700 text-sm rounded-md px-4 py-3">
-                            ✅ <strong>{datesAvailability.remaining} slot{datesAvailability.remaining !== 1 ? 's' : ''} available</strong>.
+                          <div className="flex justify-between text-gray-600 dark:text-zinc-400">
+                            <span>{weekends} weekend days × ₹{ENTERPRISE_RATES.weekend}</span>
+                            <span>₹{(weekends * ENTERPRISE_RATES.weekend).toLocaleString('en-IN')}</span>
                           </div>
-                        )
-                      ) : null}
-                    </div>
-                  )}
-
-                  {/* Enterprise: Live pricing breakdown */}
-                  {isCustom && startDate && endDate && total > 0 && (
-                    <div className="bg-amber-50 dark:bg-zinc-800 border border-amber-200 dark:border-zinc-700 rounded-md px-4 py-3 space-y-1 text-sm">
-                      <p className="font-semibold text-gray-700 dark:text-zinc-200 mb-2">Pricing Breakdown</p>
-                      <div className="flex justify-between text-gray-600 dark:text-zinc-400">
-                        <span>{weekdays} weekdays × ₹{ENTERPRISE_RATES.weekday}</span>
-                        <span>₹{(weekdays * ENTERPRISE_RATES.weekday).toLocaleString('en-IN')}</span>
-                      </div>
-                      <div className="flex justify-between text-gray-600 dark:text-zinc-400">
-                        <span>{weekends} weekend days × ₹{ENTERPRISE_RATES.weekend}</span>
-                        <span>₹{(weekends * ENTERPRISE_RATES.weekend).toLocaleString('en-IN')}</span>
-                      </div>
-                      <div className="flex justify-between font-bold text-editorial-black dark:text-zinc-100 pt-2 border-t border-amber-200 dark:border-zinc-600 mt-1">
-                        <span>Total ({total} days)</span>
-                        <span className="text-editorial-red">₹{enterpriseCost.toLocaleString('en-IN')}</span>
-                      </div>
-                      {plan.discountPercentage > 0 && (
-                        <div className="flex justify-between font-bold text-green-600 pt-1">
-                          <span>Discount ({plan.discountPercentage}%)</span>
-                          <span>- ₹{(enterpriseCost - finalPrice).toLocaleString('en-IN')}</span>
+                          <div className="flex justify-between font-bold text-editorial-black dark:text-zinc-100 pt-2 border-t border-amber-200 dark:border-zinc-600 mt-1">
+                            <span>Total ({total} days)</span>
+                            <span className="text-editorial-red">₹{enterpriseCost.toLocaleString('en-IN')}</span>
+                          </div>
+                          {plan.discountPercentage > 0 && (
+                            <div className="flex justify-between font-bold text-green-600 pt-1">
+                              <span>Discount ({plan.discountPercentage}%)</span>
+                              <span>- ₹{(enterpriseCost - finalPrice).toLocaleString('en-IN')}</span>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
                   )}
-                </div>
-              )}
 
-              {/* STEP 2: Business Details */}
-              {step === 2 && (
-                <div className="space-y-4 animate-fade-in">
-                  <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 2: Business Details</h3>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Full Name</label>
-                    <input type="text" value={advertiserName} onChange={(e) => setAdvertiserName(e.target.value)} placeholder="John Doe" className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Email Address</label>
-                    <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Business Name</label>
-                    <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Company Inc." className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Phone Number</label>
-                    <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
-                  </div>
-                </div>
-              )}
+                  {/* STEP 2: Business Details */}
+                  {step === 2 && (
+                    <div className="space-y-4 animate-fade-in">
+                      <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 2: Business Details</h3>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Full Name</label>
+                        <input type="text" value={advertiserName} onChange={(e) => setAdvertiserName(e.target.value)} placeholder="John Doe" className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Email Address</label>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Business Name</label>
+                        <input type="text" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Company Inc." className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-1">Phone Number</label>
+                        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+91 98765 43210" className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 rounded-md focus:ring-editorial-red focus:border-editorial-red dark:bg-zinc-800 dark:text-zinc-100" />
+                      </div>
+                    </div>
+                  )}
 
-              {/* STEP 3: Review & Pay */}
-              {step === 3 && (
-                <div className="space-y-4 animate-fade-in">
-                  <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 3: Review & Pay</h3>
-                  <div className="bg-neutral-50 dark:bg-zinc-800 rounded-lg p-4 space-y-3 text-sm">
-                    <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
-                      <span className="text-gray-600 dark:text-zinc-400">Plan</span>
-                      <span className="font-semibold text-editorial-black dark:text-zinc-100">{plan.name}</span>
+                  {/* STEP 3: Review & Pay */}
+                  {step === 3 && (
+                    <div className="space-y-4 animate-fade-in">
+                      <h3 className="font-bold text-gray-800 dark:text-zinc-100 mb-2">Step 3: Review & Pay</h3>
+                      <div className="bg-neutral-50 dark:bg-zinc-800 rounded-lg p-4 space-y-3 text-sm">
+                        <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                          <span className="text-gray-600 dark:text-zinc-400">Plan</span>
+                          <span className="font-semibold text-editorial-black dark:text-zinc-100">{plan.name}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                          <span className="text-gray-600 dark:text-zinc-400">Placement</span>
+                          <span className="font-semibold text-editorial-black dark:text-zinc-100 capitalize">{placement}</span>
+                        </div>
+                        <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
+                          <span className="text-gray-600 dark:text-zinc-400">Campaign Dates</span>
+                          <span className="font-semibold text-editorial-black dark:text-zinc-100">{startDate} to {effectiveEndDate}</span>
+                        </div>
+                        <div className="flex justify-between pt-1">
+                          <span className="text-gray-600 dark:text-zinc-400 font-bold">Total Amount</span>
+                          <span className="font-bold text-editorial-red text-lg">₹{displayAmount}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
-                      <span className="text-gray-600 dark:text-zinc-400">Placement</span>
-                      <span className="font-semibold text-editorial-black dark:text-zinc-100 capitalize">{placement}</span>
-                    </div>
-                    <div className="flex justify-between border-b border-gray-200 dark:border-zinc-700 pb-2">
-                      <span className="text-gray-600 dark:text-zinc-400">Campaign Dates</span>
-                      <span className="font-semibold text-editorial-black dark:text-zinc-100">{startDate} to {effectiveEndDate}</span>
-                    </div>
-                    <div className="flex justify-between pt-1">
-                      <span className="text-gray-600 dark:text-zinc-400 font-bold">Total Amount</span>
-                      <span className="font-bold text-editorial-red text-lg">₹{displayAmount}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
+                  )}
 
-              {/* STEP 4: Success */}
-              {step === 4 && (
-                <div className="text-center py-8 animate-fade-in">
-                  <div className="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold mb-2">Booking Confirmed!</h3>
-                  <p className="text-editorial-muted mb-6 text-sm">Our team will contact you at {email}.</p>
-                  <button onClick={onClose} className="bg-editorial-black text-white px-6 py-2 rounded font-bold hover:bg-neutral-800">Close</button>
-                </div>
-              )}
+                  {/* STEP 4: Success */}
+                  {step === 4 && (
+                    <div className="text-center py-8 animate-fade-in">
+                      <div className="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <h3 className="text-2xl font-bold mb-2 dark:text-zinc-100">Booking Confirmed!</h3>
+                      {bookingId && (
+                        <div className="bg-neutral-50 dark:bg-zinc-800 border-2 border-dashed border-editorial-red rounded-lg px-4 py-3 my-4 inline-block">
+                          <p className="text-[10px] text-editorial-muted uppercase tracking-widest mb-1">Booking ID</p>
+                          <p className="text-xl font-bold text-editorial-red tracking-wider">{bookingId}</p>
+                        </div>
+                      )}
+                      <p className="text-editorial-muted mb-1 text-sm">A confirmation email has been sent to</p>
+                      <p className="font-bold text-editorial-black dark:text-zinc-200 mb-4 text-sm">{email}</p>
+                      <p className="text-xs text-editorial-muted mb-6">Please save your booking ID for future reference.</p>
+                      <button onClick={onClose} className="bg-editorial-black text-white px-6 py-2 rounded font-bold hover:bg-neutral-800">Close</button>
+                    </div>
+                  )}
 
-              {/* Navigation */}
-              {step < 4 && (
-                <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-100 dark:border-zinc-800">
-                  <div className="text-xs text-gray-400 font-medium">Step {step} of 3</div>
-                  <div className="flex gap-3">
-                    {step > 1 && (
-                      <button onClick={prevStep} disabled={loading} className="px-4 py-2 text-sm text-gray-600 dark:text-zinc-300">Back</button>
-                    )}
-                    {step < 3 ? (
-                      <button onClick={nextStep} className="bg-editorial-black text-white px-5 py-2 rounded text-sm font-bold">Continue</button>
-                    ) : (
-                      <button onClick={handleSubmit} disabled={loading} className="bg-editorial-red text-white text-sm font-bold px-5 py-2 rounded disabled:opacity-70">
-                        {loading ? 'Processing...' : `Pay ₹${displayAmount}`}
-                      </button>
-                    )}
-                  </div>
-                </div>
-              )}
-            </>
-          )}
+                  {/* Navigation */}
+                  {step < 4 && (
+                    <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-100 dark:border-zinc-800">
+                      <div className="text-xs text-gray-400 font-medium">Step {step} of 3</div>
+                      <div className="flex gap-3">
+                        {step > 1 && (
+                          <button onClick={prevStep} disabled={loading} className="px-4 py-2 text-sm text-gray-600 dark:text-zinc-300">Back</button>
+                        )}
+                        {step < 3 ? (
+                          <button onClick={nextStep} className="bg-editorial-black text-white px-5 py-2 rounded text-sm font-bold">Continue</button>
+                        ) : (
+                          <button onClick={handleSubmit} disabled={loading} className="bg-editorial-red text-white text-sm font-bold px-5 py-2 rounded disabled:opacity-70">
+                            {loading ? 'Processing...' : `Pay ₹${displayAmount}`}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  </>
+              )
+            )}
+            </div>
         </div>
-      </div>
     </div>
   );
 };

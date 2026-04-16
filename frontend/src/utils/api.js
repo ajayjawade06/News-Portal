@@ -13,10 +13,17 @@ const api = axios.create({
 // Add token to requests if available
 api.interceptors.request.use(
   (config) => {
+    // Priority 1: Reporter Token
     const token = localStorage.getItem('token');
+    // Priority 2: Regular User Token
+    const userToken = localStorage.getItem('userToken');
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else if (userToken) {
+      config.headers.Authorization = `Bearer ${userToken}`;
     }
+    
     return config;
   },
   (error) => {
@@ -31,7 +38,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       // Unauthorized - clear token and redirect to login
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      window.location.href = '/user/login';
     }
     return Promise.reject(error);
   }

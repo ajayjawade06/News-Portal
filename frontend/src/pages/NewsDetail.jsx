@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
+import { useUserAuth } from '../context/UserAuthContext';
 import AdRenderer from '../components/AdRenderer';
 import NewsRating from '../components/NewsRating';
 import BackButton from '../components/BackButton';
@@ -27,6 +28,7 @@ const NewsDetail = () => {
   const yourCommentLabel = useText('Your comment');
   const postCommentText = useText('Post');
   const namePromptText = useText('Please enter your name');
+  const { user, isAuthenticated } = useUserAuth();
 
   useEffect(() => {
     const fetchNewsDetail = async () => {
@@ -89,15 +91,13 @@ const NewsDetail = () => {
     e.preventDefault();
     if (!commentText.trim()) return;
 
-    let name = commentName;
-    if (!name) {
-      name = prompt(namePromptText);
-      if (!name) return;
-      setCommentName(name);
+    if (!isAuthenticated) {
+      alert('Please log in to post a comment');
+      return;
     }
 
     try {
-      const res = await api.post(`/news/${id}/comments`, { name, text: commentText });
+      const res = await api.post(`/news/${id}/comments`, { text: commentText });
       setComments(res.data.data);
       setCommentText('');
     } catch (err) {
@@ -203,19 +203,34 @@ const NewsDetail = () => {
             </ul>
           )}
 
-          <form onSubmit={handleCommentSubmit} className="space-y-3">
-            <textarea
-              value={commentText}
-              onChange={e => setCommentText(e.target.value)}
-              required
-              rows={3}
-              placeholder={yourCommentLabel}
-              className="input-editorial w-full"
-            />
-            <button type="submit" className="btn-editorial">
-              {postCommentText}
-            </button>
-          </form>
+          {isAuthenticated ? (
+            <form onSubmit={handleCommentSubmit} className="space-y-3">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="w-6 h-6 bg-editorial-red text-white text-[10px] font-bold rounded-full flex items-center justify-center uppercase">
+                  {user.firstName?.charAt(0)}
+                </div>
+                <span className="text-sm font-bold text-editorial-black dark:text-zinc-200">{user.firstName} {user.lastName}</span>
+              </div>
+              <textarea
+                value={commentText}
+                onChange={e => setCommentText(e.target.value)}
+                required
+                rows={3}
+                placeholder={yourCommentLabel}
+                className="input-editorial w-full"
+              />
+              <button type="submit" className="btn-editorial">
+                {postCommentText}
+              </button>
+            </form>
+          ) : (
+            <div className="bg-neutral-50 dark:bg-zinc-900 border border-editorial-border dark:border-zinc-800 p-6 text-center rounded">
+              <p className="text-editorial-muted mb-4 text-sm font-medium">Please log in to participate in the conversation.</p>
+              <Link to="/user/login" state={{ from: { pathname: `/news/${id}` } }} className="btn-editorial text-sm">
+                Log in to Comment
+              </Link>
+            </div>
+          )}
         </section>
 
         {/* news rating section */}

@@ -1,6 +1,6 @@
 import express from 'express';
 import News from '../models/News.js';
-import { authenticateReporter } from '../middleware/auth.js';
+import { authenticateReporter, authenticateUser } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 import { translateNewsContent } from '../utils/translator.js';
 
@@ -550,16 +550,14 @@ router.delete('/:id', authenticateReporter, async (req, res) => {
 ====================================================== */
 
 // POST /api/news/:id/comments
-// body: { name, text }
-// Attach a comment to the specified article. We ask for a name even though there
-// is no login so comments remain simple and anonymous.
-router.post('/:id/comments', async (req, res) => {
+// Requires user authentication
+router.post('/:id/comments', authenticateUser, async (req, res) => {
   try {
-    const { name, text } = req.body;
-    if (!name || !text) {
+    const { text } = req.body;
+    if (!text) {
       return res.status(400).json({
         success: false,
-        message: 'Name and text are required for a comment'
+        message: 'Comment text is required'
       });
     }
 
@@ -572,7 +570,11 @@ router.post('/:id/comments', async (req, res) => {
     }
 
     news.comments = news.comments || [];
-    news.comments.push({ name, text });
+    news.comments.push({ 
+      userId: req.user._id, 
+      name: req.user.username, // Store current username for display speed
+      text 
+    });
     await news.save();
 
     res.json({
@@ -583,6 +585,44 @@ router.post('/:id/comments', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error adding comment',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * GET /api/news/user/my-comments
+ * Get all comments made by the logged-in user
+ */
+router.get('/user/my-comments', authenticateUser, async (req, res) => {
+  try {
+    const newsItems = await News.find({ 'comments.userId': req.user._id })
+      .select('title comments')
+      .lean();
+
+    const myComments = [];
+    newsItems.forEach(item => {
+      item.comments.forEach(comment => {
+        if (comment.userId && comment.userId.toString() === req.user._id.toString()) {
+          myComments.push({
+            newsId: item._id,
+            newsTitle: item.title.en, // default to english title
+            text: comment.text,
+            createdAt: comment.createdAt,
+            isDeleted: comment.isDeleted
+          });
+        }
+      });
+    });
+
+    res.json({
+      success: true,
+      data: myComments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching your comments',
       error: error.message
     });
   }
@@ -681,24 +721,16 @@ router.patch('/:id/publish', authenticateReporter, async (req, res) => {
 
 /**
  * POST /api/news/:id/ratings
- * Add a rating to an article (1-5 stars with optional feedback)
+ * Requires user authentication
  */
-router.post('/:id/ratings', async (req, res) => {
+router.post('/:id/ratings', authenticateUser, async (req, res) => {
   try {
-    const { ratingValue, feedback, name, email } = req.body;
+    const { ratingValue, feedback } = req.body;
 
-    // Validate rating
     if (!ratingValue || ratingValue < 1 || ratingValue > 5) {
       return res.status(400).json({
         success: false,
         message: 'Rating must be between 1 and 5'
-      });
-    }
-
-    if (!name || name.trim() === '') {
-      return res.status(400).json({
-        success: false,
-        message: 'Name is required'
       });
     }
 
@@ -710,13 +742,22 @@ router.post('/:id/ratings', async (req, res) => {
       });
     }
 
-    // Add rating
+    // Optional: Check if user already rated
+    const existingRating = news.ratings.find(r => r.userId && r.userId.toString() === req.user._id.toString());
+    if (existingRating) {
+      return res.status(400).json({
+        success: false,
+        message: 'You have already rated this article'
+      });
+    }
+
     news.ratings = news.ratings || [];
     const newRating = {
+      userId: req.user._id,
       ratingValue,
       feedback: feedback || '',
-      name: name.trim(),
-      email: email || ''
+      name: req.user.username,
+      email: req.user.email
     };
     news.ratings.push(newRating);
 
@@ -727,7 +768,6 @@ router.post('/:id/ratings', async (req, res) => {
       news.aggregateRating.averageRating = (sum / activeRatings.length).toFixed(1);
       news.aggregateRating.totalRatings = activeRatings.length;
 
-      // Update breakdown
       news.aggregateRating.ratingBreakdown = {
         fiveStar: activeRatings.filter(r => r.ratingValue === 5).length,
         fourStar: activeRatings.filter(r => r.ratingValue === 4).length,

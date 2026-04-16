@@ -3,16 +3,20 @@ import {
   bookAdvertisement,
   getAllBookings,
   getBookedDates,
+  getUserBookings,
   updateBookingStatus
 } from '../controllers/adBookingController.js';
-import { authenticateReporter } from '../middleware/auth.js';
+import { authenticateReporter, authenticateUser } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Public: Book an ad slot (called by advertisers)
-router.post('/book', bookAdvertisement);
+// User: Book an ad slot (Protected)
+router.post('/book', authenticateUser, bookAdvertisement);
 
-// Public: Get booked date ranges for a placement (used by CheckoutModal to block dates)
+// User: Get current user's bookings (Protected)
+router.get('/my-bookings', authenticateUser, getUserBookings);
+
+// Public: Get booked date ranges for a placement
 router.get('/booked-dates', getBookedDates);
 
 // Admin: Get all bookings

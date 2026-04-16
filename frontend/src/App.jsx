@@ -1,8 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { NewsProvider } from './context/NewsContext';
+import { UserAuthProvider } from './context/UserAuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
+import UserProtectedRoute from './components/UserProtectedRoute';
 import AdRenderer from './components/AdRenderer';
 
 import Home from './pages/Home';
@@ -13,8 +15,7 @@ import Rajura from './pages/Rajura';
 import International from './pages/International';
 import National from './pages/National';
 import NewsDetail from './pages/NewsDetail';
-import Login from './pages/Login';
-import Register from './pages/Register';
+
 import Dashboard from './pages/Dashboard';
 import CreateNews from './pages/CreateNews';
 import EditNews from './pages/EditNews';
@@ -27,6 +28,11 @@ import AdBookingsManagement from './pages/AdBookingsManagement';
 import AdAnalytics from './pages/AdAnalytics';
 import AdPlansManagement from './pages/AdPlansManagement';
 import AdminReports from './pages/AdminReports';
+import UserLogin from './pages/UserLogin';
+import UserRegister from './pages/UserRegister';
+import UserProfile from './pages/UserProfile';
+import UserForgotPassword from './pages/UserForgotPassword';
+import UserResetPassword from './pages/UserResetPassword';
 
 const AppContent = () => {
   const { pathname } = useLocation();
@@ -54,8 +60,21 @@ const AppContent = () => {
           <Route path="/korpana" element={<Korpana />} />
           <Route path="/rajura" element={<Rajura />} />
           <Route path="/news/:id" element={<NewsDetail />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<UserLogin />} />
+          <Route path="/register" element={<UserRegister />} />
+          
+          <Route path="/user/login" element={<UserLogin />} />
+          <Route path="/user/register" element={<UserRegister />} />
+          <Route path="/user/forgot-password" element={<UserForgotPassword />} />
+          <Route path="/user/reset-password" element={<UserResetPassword />} />
+          <Route 
+            path="/user/profile" 
+            element={
+              <UserProtectedRoute>
+                <UserProfile />
+              </UserProtectedRoute>
+            } 
+          />
           <Route
             path="/dashboard"
             element={
@@ -154,16 +173,18 @@ const AppContent = () => {
 
 function App() {
   return (
-    <NewsProvider>
-      <Router
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        <AppContent />
-      </Router>
-    </NewsProvider>
+    <UserAuthProvider>
+      <NewsProvider>
+        <Router
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true,
+          }}
+        >
+          <AppContent />
+        </Router>
+      </NewsProvider>
+    </UserAuthProvider>
   );
 }
 

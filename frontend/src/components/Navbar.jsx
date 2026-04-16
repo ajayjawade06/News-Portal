@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import { useNews } from '../context/NewsContext';
-import { Layout, LogOut, Moon, Sun, Globe, Monitor, ShieldCheck } from 'lucide-react';
+import { useUserAuth } from '../context/UserAuthContext';
+import { Layout, LogOut, Moon, Sun, Globe, Monitor, ShieldCheck, User } from 'lucide-react';
 // logo import removed - using public asset /photo/image.png instead
 const logo = '/photo/image.png';
 
@@ -27,6 +28,7 @@ const Navbar = () => {
   const loginText = useText('Login');
   const logoutText = useText('Logout');
   const advertiseText = useText('Advertise');
+  const { user, logout, isAuthenticated } = useUserAuth();
   const [language, setLanguage] = useState('en');
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
@@ -174,10 +176,26 @@ const Navbar = () => {
                   <LogOut size={18} />
                 </button>
               </div>
+            ) : isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <Link to="/user/profile" className="flex items-center gap-2 px-4 py-2 bg-editorial-red text-white text-xs font-black uppercase tracking-widest rounded transition-all hover:bg-editorial-red-dark shadow-sm">
+                  <User size={14} />
+                  <span>{user.firstName}</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="text-sm font-medium text-editorial-muted dark:text-zinc-400 hover:text-editorial-red transition-colors hidden sm:inline"
+                >
+                  <LogOut size={18} />
+                </button>
+              </div>
             ) : (
-              <Link to="/login" className="btn-editorial text-sm py-2 px-4 hidden sm:inline-flex">
-                {loginText}
-              </Link>
+              <div className="hidden sm:flex gap-2">
+                <Link to="/user/login" className="btn-editorial text-xs py-2 px-4">
+                  Log in
+                </Link>
+              </div>
             )}
 
             {/* MOBILE MENU BUTTON */}
@@ -222,14 +240,32 @@ const Navbar = () => {
                     {logoutText}
                   </button>
                 </>
+              ) : isAuthenticated ? (
+                <>
+                  <Link
+                    to="/user/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="btn-editorial mt-3 mx-4 text-center py-2.5"
+                  >
+                    My Profile
+                  </Link>
+                  <button
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="mt-2 mx-4 py-2.5 text-sm font-medium text-editorial-muted hover:text-editorial-red text-left font-bold"
+                  >
+                    {logoutText}
+                  </button>
+                </>
               ) : (
-                <Link
-                  to="/login"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="btn-editorial mt-3 mx-4 text-center py-2.5"
-                >
-                  {loginText}
-                </Link>
+                <div className="flex flex-col gap-2 mx-4 mt-3">
+                  <Link
+                    to="/user/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="btn-editorial text-center py-2.5"
+                  >
+                    {loginText}
+                  </Link>
+                </div>
               )}
             </div>
           </div>

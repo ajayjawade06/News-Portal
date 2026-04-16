@@ -134,6 +134,11 @@ const newsSchema = new mongoose.Schema({
         required: true,
         trim: true
       },
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+      },
       text: {
         type: String,
         required: true
@@ -187,6 +192,11 @@ const newsSchema = new mongoose.Schema({
         required: true,
         trim: true,
         maxlength: 50
+      },
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
       },
       email: {
         type: String,

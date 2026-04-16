@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useText } from '../hooks/useText';
 import AdRenderer from '../components/AdRenderer';
 import CheckoutModal from '../components/CheckoutModal';
 import api from '../utils/api';
 
 const Advertising = () => {
+  const location = useLocation();
   const advertText = useText('Advertise');
   const [selectedPlan, setSelectedPlan] = useState(null);
   
@@ -29,6 +31,24 @@ const Advertising = () => {
     };
     fetchPlansAndConfig();
   }, []);
+
+  // Check if we should re-open checkout modal after login
+  useEffect(() => {
+    if (location.state?.pendingPlanId && plans.length > 0) {
+      const planToRestore = plans.find(p => p.internalId === location.state.pendingPlanId);
+      if (planToRestore) {
+        handleOpenCheckout(
+          planToRestore.internalId, 
+          planToRestore.name, 
+          planToRestore.price, 
+          planToRestore.isCustom, 
+          planToRestore.durationDays
+        );
+        // Clear state to prevent modal reopening on refresh
+        window.history.replaceState({}, document.title);
+      }
+    }
+  }, [location.state, plans]);
 
   const handleOpenCheckout = (planId, planName, planPrice, isCustom, durationDays) => {
     setSelectedPlan({ 

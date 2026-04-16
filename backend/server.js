@@ -13,6 +13,7 @@ import adRoutes from './routes/adRoutes.js';
 import adBookingRoutes from './routes/adBookingRoutes.js';
 import razorpayRoutes from './routes/razorpayRoutes.js';
 import adPlanRoutes from './routes/adPlanRoutes.js';
+import userAuthRoutes from './routes/userAuth.js';
 
 // Load environment variables
 dotenv.config();
@@ -62,6 +63,7 @@ app.use('/api/ads', adRoutes);
 app.use('/api/bookings', adBookingRoutes);
 app.use('/api/razorpay', razorpayRoutes);
 app.use('/api/plans', adPlanRoutes);
+app.use('/api/user-auth', userAuthRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

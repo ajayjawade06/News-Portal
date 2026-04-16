@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../utils/api';
+import { useUserAuth } from '../context/UserAuthContext';
+import { Link, useLocation } from 'react-router-dom';
 
 const NewsRating = ({ newsId }) => {
   const [ratings, setRatings] = useState([]);
@@ -10,6 +12,8 @@ const NewsRating = ({ newsId }) => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { user, isAuthenticated } = useUserAuth();
+  const location = useLocation();
 
   // Fetch ratings
   useEffect(() => {
@@ -31,8 +35,13 @@ const NewsRating = ({ newsId }) => {
   const handleSubmitRating = async (e) => {
     e.preventDefault();
 
-    if (!selectedRating || !name.trim()) {
-      alert('Please select a rating and enter your name');
+    if (!isAuthenticated) {
+      alert('Please log in to rate this article');
+      return;
+    }
+
+    if (!selectedRating) {
+      alert('Please select a rating');
       return;
     }
 
@@ -49,8 +58,6 @@ const NewsRating = ({ newsId }) => {
         setAggregateRating(response.data.data.aggregateRating);
         setSelectedRating(0);
         setFeedback('');
-        setName('');
-        setEmail('');
         setSubmitted(true);
         setTimeout(() => setSubmitted(false), 3000);
       }
@@ -139,92 +146,85 @@ const NewsRating = ({ newsId }) => {
       <div className="mb-8 p-6 bg-white dark:bg-zinc-800 rounded-lg border border-editorial-border dark:border-zinc-700">
         <h3 className="font-semibold text-lg mb-4">Share Your Rating</h3>
 
-        <form onSubmit={handleSubmitRating} className="space-y-4">
-          {/* Star Rating Selection */}
-          <div>
-            <label className="block text-sm font-medium mb-2">Rate this article</label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setSelectedRating(star)}
-                  className="text-4xl transition-colors"
-                >
-                  <span
-                    className={`${
-                      star <= selectedRating
-                        ? 'text-yellow-400'
-                        : 'text-gray-300 hover:text-yellow-300'
-                    }`}
+        {isAuthenticated ? (
+          <form onSubmit={handleSubmitRating} className="space-y-4">
+            {/* Star Rating Selection */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Rate this article</label>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setSelectedRating(star)}
+                    className="text-4xl transition-colors"
                   >
-                    ★
-                  </span>
-                </button>
-              ))}
+                    <span
+                      className={`${
+                        star <= selectedRating
+                          ? 'text-yellow-400'
+                          : 'text-gray-300 hover:text-yellow-300'
+                      }`}
+                    >
+                      ★
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {selectedRating > 0 && (
+                <p className="text-sm text-editorial-red mt-1">
+                  You selected {selectedRating} star{selectedRating !== 1 ? 's' : ''}
+                </p>
+              )}
             </div>
-            {selectedRating > 0 && (
-              <p className="text-sm text-editorial-red mt-1">
-                You selected {selectedRating} star{selectedRating !== 1 ? 's' : ''}
+
+            <div className="flex items-center gap-2 py-2 border-y border-editorial-border dark:border-zinc-700">
+              <span className="text-sm text-editorial-muted">Rating as:</span>
+              <span className="text-sm font-bold text-editorial-black dark:text-zinc-100">{user.firstName} {user.lastName}</span>
+            </div>
+
+            {/* Feedback */}
+            <div>
+              <label className="block text-sm font-medium mb-1">Your Feedback (optional)</label>
+              <textarea
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+                placeholder="Share your thoughts about this article..."
+                maxLength={500}
+                rows="4"
+                className="w-full px-3 py-2 border border-editorial-border dark:border-zinc-600 rounded bg-white dark:bg-zinc-700 text-editorial-black dark:text-zinc-100"
+              />
+              <p className="text-xs text-editorial-muted mt-1">
+                {feedback.length}/500 characters
               </p>
-            )}
-          </div>
-
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Your Name *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-              className="w-full px-3 py-2 border border-editorial-border dark:border-zinc-600 rounded bg-white dark:bg-zinc-700 text-editorial-black dark:text-zinc-100"
-              required
-            />
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Email (optional)</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              className="w-full px-3 py-2 border border-editorial-border dark:border-zinc-600 rounded bg-white dark:bg-zinc-700 text-editorial-black dark:text-zinc-100"
-            />
-          </div>
-
-          {/* Feedback */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Your Feedback (optional)</label>
-            <textarea
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Share your thoughts about this article..."
-              maxLength={500}
-              rows="4"
-              className="w-full px-3 py-2 border border-editorial-border dark:border-zinc-600 rounded bg-white dark:bg-zinc-700 text-editorial-black dark:text-zinc-100"
-            />
-            <p className="text-xs text-editorial-muted mt-1">
-              {feedback.length}/500 characters
-            </p>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-editorial-red text-white font-medium py-2 rounded hover:bg-editorial-red-dark transition-colors"
-          >
-            Submit Rating
-          </button>
-
-          {submitted && (
-            <div className="p-3 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-sm">
-              ✓ Thank you for rating this article!
             </div>
-          )}
-        </form>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-editorial-red text-white font-medium py-2 rounded hover:bg-editorial-red-dark transition-colors"
+            >
+              Submit Rating
+            </button>
+
+            {submitted && (
+              <div className="p-3 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded text-sm">
+                ✓ Thank you for rating this article!
+              </div>
+            )}
+          </form>
+        ) : (
+          <div className="text-center py-6">
+            <p className="text-editorial-muted mb-4 text-sm">Please log in to rate this article and share your feedback.</p>
+            <Link 
+              to="/user/login" 
+              state={{ from: location }}
+              className="btn-editorial py-2 px-6 text-sm"
+            >
+              Log in to Rate
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Ratings List */}
