@@ -136,8 +136,7 @@ const newsSchema = new mongoose.Schema({
       },
       userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
       },
       text: {
         type: String,
@@ -195,8 +194,7 @@ const newsSchema = new mongoose.Schema({
       },
       userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
       },
       email: {
         type: String,

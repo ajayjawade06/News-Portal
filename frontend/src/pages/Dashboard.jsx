@@ -139,6 +139,7 @@ const Dashboard = () => {
             { to: '/dashboard/plans', label: 'Ad Plans & Pricing', desc: 'Manage packages & discounts', icon: Tag, color: 'text-indigo-500', bg: 'bg-indigo-500/10' },
             { to: '/dashboard/ad-bookings', label: 'Client Bookings', desc: 'Manage incoming requests', icon: PlusCircle, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
             { to: '/dashboard/moderation', label: 'Content Guard', desc: 'Review & approve posts', icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+            { to: '/dashboard/users', label: 'User Management', desc: 'Secure & ban user accounts', icon: Users, color: 'text-rose-500', bg: 'bg-rose-500/10' },
             { to: '/dashboard/reports', label: 'Data & Reports', desc: 'Download CSV & PDF logs', icon: Download, color: 'text-cyan-500', bg: 'bg-cyan-500/10' }
           ].map((item, i) => (
             <Link 

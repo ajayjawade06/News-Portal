@@ -1,8 +1,10 @@
 import express from 'express';
 import News from '../models/News.js';
+import User from '../models/User.js';
 import { authenticateReporter, authenticateUser } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 import { translateNewsContent } from '../utils/translator.js';
+import { sendModerationWarningEmail } from '../utils/emailService.js';
 
 const router = express.Router();
 
@@ -569,10 +571,13 @@ router.post('/:id/comments', authenticateUser, async (req, res) => {
       });
     }
 
-    news.comments = news.comments || [];
+    const userName = (req.user.firstName && req.user.lastName) 
+      ? `${req.user.firstName} ${req.user.lastName}` 
+      : (req.user.name || req.user.username || 'Anonymous User');
+
     news.comments.push({ 
       userId: req.user._id, 
-      name: req.user.username, // Store current username for display speed
+      name: userName, // Store current user name for display speed
       text 
     });
     await news.save();
@@ -659,6 +664,8 @@ router.delete('/:id/comments/:commentId', authenticateReporter, async (req, res)
     comment.deletedBy = req.reporter._id;
 
     await news.save();
+
+
 
     res.json({
       success: true,
@@ -752,11 +759,15 @@ router.post('/:id/ratings', authenticateUser, async (req, res) => {
     }
 
     news.ratings = news.ratings || [];
+    const userName = (req.user.firstName && req.user.lastName) 
+      ? `${req.user.firstName} ${req.user.lastName}` 
+      : (req.user.name || req.user.username || 'Anonymous User');
+
     const newRating = {
       userId: req.user._id,
       ratingValue,
       feedback: feedback || '',
-      name: req.user.username,
+      name: userName,
       email: req.user.email
     };
     news.ratings.push(newRating);
@@ -783,7 +794,8 @@ router.post('/:id/ratings', authenticateUser, async (req, res) => {
       success: true,
       message: 'Rating added successfully',
       data: {
-        rating: newRating,
+        // Return the last pushed item from array because it contains Mongoose injected _id and createdAt
+        rating: news.ratings[news.ratings.length - 1],
         aggregateRating: news.aggregateRating
       }
     });
@@ -887,6 +899,8 @@ router.delete('/:id/ratings/:ratingId', authenticateReporter, async (req, res) =
     }
 
     await news.save();
+
+
 
     res.json({
       success: true,

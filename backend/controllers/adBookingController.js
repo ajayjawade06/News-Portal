@@ -1,6 +1,6 @@
 import AdBooking from '../models/AdBooking.js';
 import Ad from '../models/Ad.js';
-import { sendBookingConfirmation } from '../utils/emailService.js';
+import { sendBookingConfirmation, sendBookingStatusEmail } from '../utils/emailService.js';
 
 // Max simultaneous bookings per placement. Increased to 5 to allow rotational setups.
 const MAX_ADS_PER_PLACEMENT = {
@@ -190,6 +190,16 @@ export const updateBookingStatus = async (req, res) => {
     if (!booking) {
       return res.status(404).json({ success: false, message: 'Booking not found' });
     }
+
+    // Send email notification based on new status
+    if (status === 'approved' || status === 'rejected') {
+      try {
+        await sendBookingStatusEmail(booking, status);
+      } catch (emailErr) {
+        console.error(`Failed to send booking ${status} email:`, emailErr.message);
+      }
+    }
+
     res.json({ success: true, message: `Booking ${status} successfully`, data: booking });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Error updating booking status', error: error.message });

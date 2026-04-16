@@ -10,6 +10,8 @@ const ModerationDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState({ activeComments: 0, deletedComments: 0, activeRatings: 0, deletedRatings: 0 });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('date-desc');
 
   useEffect(() => {
     fetchAllData();
@@ -152,9 +154,33 @@ const ModerationDashboard = () => {
     }
   };
 
-  const filteredItems = viewType === 'active'
+  let filteredItems = viewType === 'active'
     ? allItems.filter(i => !i.isDeleted)
     : allItems.filter(i => i.isDeleted);
+
+  if (searchTerm) {
+    const lowerSearch = searchTerm.toLowerCase();
+    filteredItems = filteredItems.filter(i => 
+      i.author?.toLowerCase().includes(lowerSearch) || 
+      i.text?.toLowerCase().includes(lowerSearch) || 
+      i.feedback?.toLowerCase().includes(lowerSearch) ||
+      i.newsTitle?.toLowerCase().includes(lowerSearch)
+    );
+  }
+
+  filteredItems.sort((a, b) => {
+    switch (sortBy) {
+      case 'date-asc':
+        return new Date(a.createdAt) - new Date(b.createdAt);
+      case 'name-asc':
+        return (a.author || '').localeCompare(b.author || '');
+      case 'name-desc':
+        return (b.author || '').localeCompare(a.author || '');
+      case 'date-desc':
+      default:
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    }
+  });
 
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950 p-4 sm:p-6 lg:p-8">
@@ -236,6 +262,27 @@ const ModerationDashboard = () => {
           >
             Ratings ({viewType === 'active' ? stats.activeRatings : stats.deletedRatings})
           </button>
+        </div>
+
+        {/* Controls */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <input
+            type="text"
+            placeholder="Search by author, article, or content..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full md:w-96 px-4 py-2 border border-editorial-border rounded bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-editorial-red"
+          />
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="px-4 py-2 border border-editorial-border rounded bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-editorial-red"
+          >
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="name-asc">Author (A-Z)</option>
+            <option value="name-desc">Author (Z-A)</option>
+          </select>
         </div>
 
         {/* Content */}

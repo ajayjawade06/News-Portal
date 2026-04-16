@@ -63,7 +63,7 @@ const NewsRating = ({ newsId }) => {
       }
     } catch (error) {
       console.error('Error submitting rating:', error);
-      alert('Error submitting rating');
+      alert(error.response?.data?.message || 'Error submitting rating');
     }
   };
 

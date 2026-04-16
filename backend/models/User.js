@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
   },
   otpExpires: {
     type: Date
+  },
+  isBanned: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

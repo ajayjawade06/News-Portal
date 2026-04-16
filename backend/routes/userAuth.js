@@ -2,7 +2,7 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import Reporter from '../models/Reporter.js';
-import { authenticateUser } from '../middleware/auth.js';
+import { authenticateUser, authenticateReporter } from '../middleware/auth.js';
 import { sendRegisterOTP, sendPasswordResetOTP } from '../utils/emailService.js';
 
 const generateOTP = () => {
@@ -242,11 +242,18 @@ router.post('/login', async (req, res) => {
       });
     }
 
+    if (user.isBanned) {
+      return res.status(403).json({
+        success: false,
+        message: 'Your account has been banned. Please contact support.'
+      });
+    }
+
     if (!user.isVerified) {
       const otp = generateOTP();
       user.otp = otp;
       user.otpExpires = Date.now() + 10 * 60 * 1000;
-      await user.save();
+      await user.save({ validateBeforeSave: false });
       await sendRegisterOTP(email, otp);
       return res.status(403).json({
         success: false,
@@ -311,7 +318,9 @@ router.post('/forgot-password', async (req, res) => {
     const otp = generateOTP();
     user.otp = otp;
     user.otpExpires = Date.now() + 10 * 60 * 1000;
-    await user.save();
+    
+    // Skip full document validation to allow password resets for legacy users missing new required fields (like phone/businessName)
+    await user.save({ validateBeforeSave: false });
 
     await sendPasswordResetOTP(email, otp);
 
@@ -392,7 +401,8 @@ router.post('/reset-password', async (req, res) => {
     user.password = newPassword;
     user.otp = undefined;
     user.otpExpires = undefined;
-    await user.save();
+    // Skip full document validation to allow password resets for legacy users missing new required fields
+    await user.save({ validateBeforeSave: false });
 
     res.json({
       success: true,
@@ -427,6 +437,85 @@ router.get('/me', authenticateUser, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching user info',
+      error: error.message
+    });
+  }
+});
+
+/* ======================================================
+   ADMIN ROUTES
+====================================================== */
+
+/**
+ * GET /api/user-auth/admin/users
+ * Fetch all registered users
+ */
+router.get('/admin/users', authenticateReporter, async (req, res) => {
+  try {
+    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    res.json({
+      success: true,
+      data: users
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching users',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * PATCH /api/user-auth/admin/users/:id/toggle-ban
+ * Ban or unban a user
+ */
+router.patch('/admin/users/:id/toggle-ban', authenticateReporter, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    user.isBanned = !user.isBanned;
+    await user.save({ validateBeforeSave: false }); // Skip validation in case of legacy users
+
+    res.json({
+      success: true,
+      message: user.isBanned ? 'User has been banned' : 'User has been unbanned',
+      user: {
+        id: user._id,
+        isBanned: user.isBanned
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error toggling ban status',
+      error: error.message
+    });
+  }
+});
+
+/**
+ * DELETE /api/user-auth/admin/users/:id
+ * Permanently delete a user
+ */
+router.delete('/admin/users/:id', authenticateReporter, async (req, res) => {
+  try {
+    const user = await User.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    res.json({
+      success: true,
+      message: 'User deleted successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting user',
       error: error.message
     });
   }

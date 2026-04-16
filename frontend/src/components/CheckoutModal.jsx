@@ -67,7 +67,10 @@ const CheckoutModal = ({ plan, onClose }) => {
   const [endDate, setEndDate] = useState('');
   const [placement, setPlacement] = useState('');
 
-  const [advertiserName, setAdvertiserName] = useState(user ? `${user.firstName} ${user.lastName}` : '');
+  const [advertiserName, setAdvertiserName] = useState(() => {
+    if (!user) return '';
+    return (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : (user.username || user.name || '');
+  });
   const [email, setEmail] = useState(user?.email || '');
   const [businessName, setBusinessName] = useState(user?.businessName || '');
   const [phone, setPhone] = useState(user?.phone || '');
@@ -75,10 +78,11 @@ const CheckoutModal = ({ plan, onClose }) => {
   // Pre-fill user data if available
   useEffect(() => {
     if (user) {
-      if (!advertiserName) setAdvertiserName(`${user.firstName} ${user.lastName}`);
-      if (!email) setEmail(user.email);
-      if (!businessName) setBusinessName(user.businessName || '');
-      if (!phone) setPhone(user.phone || '');
+      const name = (user.firstName && user.lastName) ? `${user.firstName} ${user.lastName}` : (user.username || user.name || '');
+      setAdvertiserName(prev => prev || name);
+      setEmail(prev => prev || user.email || '');
+      setBusinessName(prev => prev || user.businessName || '');
+      setPhone(prev => prev || user.phone || '');
     }
   }, [user]);
 

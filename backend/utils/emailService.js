@@ -155,3 +155,98 @@ export const sendBookingConfirmation = async (booking) => {
 
   return sendEmail(booking.email, `Booking Confirmed — ${booking.bookingId} | Lokawani News`, html);
 };
+
+/**
+ * Send Booking Status Update Email (Approved/Rejected)
+ */
+export const sendBookingStatusEmail = async (booking, status) => {
+  const isApproved = status === 'approved';
+  const headerColor = isApproved ? '#22c55e' : '#ef4444';
+  const headerTitle = isApproved ? 'Booking Approved!' : 'Booking Rejected';
+  const headerSubtitle = isApproved ? 'Your advertisement mapping is approved and scheduled.' : 'We could not approve your advertisement booking at this time.';
+  const amount = Number(booking.amountPaid).toLocaleString('en-IN');
+  
+  const statusBadge = isApproved 
+    ? '<span style="background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">Approved</span>'
+    : '<span style="background: #fee2e2; color: #991b1b; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase;">Rejected</span>';
+
+  const nextStepsHTML = isApproved
+    ? `<li>Your ad will go live automatically on the scheduled start date.</li>
+       <li>You can track its performance in your dashboard once it's active.</li>
+       <li>Thank you for choosing Lokawani News for your advertising needs.</li>`
+    : `<li>Please review our advertising guidelines to ensure your content meets our standards.</li>
+       <li>You can submit a new booking request with updated details.</li>
+       <li>Any payments processed will be refunded to your original payment method within 3-5 business days.</li>`;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 10px; overflow: hidden;">
+      <div style="background: ${headerColor}; color: white; padding: 30px 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 24px;">${headerTitle}</h1>
+        <p style="margin: 8px 0 0; opacity: 0.9; font-size: 14px;">${headerSubtitle}</p>
+      </div>
+
+      <div style="padding: 30px 20px;">
+        <p style="color: #333;">Dear <strong>${booking.advertiserName}</strong>,</p>
+        <p style="color: #555;">Here are your booking details:</p>
+
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px 8px; color: #888; font-size: 13px; width: 40%;">Booking ID</td>
+            <td style="padding: 12px 8px; font-weight: bold; color: #333;">${booking.bookingId}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px 8px; color: #888; font-size: 13px;">Business</td>
+            <td style="padding: 12px 8px; font-weight: bold; color: #333;">${booking.businessName}</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #eee;">
+            <td style="padding: 12px 8px; color: #888; font-size: 13px;">Amount Paid</td>
+            <td style="padding: 12px 8px; font-weight: bold; color: #c41e3a;">₹${amount}</td>
+          </tr>
+           <tr>
+            <td style="padding: 12px 8px; color: #888; font-size: 13px;">Status</td>
+            <td style="padding: 12px 8px;">${statusBadge}</td>
+          </tr>
+        </table>
+
+        <div style="background: #f8f8f8; border-left: 4px solid ${headerColor}; padding: 15px; border-radius: 0 8px 8px 0; margin: 20px 0;">
+          <p style="margin: 0; font-weight: bold; color: #333;">What happens next?</p>
+          <ol style="margin: 8px 0 0; padding-left: 20px; color: #555; font-size: 14px; line-height: 1.8;">
+            ${nextStepsHTML}
+          </ol>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return sendEmail(booking.email, `Booking ${isApproved ? 'Approved' : 'Rejected'} — Lokawani News`, html);
+};
+
+/**
+ * Send warning email when a comment or rating is deleted by moderation
+ */
+export const sendModerationWarningEmail = async (email, name, contentType, contentText, reason) => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
+      <h2 style="color: #ef4444; text-align: center;">Content Moderation Notice</h2>
+      <p>Dear <strong>${name}</strong>,</p>
+      <p>Your recent ${contentType} on Lokawani News was reviewed by our moderation team and has been removed because it violates our community guidelines.</p>
+      
+      <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <p style="margin: 0 0 10px 0; font-size: 13px; color: #991b1b; text-transform: uppercase; font-weight: bold;">Reason for Removal:</p>
+        <p style="margin: 0; color: #7f1d1d; font-style: italic;">"${reason}"</p>
+      </div>
+
+      <p style="font-size: 13px; color: #666; border-left: 3px solid #ccc; padding-left: 10px; margin-bottom: 20px;">
+        <strong>Your deleted ${contentType}:</strong><br/>
+        "${contentText}"
+      </p>
+
+      <p>Please ensure future contributions abide by our community standards. Repeated violations may result in account suspension.</p>
+      
+      <hr style="border: 0; border-top: 1px solid #eeeeee; margin: 30px 0 15px;" />
+      <p style="font-size: 12px; color: #888; text-align: center;">Lokawani News Moderation Team</p>
+    </div>
+  `;
+
+  return sendEmail(email, 'Notice regarding your recent content — Lokawani News', html);
+};

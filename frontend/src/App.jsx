@@ -34,6 +34,8 @@ import UserProfile from './pages/UserProfile';
 import UserForgotPassword from './pages/UserForgotPassword';
 import UserResetPassword from './pages/UserResetPassword';
 
+import UserManagement from './pages/UserManagement';
+
 const AppContent = () => {
   const { pathname } = useLocation();
   const isAdminPath = pathname.startsWith('/dashboard');
@@ -152,6 +154,14 @@ const AppContent = () => {
             element={
               <ProtectedRoute>
                 <AdminReports />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/users"
+            element={
+              <ProtectedRoute>
+                <UserManagement />
               </ProtectedRoute>
             }
           />
