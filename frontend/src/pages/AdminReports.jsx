@@ -426,7 +426,7 @@ const AdminReports = () => {
           <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-zinc-800 flex justify-end gap-3 items-center">
             {activeTab === 'earnings' && (
               <div className="mr-auto text-lg text-editorial-black dark:text-zinc-100 font-black">
-                Total Revenue: <span className="text-emerald-600">₹{filteredData.reduce((acc, row) => acc + (Number(row.amount) || 0), 0).toLocaleString('en-IN')}</span>
+                Total Revenue: <span className="text-emerald-600">₹{filteredData.filter(row => row.status === 'approved').reduce((acc, row) => acc + (Number(row.amount) || 0), 0).toLocaleString('en-IN')}</span>
               </div>
             )}
             <div className="text-xs font-bold tracking-widest uppercase text-editorial-red bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-full">
