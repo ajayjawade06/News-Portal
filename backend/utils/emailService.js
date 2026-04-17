@@ -15,11 +15,16 @@ const {
 const transporter = nodemailer.createTransport({
   host: SMTP_HOST || 'smtp-relay.brevo.com',
   port: parseInt(SMTP_PORT) || 587,
-  secure: false, // true for 465, false for other ports
+  secure: parseInt(SMTP_PORT) === 465, // true for 465, false for other ports
   auth: {
     user: SMTP_USER,
     pass: SMTP_PASS,
   },
+  debug: true, // show debug output
+  logger: true, // log information in console
+  tls: {
+    rejectUnauthorized: false // helps with some certificate issues
+  }
 });
 
 /**
