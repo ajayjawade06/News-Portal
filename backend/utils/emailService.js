@@ -1,35 +1,46 @@
 import dotenv from 'dotenv';
+import nodemailer from 'nodemailer';
+
 dotenv.config();
 
-const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
-const BREVO_API_KEY = process.env.BREVO_API_KEY;
-const EMAIL_FROM = process.env.EMAIL_FROM;
+const {
+  SMTP_HOST,
+  SMTP_PORT,
+  SMTP_USER,
+  SMTP_PASS,
+  EMAIL_FROM
+} = process.env;
+
+// Create SMTP transporter
+const transporter = nodemailer.createTransport({
+  host: SMTP_HOST || 'smtp-relay.brevo.com',
+  port: parseInt(SMTP_PORT) || 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: SMTP_USER,
+    pass: SMTP_PASS,
+  },
+});
 
 /**
- * Send email using Brevo HTTP API (more reliable than SMTP)
+ * Send email using Nodemailer (SMTP)
  */
 const sendEmail = async (to, subject, htmlContent) => {
-  const response = await fetch(BREVO_API_URL, {
-    method: 'POST',
-    headers: {
-      'accept': 'application/json',
-      'api-key': BREVO_API_KEY,
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify({
-      sender: { name: 'Lokawani News', email: EMAIL_FROM },
-      to: [{ email: to }],
+  try {
+    const mailOptions = {
+      from: `"Lokawani News" <${EMAIL_FROM || SMTP_USER}>`,
+      to,
       subject,
-      htmlContent
-    })
-  });
+      html: htmlContent,
+    };
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(`Brevo API error (${response.status}): ${errorData.message || response.statusText}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Email sent: ${info.messageId}`);
+    return info;
+  } catch (error) {
+    console.error(`❌ Email sending failed to ${to}:`, error.message);
+    throw new Error(`Email service error: ${error.message}`);
   }
-
-  return response.json();
 };
 
 /**

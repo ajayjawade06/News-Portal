@@ -124,6 +124,7 @@ router.post('/register', async (req, res) => {
       message: 'OTP sent to your email. Please verify to complete registration.'
     });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
       message: 'Error registering user',
@@ -178,6 +179,7 @@ router.post('/verify-otp', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('OTP Verification error:', error);
     res.status(500).json({
       success: false,
       message: 'Error verifying OTP',
@@ -292,6 +294,7 @@ router.post('/login', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({
       success: false,
       message: 'Error logging in',
@@ -329,6 +332,7 @@ router.post('/forgot-password', async (req, res) => {
       message: 'Password reset OTP sent to your email.'
     });
   } catch (error) {
+    console.error('Forgot password error:', error);
     res.status(500).json({
       success: false,
       message: 'Error sending reset OTP',
@@ -409,6 +413,7 @@ router.post('/reset-password', async (req, res) => {
       message: 'Password reset successfully. You can now login.'
     });
   } catch (error) {
+    console.error('Reset password error:', error);
     res.status(500).json({
       success: false,
       message: 'Error resetting password',

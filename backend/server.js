@@ -18,6 +18,15 @@ import userAuthRoutes from './routes/userAuth.js';
 // Load environment variables
 dotenv.config();
 
+// Validate required environment variables
+const requiredEnv = ['MONGODB_URI', 'JWT_SECRET', 'SMTP_PASS', 'SMTP_USER'];
+const missingEnv = requiredEnv.filter(env => !process.env[env]);
+
+if (missingEnv.length > 0) {
+  console.warn(`\x1b[33m⚠️  Warning: Missing environment variables: ${missingEnv.join(', ')}\x1b[0m`);
+  console.warn('\x1b[33m   Using defaults or some features (like email/auth) may fail.\x1b[0m');
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -79,7 +88,9 @@ mongoose
     console.log('✅ Connected to MongoDB');
   })
   .catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
+    console.error('❌ MongoDB connection error:');
+    console.error(`   Message: ${error.message}`);
+    console.error('   Please check if your IP address is whitelisted in MongoDB Atlas and MONGODB_URI is correct.');
   });
 
 // Start server
