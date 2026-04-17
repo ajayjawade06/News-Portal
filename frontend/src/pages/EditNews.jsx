@@ -47,7 +47,7 @@ const EditNews = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await api.get(`/news/${id}`);
+        const response = await api.get(`/news/admin/${id}`);
         const news = response.data.data;
         const baseLang = news.baseLanguage || 'en';
         setFormData({
