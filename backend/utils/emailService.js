@@ -11,27 +11,42 @@ const {
   EMAIL_FROM
 } = process.env;
 
-// Create SMTP transporter
-const transporter = nodemailer.createTransport({
-  host: SMTP_HOST || 'smtp-relay.brevo.com',
-  port: parseInt(SMTP_PORT) || 587,
-  secure: parseInt(SMTP_PORT) === 465, // true for 465, false for other ports
-  auth: {
-    user: SMTP_USER,
-    pass: SMTP_PASS,
-  },
-  debug: true, // show debug output
-  logger: true, // log information in console
-  tls: {
-    rejectUnauthorized: false // helps with some certificate issues
+// Create SMTP transporter lazily or ensure it uses current process.env
+const getTransporter = () => {
+  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
+  
+  if (!SMTP_USER || !SMTP_PASS) {
+    console.warn('⚠️  Email credentials missing from environment variables.');
   }
-});
+
+  return nodemailer.createTransport({
+    host: SMTP_HOST || 'smtp-relay.brevo.com',
+    port: parseInt(SMTP_PORT) || 587,
+    secure: parseInt(SMTP_PORT) === 465,
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASS,
+    },
+    debug: true,
+    logger: true,
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+};
 
 /**
  * Send email using Nodemailer (SMTP)
  */
 const sendEmail = async (to, subject, htmlContent) => {
   try {
+    const { SMTP_USER, EMAIL_FROM } = process.env;
+    
+    if (!SMTP_USER) {
+      throw new Error('SMTP_USER environment variable is not set');
+    }
+
+    const transporter = getTransporter();
     const mailOptions = {
       from: `"Lokawani News" <${EMAIL_FROM || SMTP_USER}>`,
       to,
