@@ -19,7 +19,7 @@ import userAuthRoutes from './routes/userAuth.js';
 dotenv.config();
 
 // Validate required environment variables
-const requiredEnv = ['MONGODB_URI', 'JWT_SECRET', 'SMTP_PASS', 'SMTP_USER'];
+const requiredEnv = ['MONGODB_URI', 'JWT_SECRET', 'BREVO_API_KEY'];
 const missingEnv = requiredEnv.filter(env => !process.env[env]);
 
 if (missingEnv.length > 0) {

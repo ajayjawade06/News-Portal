@@ -1,62 +1,41 @@
-import dotenv from 'dotenv';
-import nodemailer from 'nodemailer';
-
-dotenv.config();
-
-const {
-  SMTP_HOST,
-  SMTP_PORT,
-  SMTP_USER,
-  SMTP_PASS,
-  EMAIL_FROM
-} = process.env;
-
-// Create SMTP transporter lazily or ensure it uses current process.env
-const getTransporter = () => {
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-  
-  if (!SMTP_USER || !SMTP_PASS) {
-    console.warn('⚠️  Email credentials missing from environment variables.');
-  }
-
-  return nodemailer.createTransport({
-    host: SMTP_HOST || 'smtp-relay.brevo.com',
-    port: parseInt(SMTP_PORT) || 587,
-    secure: parseInt(SMTP_PORT) === 465,
-    auth: {
-      user: SMTP_USER,
-      pass: SMTP_PASS,
-    },
-    debug: true,
-    logger: true,
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
-};
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
 
 /**
- * Send email using Nodemailer (SMTP)
+ * Send email using Brevo HTTP API (More reliable on Render/Vercel)
  */
 const sendEmail = async (to, subject, htmlContent) => {
+  const BREVO_API_KEY = process.env.BREVO_API_KEY;
+  const EMAIL_FROM = process.env.EMAIL_FROM || process.env.SMTP_USER;
+
+  if (!BREVO_API_KEY) {
+    console.warn('⚠️  BREVO_API_KEY is missing. Email will not be sent.');
+    return { success: false, message: 'API Key missing' };
+  }
+
   try {
-    const { SMTP_USER, EMAIL_FROM } = process.env;
-    
-    if (!SMTP_USER) {
-      throw new Error('SMTP_USER environment variable is not set');
+    const response = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: { name: 'Lokawani News', email: EMAIL_FROM || 'ajayjawade6@gmail.com' },
+        to: [{ email: to }],
+        subject,
+        htmlContent
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Brevo API error (${response.status}): ${errorData.message || response.statusText}`);
     }
 
-    const transporter = getTransporter();
-    const mailOptions = {
-      from: `"Lokawani News" <${EMAIL_FROM || SMTP_USER}>`,
-      to,
-      subject,
-      html: htmlContent,
-    };
-
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent: ${info.messageId}`);
-    return info;
+    const result = await response.json();
+    console.log(`✅ Email sent via API to ${to}`);
+    return result;
   } catch (error) {
     console.error(`❌ Email sending failed to ${to}:`, error.message);
     throw new Error(`Email service error: ${error.message}`);
