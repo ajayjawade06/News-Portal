@@ -491,11 +491,60 @@ router.put('/:id', authenticateReporter, upload.single('image'), async (req, res
       });
     }
 
-    const updates = req.body;
+    const {
+      title,
+      subHeading,
+      content,
+      baseLanguage,
+      location,
+      category,
+      published,
+      isFeatured
+    } = req.body;
 
-    Object.keys(updates).forEach(key => {
-      news[key] = updates[key];
-    });
+    // Handle translation-critical fields
+    // If title, content or subHeading are provided, we should re-translate
+    if (title || content || subHeading !== undefined || baseLanguage) {
+      const finalBaseLang = baseLanguage || news.baseLanguage || 'en';
+      const finalTitle = title || news.title[finalBaseLang] || news.title.en;
+      const finalContent = content || news.content[finalBaseLang] || news.content.en;
+      // subHeading can be empty string, so check for undefined
+      const finalSubHeading = subHeading !== undefined ? subHeading : (news.subHeading[finalBaseLang] || news.subHeading.en || '');
+
+      let translated;
+      try {
+        translated = await translateNewsContent(
+          finalTitle,
+          finalContent,
+          finalBaseLang,
+          finalSubHeading
+        );
+        news.title = translated.title;
+        news.subHeading = translated.subHeading;
+        news.content = translated.content;
+      } catch (err) {
+        console.error('Translation error during update:', err);
+        // Fallback: manually update the specific language if translation service fails
+        news.title[finalBaseLang] = finalTitle;
+        news.content[finalBaseLang] = finalContent;
+        news.subHeading[finalBaseLang] = finalSubHeading;
+      }
+      news.baseLanguage = finalBaseLang;
+    }
+
+    if (location) news.location = location;
+    if (category) news.category = category;
+    
+    if (published !== undefined) {
+      news.published = published === 'true' || published === true;
+      if (news.published && !news.publishedBy) {
+        news.publishedBy = req.reporter._id;
+      }
+    }
+    
+    if (isFeatured !== undefined) {
+      news.isFeatured = isFeatured === 'true' || isFeatured === true;
+    }
 
     if (req.file) {
       news.image = `/uploads/${req.file.filename}`;
@@ -510,6 +559,7 @@ router.put('/:id', authenticateReporter, upload.single('image'), async (req, res
     });
 
   } catch (error) {
+    console.error('Update news error:', error);
     res.status(500).json({
       success: false,
       message: 'Error updating news',

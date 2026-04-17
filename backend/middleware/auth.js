@@ -74,7 +74,17 @@ export const authenticateUser = async (req, res, next) => {
     const token = authHeader.substring(7);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded.id).select('-password');
+    // Try finding in User model first
+    let user = await User.findById(decoded.id).select('-password');
+    
+    // If not found in User, try Reporter model (Admin)
+    if (!user) {
+      user = await Reporter.findById(decoded.id).select('-password');
+      if (user) {
+        // Tag as admin/reporter for route logic if needed
+        user.isReporter = true;
+      }
+    }
     
     if (!user) {
       return res.status(401).json({ 

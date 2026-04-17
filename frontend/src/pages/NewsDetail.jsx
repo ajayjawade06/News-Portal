@@ -209,7 +209,9 @@ const NewsDetail = () => {
                 <div className="w-6 h-6 bg-editorial-red text-white text-[10px] font-bold rounded-full flex items-center justify-center uppercase">
                   {user.firstName?.charAt(0)}
                 </div>
-                <span className="text-sm font-bold text-editorial-black dark:text-zinc-200">{user.firstName} {user.lastName}</span>
+                <span className="text-sm font-bold text-editorial-black dark:text-zinc-200">
+                  {[user.firstName, user.lastName].filter(Boolean).join(' ')}
+                </span>
               </div>
               <textarea
                 value={commentText}

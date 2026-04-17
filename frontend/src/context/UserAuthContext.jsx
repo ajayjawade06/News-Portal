@@ -17,16 +17,29 @@ export const UserAuthProvider = ({ children }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const token = localStorage.getItem('userToken');
-      if (token) {
+      const userToken = localStorage.getItem('userToken');
+      const adminToken = localStorage.getItem('token');
+
+      if (userToken) {
         try {
           const res = await api.get('/user-auth/me', {
-            headers: { Authorization: `Bearer ${token}` }
+            headers: { Authorization: `Bearer ${userToken}` }
           });
           setUser(res.data.user);
         } catch (err) {
           localStorage.removeItem('userToken');
           localStorage.removeItem('userData');
+        }
+      } else if (adminToken) {
+        // If admin token exists, restore session from stored user data
+        const adminData = localStorage.getItem('user');
+        if (adminData) {
+          try {
+            setUser(JSON.parse(adminData));
+          } catch (err) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+          }
         }
       }
       setLoading(false);
@@ -42,6 +55,7 @@ export const UserAuthProvider = ({ children }) => {
       // Store admin credentials in the admin storage keys
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData); // Set user state for admin as well
       return { ...res.data, isAdmin: true };
     }
 
@@ -79,6 +93,8 @@ export const UserAuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('userToken');
     localStorage.removeItem('userData');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setUser(null);
   };
 

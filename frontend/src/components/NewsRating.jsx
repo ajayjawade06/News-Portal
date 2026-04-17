@@ -180,7 +180,9 @@ const NewsRating = ({ newsId }) => {
 
             <div className="flex items-center gap-2 py-2 border-y border-editorial-border dark:border-zinc-700">
               <span className="text-sm text-editorial-muted">Rating as:</span>
-              <span className="text-sm font-bold text-editorial-black dark:text-zinc-100">{user.firstName} {user.lastName}</span>
+              <span className="text-sm font-bold text-editorial-black dark:text-zinc-100">
+                {[user.firstName, user.lastName].filter(Boolean).join(' ')}
+              </span>
             </div>
 
             {/* Feedback */}
