@@ -124,11 +124,21 @@ router.post('/register', async (req, res) => {
       message: 'OTP sent to your email. Please verify to complete registration.'
     });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration error details:', {
+      message: error.message,
+      stack: error.stack,
+      type: error.name
+    });
+
+    const isEmailError = error.message.includes('Email service error');
+    
     res.status(500).json({
       success: false,
-      message: 'Error registering user',
-      error: error.message
+      message: isEmailError 
+        ? 'User saved but failed to send verification email. Please try logging in to resend OTP.' 
+        : 'Error during registration process',
+      error: error.message,
+      code: isEmailError ? 'EMAIL_FAILURE' : 'REGISTRATION_FAILURE'
     });
   }
 });
