@@ -129,7 +129,7 @@ const EditNews = () => {
       formDataToSend.append('isFeatured', formData.isFeatured);
       if (image) formDataToSend.append('image', image);
 
-      await api.put(`/news/${id}`, formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
+      await api.put(`/news/${id}`, formDataToSend);
       navigate('/dashboard/manage');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update article');
@@ -225,7 +225,7 @@ const EditNews = () => {
                 </div>
               ) : existingImage ? (
                 <div className="space-y-2">
-                  <img src={existingImage.startsWith('http') ? existingImage : `${IMAGE_BASE_URL}${existingImage}`} alt="Current" className="max-w-xs h-48 object-cover border border-editorial-border" />
+                  <img src={existingImage.startsWith('http') || existingImage.startsWith('data:') ? existingImage : `${IMAGE_BASE_URL}${existingImage}`} alt="Current" className="max-w-xs h-48 object-cover border border-editorial-border" />
                   <button type="button" onClick={removeImage} className="btn-editorial-outline text-sm py-2">{removeImageText}</button>
                 </div>
               ) : (

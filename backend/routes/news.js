@@ -5,6 +5,7 @@ import { authenticateReporter, authenticateUser } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
 import { translateNewsContent } from '../utils/translator.js';
 import { sendModerationWarningEmail } from '../utils/emailService.js';
+import fs from 'fs/promises';
 
 const router = express.Router();
 
@@ -456,7 +457,16 @@ router.post('/', authenticateReporter, upload.single('image'), async (req, res) 
     }
 
     if (req.file) {
-      newsData.image = `/uploads/${req.file.filename}`;
+      try {
+        const fileContent = await fs.readFile(req.file.path);
+        const base64Image = `data:${req.file.mimetype};base64,${fileContent.toString('base64')}`;
+        newsData.image = base64Image;
+        // Clean up temporary file
+        await fs.unlink(req.file.path).catch(e => console.error('Error deleting temp file:', e));
+      } catch (err) {
+        console.error('Base64 conversion error:', err);
+        newsData.image = `/uploads/${req.file.filename}`;
+      }
     }
 
     const news = await News.create(newsData);
@@ -547,8 +557,22 @@ router.put('/:id', authenticateReporter, upload.single('image'), async (req, res
     }
 
     if (req.file) {
-      news.image = `/uploads/${req.file.filename}`;
+      try {
+        const fileContent = await fs.readFile(req.file.path);
+        const base64Image = `data:${req.file.mimetype};base64,${fileContent.toString('base64')}`;
+        news.image = base64Image;
+        // Clean up temporary file
+        await fs.unlink(req.file.path).catch(e => console.error('Error deleting temp file:', e));
+      } catch (err) {
+        console.error('Base64 conversion error:', err);
+        news.image = `/uploads/${req.file.filename}`;
+      }
     }
+
+    // Explicitly mark nested objects as modified for Mongoose change detection
+    news.markModified('title');
+    news.markModified('subHeading');
+    news.markModified('content');
 
     await news.save();
 

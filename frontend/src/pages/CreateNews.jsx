@@ -92,7 +92,7 @@ const CreateNews = () => {
       formDataToSend.append('isFeatured', formData.isFeatured);
       if (image) formDataToSend.append('image', image);
 
-      await api.post('/news', formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
+      await api.post('/news', formDataToSend);
       setTranslating(false);
       navigate('/dashboard/manage');
     } catch (err) {

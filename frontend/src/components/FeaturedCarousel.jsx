@@ -45,7 +45,7 @@ const FeaturedCarousel = ({ featuredNews }) => {
             <Link to={`/news/${item._id}`} className="block relative w-full h-full">
               {item.image && (
                 <img
-                  src={item.image.startsWith('http') ? item.image : `${IMAGE_BASE_URL}${item.image}`}
+                  src={item.image.startsWith('http') || item.image.startsWith('data:') ? item.image : `${IMAGE_BASE_URL}${item.image}`}
                   alt={getNewsContent(item, 'title')}
                   className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[5s] ease-linear ${
                     index === currentIndex ? 'scale-110' : 'scale-100'

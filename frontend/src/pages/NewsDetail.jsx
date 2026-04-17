@@ -123,7 +123,7 @@ const NewsDetail = () => {
           {newsItem.image && (
             <div className="aspect-video overflow-hidden">
               <img
-                src={newsItem.image.startsWith('http') ? newsItem.image : `${IMAGE_BASE_URL}${newsItem.image}`}
+                src={newsItem.image.startsWith('http') || newsItem.image.startsWith('data:') ? newsItem.image : `${IMAGE_BASE_URL}${newsItem.image}`}
                 alt={title}
                 className="w-full h-full object-cover"
               />

@@ -17,7 +17,7 @@ const NewsCard = ({ newsItem }) => {
         {newsItem.image && (
           <div className="aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-800">
             <img
-              src={newsItem.image.startsWith('http') ? newsItem.image : `${IMAGE_BASE_URL}${newsItem.image}`}
+              src={newsItem.image.startsWith('http') || newsItem.image.startsWith('data:') ? newsItem.image : `${IMAGE_BASE_URL}${newsItem.image}`}
               alt={title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
             />
