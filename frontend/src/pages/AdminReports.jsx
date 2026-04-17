@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import api from '../utils/api';
 import BackButton from '../components/BackButton';
-import { Download, FileText, FileSpreadsheet, Newspaper, Layout, Target, Tag, Filter, DollarSign } from 'lucide-react';
+import { Download, FileText, FileSpreadsheet, Newspaper, Layout, Target, Tag, Filter, DollarSign, Users } from 'lucide-react';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -33,7 +33,8 @@ const AdminReports = () => {
       { key: '_rawDate', label: '', hidden: true }
     ],
     earnings: [
-      { key: 'id', label: 'Booking Ref' },
+      { key: 'id', label: 'Ref ID' },
+      { key: 'type', label: 'Source' },
       { key: 'createdAt', label: 'Payment Date' },
       { key: 'business', label: 'Advertiser/Business' },
       { key: 'plan', label: 'Ad Plan' },
@@ -70,6 +71,17 @@ const AdminReports = () => {
       { key: 'duration', label: 'Duration (Days)' },
       { key: 'custom', label: 'Is Custom' },
       { key: 'active', label: 'Is Active' },
+      { key: '_rawDate', label: '', hidden: true }
+    ],
+    users: [
+      { key: 'id', label: 'User ID' },
+      { key: 'name', label: 'Name' },
+      { key: 'email', label: 'Email' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'business', label: 'Business' },
+      { key: 'status', label: 'Status' },
+      { key: 'verified', label: 'Verified' },
+      { key: 'createdAt', label: 'Joined Date' },
       { key: '_rawDate', label: '', hidden: true }
     ]
   };
@@ -141,18 +153,64 @@ const AdminReports = () => {
           _custom: item.isCustom ? 'custom' : 'regular'
         })));
       } else if (tab === 'earnings') {
-        const res = await api.get('/bookings');
+        const [bookingsRes, adsRes] = await Promise.all([
+          api.get('/bookings'),
+          api.get('/ads')
+        ]);
+        const bookings = bookingsRes.data.data || [];
+        const ads = adsRes.data.data || [];
+        const now = new Date();
+        const earningsData = [];
+        
+        bookings.forEach(item => {
+          earningsData.push({
+            id: item._id,
+            type: 'Booking',
+            business: item.businessName || item.advertiserName,
+            plan: item.planId,
+            placement: item.placement,
+            amount: item.amountPaid,
+            status: item.status,
+            createdAt: new Date(item.createdAt).toLocaleDateString(),
+            _rawDate: new Date(item.createdAt),
+            _status: item.status
+          });
+        });
+        
+        ads.forEach(item => {
+          if (item.price && item.price > 0) {
+            const isWithinDate = (!item.startDate || new Date(item.startDate) <= now) && (!item.endDate || new Date(item.endDate) >= now);
+            const isActive = item.isActive && isWithinDate;
+            earningsData.push({
+              id: item._id,
+              type: 'Direct Ad',
+              business: 'Admin / Direct',
+              plan: item.plan || 'none',
+              placement: item.placement,
+              amount: item.price,
+              status: isActive ? 'active' : 'inactive',
+              createdAt: new Date(item.createdAt).toLocaleDateString(),
+              _rawDate: new Date(item.createdAt),
+              _status: isActive ? 'active' : 'inactive'
+            });
+          }
+        });
+        setRawData(earningsData);
+      } else if (tab === 'users') {
+        const res = await api.get('/user-auth/admin/users');
         const items = res.data.data || [];
         setRawData(items.map(item => ({
           id: item._id,
-          business: item.businessName || item.advertiserName,
-          plan: item.planId,
-          placement: item.placement,
-          amount: item.amountPaid,
-          status: item.status,
+          name: `${item.firstName} ${item.lastName || ''}`.trim(),
+          email: item.email,
+          phone: item.phone || 'N/A',
+          business: item.businessName || 'N/A',
+          status: item.isBanned ? 'Banned' : 'Active',
+          verified: item.isVerified ? 'Yes' : 'No',
           createdAt: new Date(item.createdAt).toLocaleDateString(),
           _rawDate: new Date(item.createdAt),
-          _status: item.status
+          _status: item.isBanned ? 'banned' : 'active',
+          _verified: item.isVerified
         })));
       }
     } catch (err) {
@@ -211,6 +269,10 @@ const AdminReports = () => {
           if (row._custom !== 'custom') return false;
         } else if (activeTab === 'plans' && statusFilter === 'regular') {
           if (row._custom !== 'regular') return false;
+        } else if (activeTab === 'users' && statusFilter === 'verified') {
+          if (!row._verified) return false;
+        } else if (activeTab === 'users' && statusFilter === 'unverified') {
+          if (row._verified) return false;
         } else if (row._status !== statusFilter) {
           return false;
         }
@@ -282,7 +344,8 @@ const AdminReports = () => {
     { id: 'bookings', icon: Target, label: 'Ad Bookings' },
     { id: 'earnings', icon: DollarSign, label: 'Financial Earnings' },
     { id: 'ads', icon: Layout, label: 'Running Ads' },
-    { id: 'plans', icon: Tag, label: 'Ad Plans' }
+    { id: 'plans', icon: Tag, label: 'Ad Plans' },
+    { id: 'users', icon: Users, label: 'User Reports' }
   ];
 
   return (
@@ -365,6 +428,14 @@ const AdminReports = () => {
                     <option value="cancelled">Cancelled</option>
                   </>
                 )}
+                {activeTab === 'earnings' && (
+                  <>
+                    <option value="approved">Approved Bookings</option>
+                    <option value="pending">Pending Bookings</option>
+                    <option value="active">Active Direct Ads</option>
+                    <option value="inactive">Inactive Direct Ads</option>
+                  </>
+                )}
                 {activeTab === 'ads' && (
                   <>
                     <option value="active">Active</option>
@@ -377,6 +448,14 @@ const AdminReports = () => {
                     <option value="inactive">Inactive Plans</option>
                     <option value="custom">Enterprise / Custom</option>
                     <option value="regular">Regular Defined</option>
+                  </>
+                )}
+                {activeTab === 'users' && (
+                  <>
+                    <option value="active">Active Users</option>
+                    <option value="banned">Banned Users</option>
+                    <option value="verified">Verified Accounts</option>
+                    <option value="unverified">Unverified Accounts</option>
                   </>
                 )}
               </select>
@@ -426,7 +505,7 @@ const AdminReports = () => {
           <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-zinc-800 flex justify-end gap-3 items-center">
             {activeTab === 'earnings' && (
               <div className="mr-auto text-lg text-editorial-black dark:text-zinc-100 font-black">
-                Total Revenue: <span className="text-emerald-600">₹{filteredData.filter(row => row.status === 'approved').reduce((acc, row) => acc + (Number(row.amount) || 0), 0).toLocaleString('en-IN')}</span>
+                Total Revenue: <span className="text-emerald-600">₹{filteredData.filter(row => row.status === 'approved' || row.status === 'active').reduce((acc, row) => acc + (Number(row.amount) || 0), 0).toLocaleString('en-IN')}</span>
               </div>
             )}
             <div className="text-xs font-bold tracking-widest uppercase text-editorial-red bg-red-50 dark:bg-red-900/20 px-3 py-1.5 rounded-full">
