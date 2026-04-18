@@ -9,6 +9,7 @@ import fs from 'fs/promises';
 
 const router = express.Router();
 
+
 /* ======================================================
    PUBLIC ROUTES
 ====================================================== */
@@ -457,16 +458,7 @@ router.post('/', authenticateReporter, upload.single('image'), async (req, res) 
     }
 
     if (req.file) {
-      try {
-        const fileContent = await fs.readFile(req.file.path);
-        const base64Image = `data:${req.file.mimetype};base64,${fileContent.toString('base64')}`;
-        newsData.image = base64Image;
-        // Clean up temporary file
-        await fs.unlink(req.file.path).catch(e => console.error('Error deleting temp file:', e));
-      } catch (err) {
-        console.error('Base64 conversion error:', err);
-        newsData.image = `/uploads/${req.file.filename}`;
-      }
+      newsData.image = req.file.path;
     }
 
     const news = await News.create(newsData);
@@ -557,16 +549,7 @@ router.put('/:id', authenticateReporter, upload.single('image'), async (req, res
     }
 
     if (req.file) {
-      try {
-        const fileContent = await fs.readFile(req.file.path);
-        const base64Image = `data:${req.file.mimetype};base64,${fileContent.toString('base64')}`;
-        news.image = base64Image;
-        // Clean up temporary file
-        await fs.unlink(req.file.path).catch(e => console.error('Error deleting temp file:', e));
-      } catch (err) {
-        console.error('Base64 conversion error:', err);
-        news.image = `/uploads/${req.file.filename}`;
-      }
+      news.image = req.file.path;
     }
 
     // Explicitly mark nested objects as modified for Mongoose change detection

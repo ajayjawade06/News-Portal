@@ -4,10 +4,7 @@ import { API_BASE_URL } from '../config';
 // Create axios instance with base URL
 // Uses environment variable in production, proxy in development
 const api = axios.create({
-  baseURL: import.meta.env.PROD ? `${API_BASE_URL}/api` : '/api',
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: import.meta.env.PROD ? `${API_BASE_URL}/api` : '/api'
 });
 
 // Add token to requests if available

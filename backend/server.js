@@ -58,15 +58,7 @@ app.use((req, res, next) => {
 
   next();
 });
-// Request logger middleware
-app.use((req, res, next) => {
-  const start = Date.now();
-  res.on('finish', () => {
-    const duration = Date.now() - start;
-    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${duration}ms`);
-  });
-  next();
-});
+// Request logger middleware removed to keep terminal clean
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

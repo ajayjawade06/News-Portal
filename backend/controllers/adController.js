@@ -75,7 +75,7 @@ export const createAd = async (req, res) => {
 
     // If there's an image file uploaded, set it to the content
     if (req.file) {
-      adData.content = `/uploads/ads/${req.file.filename}`;
+      adData.content = req.file.path;
     }
 
     const ad = await Ad.create(adData);
@@ -114,7 +114,7 @@ export const updateAd = async (req, res) => {
     }
 
     if (req.file) {
-      updates.content = `/uploads/ads/${req.file.filename}`;
+      updates.content = req.file.path;
     }
 
     const updatedAd = await Ad.findByIdAndUpdate(
