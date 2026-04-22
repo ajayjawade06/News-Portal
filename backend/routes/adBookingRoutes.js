@@ -4,7 +4,8 @@ import {
   getAllBookings,
   getBookedDates,
   getUserBookings,
-  updateBookingStatus
+  updateBookingStatus,
+  getUserBookingsAdmin
 } from '../controllers/adBookingController.js';
 import { authenticateReporter, authenticateUser } from '../middleware/auth.js';
 
@@ -21,6 +22,9 @@ router.get('/booked-dates', getBookedDates);
 
 // Admin: Get all bookings
 router.get('/', authenticateReporter, getAllBookings);
+
+// Admin: Get a specific user's bookings
+router.get('/user/:userId', authenticateReporter, getUserBookingsAdmin);
 
 // Admin: Update booking status (approve / reject)
 router.patch('/:id/status', authenticateReporter, updateBookingStatus);

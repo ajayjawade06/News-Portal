@@ -11,6 +11,7 @@ const AdPlansManagement = () => {
 
   const [isEditingConfig, setIsEditingConfig] = useState(false);
   const [discountVal, setDiscountVal] = useState(0);
+  const [discountName, setDiscountName] = useState('Special');
   const [isDiscountActive, setIsDiscountActive] = useState(false);
 
   // New/Edit plan form state
@@ -32,6 +33,7 @@ const AdPlansManagement = () => {
       setConfig(conf);
       if (conf) {
         setDiscountVal(conf.discountPercentage);
+        setDiscountName(conf.discountName || 'Special');
         setIsDiscountActive(conf.isDiscountActive);
       }
       setError(null);
@@ -48,7 +50,8 @@ const AdPlansManagement = () => {
     try {
       const res = await api.put('/plans/config/update', {
         discountPercentage: discountVal,
-        isDiscountActive
+        isDiscountActive,
+        discountName
       });
       setConfig(res.data.data);
       setIsEditingConfig(false);
@@ -198,6 +201,21 @@ const AdPlansManagement = () => {
                 </div>
               ) : (
                 <span className="text-2xl font-black text-editorial-black dark:text-zinc-100">{config?.discountPercentage}%</span>
+              )}
+            </div>
+
+            <div className="flex-1 max-w-[200px]">
+              <p className="text-sm text-editorial-muted mb-1">Festive Name</p>
+              {isEditingConfig ? (
+                <input 
+                  type="text" 
+                  value={discountName} 
+                  onChange={e => setDiscountName(e.target.value)}
+                  placeholder="e.g. Diwali"
+                  className="w-full px-3 py-1.5 border border-gray-300 dark:border-zinc-700 rounded bg-white dark:bg-zinc-800 text-editorial-black dark:text-zinc-100"
+                />
+              ) : (
+                <span className="text-sm font-bold uppercase tracking-wider text-editorial-black dark:text-zinc-100">{config?.discountName || 'Special'}</span>
               )}
             </div>
           </div>

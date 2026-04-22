@@ -14,6 +14,10 @@ const systemConfigSchema = new mongoose.Schema(
       min: 0,
       max: 100
     },
+    discountName: {
+      type: String,
+      default: 'Special'
+    },
     isDiscountActive: {
       type: Boolean,
       default: false

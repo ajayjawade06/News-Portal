@@ -57,7 +57,8 @@ const Advertising = () => {
       price: planPrice, 
       isCustom, 
       durationDays,
-      discountPercentage: discountConfig?.isDiscountActive ? discountConfig.discountPercentage : 0 
+      discountPercentage: discountConfig?.isDiscountActive ? discountConfig.discountPercentage : 0,
+      discountName: discountConfig?.discountName || 'Special'
     });
   };
 
@@ -85,7 +86,7 @@ const Advertising = () => {
       <section className="bg-editorial-red text-white py-16 md:py-24 text-center px-4 relative overflow-hidden">
         {discountConfig?.isDiscountActive && discountConfig.discountPercentage > 0 && (
           <div className="absolute top-0 left-0 w-full bg-yellow-400 text-black py-2 font-bold uppercase tracking-widest text-sm z-10">
-            Limited Time Offer: Get {discountConfig.discountPercentage}% OFF on all Ad Plans!
+            {discountConfig.discountName || 'Special'} Offer: Get {discountConfig.discountPercentage}% OFF on all Ad Plans!
           </div>
         )}
         <h1 className={`font-serif text-4xl md:text-5xl font-bold mb-4 ${discountConfig?.isDiscountActive ? 'mt-8' : ''}`}>Advertise With Us</h1>

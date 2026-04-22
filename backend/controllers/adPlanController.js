@@ -96,18 +96,20 @@ export const getSystemConfig = async (req, res) => {
 // Admin: Update global settings
 export const updateSystemConfig = async (req, res) => {
   try {
-    const { discountPercentage, isDiscountActive } = req.body;
+    const { discountPercentage, isDiscountActive, discountName } = req.body;
     let config = await SystemConfig.findOne({ type: 'global_settings' });
     
     if (!config) {
       config = await SystemConfig.create({ 
         type: 'global_settings', 
         discountPercentage, 
-        isDiscountActive 
+        isDiscountActive,
+        discountName
       });
     } else {
       config.discountPercentage = discountPercentage !== undefined ? discountPercentage : config.discountPercentage;
       config.isDiscountActive = isDiscountActive !== undefined ? isDiscountActive : config.isDiscountActive;
+      config.discountName = discountName !== undefined ? discountName : config.discountName;
       await config.save();
     }
     

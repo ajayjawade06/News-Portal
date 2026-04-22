@@ -298,7 +298,11 @@ const AdminReports = () => {
   }, [rawData, startDate, endDate, statusFilter, placementFilter, categoryFilter, planFilter, activeTab]);
 
   const generatePDF = () => {
-    const title = `${activeTab.toUpperCase()} Report`;
+    let title = `${activeTab.toUpperCase()} Report`;
+    if (startDate && endDate) title += ` (${startDate} to ${endDate})`;
+    else if (startDate) title += ` (From ${startDate})`;
+    else if (endDate) title += ` (Until ${endDate})`;
+
     const doc = new jsPDF();
     doc.text(title, 14, 15);
     
@@ -319,7 +323,11 @@ const AdminReports = () => {
   };
 
   const generateCSV = () => {
-    const title = `${activeTab.toUpperCase()} Report`;
+    let title = `${activeTab.toUpperCase()} Report`;
+    if (startDate && endDate) title += `_${startDate}_to_${endDate}`;
+    else if (startDate) title += `_from_${startDate}`;
+    else if (endDate) title += `_until_${endDate}`;
+
     const headers = displayColumns.map(c => c.label).join(',');
     const rows = filteredData.map(row => {
       return displayColumns.map(c => {

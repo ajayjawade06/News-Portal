@@ -3,7 +3,7 @@ import api from '../utils/api';
 import BackButton from '../components/BackButton';
 import useText from '../hooks/useText';
 import { useUserAuth } from '../context/UserAuthContext';
-import { Search, Loader2, ShieldAlert, ShieldCheck, Trash2, Mail, Phone, Calendar } from 'lucide-react';
+import { Search, Loader2, ShieldAlert, ShieldCheck, Trash2, Mail, Phone, Calendar, History, X } from 'lucide-react';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
@@ -11,6 +11,10 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { user } = useUserAuth();
   const titleText = useText('User Management');
+
+  const [selectedUserForBookings, setSelectedUserForBookings] = useState(null);
+  const [userBookings, setUserBookings] = useState([]);
+  const [fetchingBookings, setFetchingBookings] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -35,6 +39,21 @@ const UserManagement = () => {
       setUsers(users.map(u => u._id === id ? { ...u, isBanned: !isBanned } : u));
     } catch (err) {
       alert(err.response?.data?.message || 'Error updating ban status');
+    }
+  };
+
+  const handleViewBookings = async (u) => {
+    setSelectedUserForBookings(u);
+    setFetchingBookings(true);
+    setUserBookings([]);
+    try {
+      const res = await api.get(`/bookings/user/${u._id}`);
+      setUserBookings(res.data.data || []);
+    } catch (err) {
+      console.error('Error fetching user bookings:', err);
+      alert('Could not fetch user bookings');
+    } finally {
+      setFetchingBookings(false);
     }
   };
 
@@ -162,6 +181,14 @@ const UserManagement = () => {
                       <td className="py-4 pr-4">
                         <div className="flex justify-end gap-2">
                           <button
+                            onClick={() => handleViewBookings(u)}
+                            title="View Bookings History"
+                            className="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20 rounded-xl transition-all"
+                          >
+                            <History size={16} />
+                          </button>
+                          
+                          <button
                             onClick={() => handleToggleBan(u._id, u.isBanned)}
                             title={u.isBanned ? "Unban User" : "Ban User"}
                             className={`p-2 rounded-xl transition-all ${
@@ -190,6 +217,61 @@ const UserManagement = () => {
           )}
         </div>
       </div>
+
+      {selectedUserForBookings && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[80vh] flex flex-col overflow-hidden">
+            <div className="px-6 py-4 border-b border-neutral-200 dark:border-zinc-800 flex justify-between items-center bg-neutral-50 dark:bg-zinc-950">
+              <h3 className="font-bold text-lg dark:text-zinc-100">
+                Booking History for {selectedUserForBookings.firstName}
+              </h3>
+              <button 
+                onClick={() => setSelectedUserForBookings(null)}
+                className="text-neutral-500 hover:text-neutral-800 dark:hover:text-zinc-200 transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+              {fetchingBookings ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-editorial-red mb-4" />
+                  <p className="text-editorial-muted text-sm">Loading history...</p>
+                </div>
+              ) : userBookings.length === 0 ? (
+                <div className="text-center py-12 text-editorial-muted">
+                  No ad bookings found for this user.
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {userBookings.map(booking => (
+                    <div key={booking._id} className="border border-neutral-200 dark:border-zinc-800 rounded-xl p-4 bg-white dark:bg-zinc-900 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                           <span className="font-bold text-editorial-black dark:text-zinc-100 uppercase">{booking.planId.replace('-',' ')}</span>
+                           <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${
+                             booking.status === 'approved' ? 'bg-green-100 text-green-700' :
+                             booking.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                           }`}>{booking.status}</span>
+                        </div>
+                        <p className="text-xs text-editorial-muted mb-1 capitalize text-editorial-red font-medium">Placement: {booking.placement}</p>
+                        <p className="text-xs text-editorial-muted">
+                          {new Date(booking.startDate).toLocaleDateString()} to {new Date(booking.endDate).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="sm:text-right">
+                        <p className="font-black text-lg text-editorial-black dark:text-zinc-100">₹{booking.amountPaid.toLocaleString('en-IN')}</p>
+                        <p className="text-[10px] text-editorial-muted uppercase tracking-widest">Booking ID: {booking.bookingId}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

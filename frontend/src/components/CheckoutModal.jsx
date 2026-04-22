@@ -293,7 +293,7 @@ const CheckoutModal = ({ plan, onClose }) => {
         <div className="bg-editorial-red text-white p-6 relative overflow-hidden">
           {plan.discountPercentage > 0 && (
             <div className="absolute top-0 right-0 bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-bl-lg">
-              {plan.discountPercentage}% OFF APPLIED
+              {plan.discountName ? `${plan.discountName.toUpperCase()} ` : ''}{plan.discountPercentage}% OFF APPLIED
             </div>
           )}
           <h2 className="text-xl font-bold font-serif mb-1">Checkout</h2>

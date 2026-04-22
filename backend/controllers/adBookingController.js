@@ -132,6 +132,26 @@ export const getUserBookings = async (req, res) => {
   }
 };
 
+// Admin: Get a specific user's bookings
+export const getUserBookingsAdmin = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const bookings = await AdBooking.find({ userId }).sort({ createdAt: -1 }).populate('userId', 'firstName lastName email flexbizName phone');
+
+    res.json({
+      success: true,
+      count: bookings.length,
+      data: bookings
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching user bookings',
+      error: error.message
+    });
+  }
+};
+
 // Public: Get booked date ranges for a placement so frontend can block unavailable dates
 export const getBookedDates = async (req, res) => {
   try {
