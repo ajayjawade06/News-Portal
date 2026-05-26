@@ -151,17 +151,6 @@ const Navbar = () => {
               {isDark ? '☀️' : '🌙'}
             </button>
 
-            {/* LANGUAGE SELECT */}
-            <select
-              value={language}
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              className="text-sm font-medium text-editorial-muted dark:text-zinc-300 border border-editorial-border dark:border-zinc-600 bg-white dark:bg-zinc-800 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-editorial-red cursor-pointer"
-            >
-              <option value="en">EN</option>
-              <option value="hi">HI</option>
-              <option value="mr">MR</option>
-            </select>
-
             {/* AUTH BUTTONS */}
             {token ? (
               <div className="flex items-center gap-3">

@@ -118,14 +118,7 @@ const CreateNews = () => {
         <form onSubmit={handleSubmit} className="card-editorial p-6 sm:p-8">
 
           <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-editorial-ink mb-2">Write in language <span className="text-editorial-red">*</span></label>
-              <select name="baseLanguage" value={formData.baseLanguage} onChange={handleChange} required className="input-editorial">
-                <option value="en">English</option>
-                <option value="hi">Hindi</option>
-                <option value="mr">Marathi</option>
-              </select>
-            </div>
+
             <div>
               <label className="block text-sm font-medium text-editorial-ink mb-2">Title <span className="text-editorial-red">*</span></label>
               <input type="text" name="title" value={formData.title} onChange={handleChange} required placeholder="Enter headline" className="input-editorial" />
