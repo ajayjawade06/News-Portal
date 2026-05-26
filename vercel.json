@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://news-portal-9gtx.onrender.com/api/$1"
+      "destination": "https://news-portal-production.up.railway.app/api/$1"
     },
     {
       "source": "/uploads/(.*)",
-      "destination": "https://news-portal-9gtx.onrender.com/uploads/$1"
+      "destination": "https://news-portal-production.up.railway.app/uploads/$1"
     },
     {
       "source": "/(.*)",
