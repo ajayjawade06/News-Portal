@@ -84,7 +84,7 @@ const EditNews = () => {
         setShowCustomCat(true);
         setFormData({ ...formData, category: '' });
         return;
-      } else {
+      } else if (type === 'select-one') {
         setShowCustomCat(false);
       }
     }
