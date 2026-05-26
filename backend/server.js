@@ -35,7 +35,7 @@ const app = express();
 // Middleware
 // CORS configuration for production - More permissive for debugging
 const corsOptions = {
-  origin: ['https://lokawani.vercel.app', 'http://localhost:3000', 'http://localhost:5173'],
+  origin: ['https://lokawani.vercel.app', 'https://lokawani.co.in', 'https://www.lokawani.co.in', 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
