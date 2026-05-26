@@ -186,8 +186,8 @@ const CreateNews = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button type="submit" disabled={loading || translating} className="btn-editorial flex-1 py-3">
-                {loading || translating ? (
+              <button type="submit" disabled={loading} className="btn-editorial flex-1 py-3">
+                {loading ? (
                   <span className="flex items-center justify-center gap-2">
                     <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     {btnLoading}
