@@ -29,7 +29,7 @@ const Navbar = () => {
   const logoutText = useText('Logout');
   const advertiseText = useText('Advertise');
   const { user, logout, isAuthenticated } = useUserAuth();
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState('mr');
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

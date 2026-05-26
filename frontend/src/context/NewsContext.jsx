@@ -13,7 +13,7 @@ export const useNews = () => {
 
 export const NewsProvider = ({ children }) => {
   // Track selected language manually (updated by Navbar handler)
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedLanguage, setSelectedLanguage] = useState('mr');
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

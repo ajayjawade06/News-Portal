@@ -25,7 +25,7 @@ const CreateNews = () => {
     title: '',
     subHeading: '',
     content: '',
-    baseLanguage: 'en',
+    baseLanguage: 'mr',
     location: '',
     category: '',
     published: false,

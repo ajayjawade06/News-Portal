@@ -10,7 +10,8 @@
     "seed": "node scripts/seedData.js",
     "seed-dummy": "node scripts/seedDummyNews.js",
     "seed-trending": "node scripts/seedRealTrendingNews.js",
-    "translate-news": "node scripts/translateExistingNews.js"
+    "translate-news": "node scripts/translateExistingNews.js",
+    "clear-data": "node scripts/clearAllDummyData.js"
   },
   "keywords": [
     "news",
