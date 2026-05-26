@@ -163,9 +163,6 @@ const EditNews = () => {
         )}
 
         <form onSubmit={handleSubmit} className="card-editorial p-6 sm:p-8">
-          <div className="mb-6 border border-editorial-border bg-neutral-50 px-4 py-3 text-sm text-editorial-ink">
-            Edits will be re-translated to all languages when you save.
-          </div>
 
           <div className="space-y-5">
             <div>

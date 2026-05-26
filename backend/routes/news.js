@@ -423,22 +423,11 @@ router.post('/', authenticateReporter, upload.single('image'), async (req, res) 
       });
     }
 
-    let translated;
-
-    try {
-      translated = await translateNewsContent(
-        title,
-        content,
-        baseLanguage,
-        subHeading
-      );
-    } catch (err) {
-      translated = {
-        title: { en: title, hi: title, mr: title },
-        subHeading: { en: subHeading, hi: subHeading, mr: subHeading },
-        content: { en: content, hi: content, mr: content }
-      };
-    }
+    const translated = {
+      title: { en: title, hi: title, mr: title },
+      subHeading: { en: subHeading, hi: subHeading, mr: subHeading },
+      content: { en: content, hi: content, mr: content }
+    };
 
     const newsData = {
       baseLanguage,
@@ -504,33 +493,15 @@ router.put('/:id', authenticateReporter, upload.single('image'), async (req, res
       isFeatured
     } = req.body;
 
-    // Handle translation-critical fields
-    // If title, content or subHeading are provided, we should re-translate
     if (title || content || subHeading !== undefined || baseLanguage) {
       const finalBaseLang = baseLanguage || news.baseLanguage || 'en';
       const finalTitle = title || news.title[finalBaseLang] || news.title.en;
       const finalContent = content || news.content[finalBaseLang] || news.content.en;
-      // subHeading can be empty string, so check for undefined
       const finalSubHeading = subHeading !== undefined ? subHeading : (news.subHeading[finalBaseLang] || news.subHeading.en || '');
 
-      let translated;
-      try {
-        translated = await translateNewsContent(
-          finalTitle,
-          finalContent,
-          finalBaseLang,
-          finalSubHeading
-        );
-        news.title = translated.title;
-        news.subHeading = translated.subHeading;
-        news.content = translated.content;
-      } catch (err) {
-        console.error('Translation error during update:', err);
-        // Fallback: manually update the specific language if translation service fails
-        news.title[finalBaseLang] = finalTitle;
-        news.content[finalBaseLang] = finalContent;
-        news.subHeading[finalBaseLang] = finalSubHeading;
-      }
+      news.title = { en: finalTitle, hi: finalTitle, mr: finalTitle };
+      news.subHeading = { en: finalSubHeading, hi: finalSubHeading, mr: finalSubHeading };
+      news.content = { en: finalContent, hi: finalContent, mr: finalContent };
       news.baseLanguage = finalBaseLang;
     }
 

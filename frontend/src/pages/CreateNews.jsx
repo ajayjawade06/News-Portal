@@ -34,7 +34,6 @@ const CreateNews = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [translating, setTranslating] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -79,7 +78,6 @@ const CreateNews = () => {
       return;
     }
     setLoading(true);
-    setTranslating(true);
     try {
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
@@ -93,10 +91,8 @@ const CreateNews = () => {
       if (image) formDataToSend.append('image', image);
 
       await api.post('/news', formDataToSend);
-      setTranslating(false);
       navigate('/dashboard/manage');
     } catch (err) {
-      setTranslating(false);
       setError(err.response?.data?.message || 'Failed to create news post');
     } finally {
       setLoading(false);
@@ -109,12 +105,9 @@ const CreateNews = () => {
         <div className="mb-6">
           <BackButton to="/dashboard/manage" label="Cancel & Back" />
         </div>
-        <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-2">
+        <h1 className="font-serif font-bold text-editorial-black text-2xl sm:text-3xl border-b-2 border-editorial-red pb-2 mb-6">
           {pageTitle || 'Create news'}
         </h1>
-        <p className="text-sm text-editorial-muted mb-6">
-          {autoTranslateNote}
-        </p>
 
         {error && (
           <div className="border border-editorial-red bg-editorial-red-muted text-editorial-red-dark px-4 py-3 mb-6">
@@ -122,20 +115,7 @@ const CreateNews = () => {
           </div>
         )}
 
-        {translating && (
-          <div className="border border-editorial-border bg-neutral-50 px-4 py-4 mb-6 flex items-center gap-3">
-            <div className="w-6 h-6 border-2 border-editorial-border border-t-editorial-red rounded-full animate-spin shrink-0" />
-            <div>
-              <p className="font-medium text-sm text-editorial-ink">Translating to all languages...</p>
-              <p className="text-caption text-editorial-muted">Please wait.</p>
-            </div>
-          </div>
-        )}
-
         <form onSubmit={handleSubmit} className="card-editorial p-6 sm:p-8">
-          <div className="mb-6 border border-editorial-border bg-neutral-50 px-4 py-3 text-sm text-editorial-ink">
-            <strong>Auto-translation:</strong> Write in one language; the system will translate to English, Hindi, and Marathi.
-          </div>
 
           <div className="space-y-5">
             <div>
