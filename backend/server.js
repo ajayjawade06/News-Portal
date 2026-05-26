@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 // Import routes
 import authRoutes from './routes/auth.js';
 import newsRoutes from './routes/news.js';
-import translateRoutes from './routes/translate.js';
+
 import adRoutes from './routes/adRoutes.js';
 import adBookingRoutes from './routes/adBookingRoutes.js';
 import razorpayRoutes from './routes/razorpayRoutes.js';
@@ -35,7 +35,7 @@ const app = express();
 // Middleware
 // CORS configuration for production - More permissive for debugging
 const corsOptions = {
-  origin: true, // Allow all origins temporarily for debugging
+  origin: ['https://lokawani.vercel.app', 'http://localhost:3000', 'http://localhost:5173'],
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -69,7 +69,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
-app.use('/api/translate', translateRoutes);
+
 app.use('/api/ads', adRoutes);
 app.use('/api/bookings', adBookingRoutes);
 app.use('/api/razorpay', razorpayRoutes);

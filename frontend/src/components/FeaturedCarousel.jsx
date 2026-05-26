@@ -56,7 +56,7 @@ const FeaturedCarousel = ({ featuredNews }) => {
                 <div className="flex items-center gap-3 mb-3 flex-wrap animate-fade-in">
                   <span className="bg-editorial-red text-white text-[10px] md:text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-sm shadow-md">Featured</span>
                   <span className="text-zinc-300 font-sans text-xs uppercase tracking-wider">
-                    {new Date(item.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    {new Date(item.createdAt).toLocaleDateString('mr-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </span>
                   {item.views !== undefined && (
                     <span className="text-zinc-300 font-sans text-xs uppercase tracking-wider flex items-center gap-1">

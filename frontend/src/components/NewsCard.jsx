@@ -10,7 +10,7 @@ const NewsCard = ({ newsItem }) => {
   const content = getNewsContent(newsItem, 'content');
   const preview = content.length > 160 ? content.substring(0, 160) + '...' : content;
   const location = newsItem.location || newsItem.coverage || '';
-  console.log("Image value:", newsItem.image);
+
   return (
     <article className="premium-card group relative">
       <Link to={`/news/${newsItem._id}`} className="block h-full">
@@ -29,7 +29,7 @@ const NewsCard = ({ newsItem }) => {
               {location || 'News'}
             </span>
             <span className="text-zinc-400 text-[11px] font-sans uppercase tracking-wider">
-              {new Date(newsItem.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+              {new Date(newsItem.createdAt).toLocaleDateString('mr-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
             </span>
             {newsItem.views !== undefined && (
               <span className="text-zinc-400 text-[11px] font-sans uppercase tracking-wider flex items-center gap-1">

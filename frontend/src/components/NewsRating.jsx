@@ -261,7 +261,7 @@ const NewsRating = ({ newsId }) => {
                       </div>
                     </div>
                     <p className="text-xs text-editorial-muted">
-                      {new Date(rating.createdAt).toLocaleDateString('en-IN')} at {new Date(rating.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(rating.createdAt).toLocaleDateString('mr-IN')} at {new Date(rating.createdAt).toLocaleTimeString('mr-IN', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                 </div>

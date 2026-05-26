@@ -3,7 +3,7 @@ import News from '../models/News.js';
 import User from '../models/User.js';
 import { authenticateReporter, authenticateUser } from '../middleware/auth.js';
 import upload from '../middleware/upload.js';
-import { translateNewsContent } from '../utils/translator.js';
+
 import { sendModerationWarningEmail } from '../utils/emailService.js';
 import fs from 'fs/promises';
 

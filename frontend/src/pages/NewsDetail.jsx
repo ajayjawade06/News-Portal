@@ -137,7 +137,7 @@ const NewsDetail = () => {
                 <span className="caption text-editorial-muted">{newsItem.views || 0} views</span>
               )}
               <span className="caption text-editorial-muted">
-                {new Date(newsItem.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {new Date(newsItem.createdAt).toLocaleDateString('mr-IN', { year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
             </div>
 
@@ -194,7 +194,7 @@ const NewsDetail = () => {
                   <p className="font-medium">
                     {c.name} 
                     <span className="text-xs text-editorial-muted block sm:inline sm:ml-2">
-                      {new Date(c.createdAt).toLocaleDateString('en-IN')} at {new Date(c.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(c.createdAt).toLocaleDateString('mr-IN')} at {new Date(c.createdAt).toLocaleTimeString('mr-IN', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </p>
                   <p className="mt-2 whitespace-pre-line text-editorial-ink">{c.text}</p>

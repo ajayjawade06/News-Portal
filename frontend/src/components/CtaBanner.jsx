@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 const CtaBanner = ({ type = 'horizontal' }) => {
   if (type === 'horizontal') {
     return (
-      <div className="w-full max-w-[728px] h-[90px] bg-gradient-to-r from-editorial-red/10 to-editorial-red/5 border border-editorial-red/20 flex flex-col sm:flex-row items-center justify-between px-6 py-2 transition-all hover:shadow-md mx-auto">
+      <div className="w-full max-w-[728px] min-h-[90px] bg-gradient-to-r from-editorial-red/10 to-editorial-red/5 border border-editorial-red/20 flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 transition-all hover:shadow-md mx-auto">
         <div className="flex items-center gap-4 mb-2 sm:mb-0">
           <div className="w-10 h-10 bg-editorial-red text-white flex items-center justify-center rounded-full shrink-0">
             <span className="text-xl">🚀</span>

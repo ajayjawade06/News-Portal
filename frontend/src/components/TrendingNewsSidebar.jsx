@@ -17,7 +17,7 @@ const formatDate = (dateString) => {
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString('mr-IN', { month: 'short', day: 'numeric' });
   } catch {
     return '—';
   }
