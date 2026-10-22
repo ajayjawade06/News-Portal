@@ -15,7 +15,7 @@ const CampaignMetrics = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await api.get('/ads/analytics');
+        const res = await api.get('/campaigns/analytics');
         setAnalytics(res.data.data);
       } catch (err) {
         console.error('Error fetching ad analytics:', err);

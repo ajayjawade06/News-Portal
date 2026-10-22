@@ -26,7 +26,7 @@ const Dashboard = () => {
       try {
         const [newsRes, adsRes] = await Promise.all([
           api.get('/news/admin/all'),
-          api.get('/ads/analytics')
+          api.get('/campaigns/analytics')
         ]);
         
         const news = newsRes.data.data || [];

@@ -108,7 +108,7 @@ const AdFormModal = ({ ad, onClose, onSave }) => {
       }
 
       if (ad) {
-        await api.put(`/ads/${ad._id}`, data, {
+        await api.put(`/campaigns/${ad._id}`, data, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {

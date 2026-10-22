@@ -16,7 +16,7 @@ const AdRenderer = ({ placement = 'header' }) => {
     const fetchAds = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/ads/active?placement=${placement}`);
+        const response = await api.get(`/campaigns/active?placement=${placement}`);
         if (active) {
           const fetchedAds = response.data.data || [];
           for (let i = fetchedAds.length - 1; i > 0; i--) {
@@ -53,7 +53,7 @@ const AdRenderer = ({ placement = 'header' }) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             // Track view
-            api.post(`/ads/${currentAd._id}/view`).catch(() => {});
+            api.post(`/campaigns/${currentAd._id}/view`).catch(() => {});
             trackedViews.current.add(currentAd._id);
             observer.disconnect();
           }
@@ -81,7 +81,7 @@ const AdRenderer = ({ placement = 'header' }) => {
   }, [ads]);
 
   const handleAdClick = (adId) => {
-    api.post(`/ads/${adId}/click`).catch(() => {});
+    api.post(`/campaigns/${adId}/click`).catch(() => {});
   };
 
   if (loading) {

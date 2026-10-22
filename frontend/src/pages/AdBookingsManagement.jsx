@@ -20,7 +20,7 @@ const AdBookingsManagement = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const fetchAnalytics = async () => {
     try {
-      const analRes = await api.get('/ads/analytics');
+      const analRes = await api.get('/campaigns/analytics');
       setTotalRevenue(analRes.data.data.totalRevenue);
     } catch (err) {
       console.error('Failed to fetch analytics:', err);
@@ -32,7 +32,7 @@ const AdBookingsManagement = () => {
       setLoading(true);
       const [bookRes, analRes] = await Promise.all([
         api.get('/bookings'),
-        api.get('/ads/analytics')
+        api.get('/campaigns/analytics')
       ]);
       setBookings(bookRes.data.data || []);
       setTotalRevenue(analRes.data.data.totalRevenue);

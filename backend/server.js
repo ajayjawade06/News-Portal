@@ -70,6 +70,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/news', newsRoutes);
 
+app.use('/api/campaigns', adRoutes);
 app.use('/api/ads', adRoutes);
 app.use('/api/bookings', adBookingRoutes);
 app.use('/api/razorpay', razorpayRoutes);

@@ -23,7 +23,7 @@ const AdsManagement = () => {
       setLoading(true);
       const [adsRes, sRes] = await Promise.all([
         api.get('/ads'),
-        api.get('/ads/analytics')
+        api.get('/campaigns/analytics')
       ]);
       setAds(adsRes.data.data || []);
       setSummary(sRes.data.data);
@@ -53,7 +53,7 @@ const AdsManagement = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this advertisement?')) {
       try {
-        await api.delete(`/ads/${id}`);
+        await api.delete(`/campaigns/${id}`);
         setAds(ads.filter(ad => ad._id !== id));
       } catch (err) {
         console.error('Error deleting ad:', err);
@@ -64,7 +64,7 @@ const AdsManagement = () => {
 
   const handleToggleActive = async (id) => {
     try {
-      const response = await api.patch(`/ads/${id}/toggle`);
+      const response = await api.patch(`/campaigns/${id}/toggle`);
       setAds(ads.map(ad => ad._id === id ? response.data.data : ad));
     } catch (err) {
       console.error('Error toggling ad status:', err);
