@@ -19,8 +19,6 @@ const CreateNews = () => {
   const btnCancel = useText('Cancel');
   // form state
   const { news, fetchNews } = useNews();
-  const categories = useMemo(() => [...new Set(news.map(n => n.category).filter(Boolean))], [news]);
-  const [showCustomCat, setShowCustomCat] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     subHeading: '',
@@ -42,15 +40,6 @@ const CreateNews = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (name === 'category') {
-      if (value === '__other__') {
-        setShowCustomCat(true);
-        setFormData({ ...formData, category: '' });
-        return;
-      } else if (type === 'select-one') {
-        setShowCustomCat(false);
-      }
-    }
     setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
     setError('');
   };
@@ -146,17 +135,7 @@ const CreateNews = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-editorial-ink mb-2">{labelCategory} <span className="text-editorial-red">*</span></label>
-                {!showCustomCat ? (
-                  <select name="category" value={formData.category} onChange={handleChange} required className="input-editorial">
-                    <option value="">Select</option>
-                    {categories.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                    <option value="__other__">Other</option>
-                  </select>
-                ) : (
-                  <input type="text" name="category" value={formData.category} onChange={handleChange} required placeholder="Enter category" className="input-editorial" />
-                )}
+                <input type="text" name="category" value={formData.category} onChange={handleChange} required placeholder="Enter category" className="input-editorial" />
               </div>
             </div>
             <div>
