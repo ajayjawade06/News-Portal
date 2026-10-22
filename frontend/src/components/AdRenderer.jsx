@@ -143,7 +143,7 @@ const AdRenderer = ({ placement = 'header' }) => {
       href={ad.targetLink} 
       target="_blank" 
       rel="noopener noreferrer" 
-      className="block w-full flex justify-center"
+      className="w-full flex justify-center"
       onClick={() => handleAdClick(ad._id)}
     >
       {adContent}
