@@ -8,7 +8,7 @@ const ReporterHighlight = () => {
       <div className="w-full aspect-[4/3] overflow-hidden rounded-xl">
         <img
           src="/photo/reporter.JPG"
-          alt="Dipak Khekare"
+          alt="Reporter"
           className="w-full h-full object-cover"
         />
       </div>
@@ -16,7 +16,7 @@ const ReporterHighlight = () => {
       {/* Details */}
       <div className="mt-4 text-center">
         <h2 className="text-xl font-bold text-gray-900">
-          Dipak Khekare
+          Reporter Name
         </h2>
 
         <p className="text-red-600 font-medium mt-1">
@@ -26,10 +26,10 @@ const ReporterHighlight = () => {
         {/* Contact */}
         <div className="mt-3 text-sm text-gray-600 space-y-1">
           <p className="flex justify-center items-center gap-2">
-            <Mail size={16} /> dipakkhekare1@gmail.com
+            <Mail size={16} /> reporter@gmail.com
           </p>
           <p className="flex justify-center items-center gap-2">
-            <Phone size={16} /> +91 7972337485
+            <Phone size={16} /> +91 9876543210
           </p>
         </div>
 

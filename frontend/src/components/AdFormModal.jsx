@@ -368,7 +368,7 @@ const AdFormModal = ({ ad, onClose, onSave }) => {
                   onChange={handleChange}
                   rows={8}
                   className="w-full px-4 py-2 border border-editorial-border rounded bg-neutral-900 text-neutral-100 focus:ring-1 focus:ring-editorial-red focus:border-editorial-red transition-colors font-mono text-sm"
-                  placeholder="<!-- Insert AdSense or other ad network code here -->\n<ins class='adsbygoogle' ...></ins>"
+                  placeholder="<!-- Paste custom ad HTML here -->\n<div>Your ad content</div>"
                 />
                 <p className="text-xs text-editorial-muted">This code will be injected directly into the selected placement area.</p>
               </div>

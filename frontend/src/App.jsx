@@ -25,7 +25,7 @@ import CategoryPage from './pages/CategoryPage';
 import ModerationDashboard from './pages/ModerationDashboard';
 import AdsManagement from './pages/AdsManagement';
 import AdBookingsManagement from './pages/AdBookingsManagement';
-import AdAnalytics from './pages/AdAnalytics';
+import CampaignMetrics from './pages/CampaignMetrics';
 import AdPlansManagement from './pages/AdPlansManagement';
 import AdminReports from './pages/AdminReports';
 import UserLogin from './pages/UserLogin';
@@ -145,7 +145,7 @@ const AppContent = () => {
             path="/dashboard/analytics"
             element={
               <ProtectedRoute>
-                <AdAnalytics />
+                <CampaignMetrics />
               </ProtectedRoute>
             }
           />

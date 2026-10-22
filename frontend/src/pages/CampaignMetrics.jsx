@@ -8,7 +8,7 @@ import {
 import { TrendingUp, DollarSign, MousePointer, Users, ArrowLeft, ExternalLink, Sparkles, PieChart as PieIcon, BarChart3 } from 'lucide-react';
 import BackButton from '../components/BackButton';
 
-const AdAnalytics = () => {
+const CampaignMetrics = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -245,4 +245,4 @@ const AdAnalytics = () => {
   );
 };
 
-export default AdAnalytics;
+export default CampaignMetrics;
